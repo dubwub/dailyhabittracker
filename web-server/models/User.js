@@ -25,8 +25,8 @@ const UserSchema = new mongoose.Schema({
 		entry_type: String,
 		entries: [{
 			date: Date,
-			rating: String,
-			entry: String
+			entry: String,
+			note: String
 		}]
 	}]
 });

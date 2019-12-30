@@ -56,28 +56,38 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 });
 
 // @route POST /api/users/:uid/habit/:hid
-// @description post an update (date/entry_value/note)
+// @description post an update (date/entry/note)
 router.post('/:uid/habit/:hid', (req, res) => {
-    User.find({ _id: req.params.uid, habits._id: req.params.hid, habits.entries.date: req.body.date })
-        .exec(function(err, user) {
-            if (err || !user) {
-                res.status(400).json({ error: "Could not find specified user" })
-            } else {
-                // found a previous edit, overwrite instead of appending new
-                
-            }
-        })
-    
     User.update(
-        {
-            _id: req.params.uid,
-            habits._id: req.params.hid
-        },
-        {
-            $push: {
-            
+        { "_id": req.params.uid, "habits._id": req.params.hid, "habits.entries.date": req.body.date },
+        { $set: { "habits.entries.$.entry": req.body.entry } }
+    ).exec(function(err, result) {
+        console.log("update result: ");
+        console.log(result);
+        if (err) {
+            res.status(400).json({ error: "Error updating specified user" })
+        } else {
+            if (result.nModified === 0) { // no set happened, add a new entry
+                User.updateOne(
+                    {
+                        "_id": req.params.uid,
+                        "habits._id": req.params.hid
+                    },
+                    {
+                        $push: {
+                            "habits.$.entries": req.body
+                        }
+                    }).exec(function (err, callback) {
+                        console.log(err);
+                        if (err) {
+                            res.status(400).json({ error: err.errmsg });
+                        } else {
+                            res.json({ result: callback });
+                        }
+                    });
+            }
         }
-    }).
+    })
 });
 
 // add delete user

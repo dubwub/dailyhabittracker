@@ -12,7 +12,6 @@ class Overview extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            leftmost_date: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
             username: "",
             journal_entries: [],
             habits: [],
