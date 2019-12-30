@@ -19,11 +19,11 @@ router.get('/:id', (req, res) => {
 // @route POST /api/users
 // @description signup
 // @access Public
-router.post('/', (req, res) => {
-	User.create(req.body)
-		.then(user => res.json({ msg: 'User added successfully' }))
-		.catch(err => res.status(400).json({ error: 'Unable to add this user' }));
-});
+// router.post('/', (req, res) => {
+// 	User.create(req.body)
+//		.then(user => res.json({ msg: 'User added successfully' }))
+//		.catch(err => res.status(400).json({ error: 'Unable to add this user' }));
+//});
 
 // @route PUT /api/users/:id
 // @description add a habit to user
@@ -56,7 +56,29 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 });
 
 // @route POST /api/users/:uid/habit/:hid
-// @description add
+// @description post an update (date/entry_value/note)
+router.post('/:uid/habit/:hid', (req, res) => {
+    User.find({ _id: req.params.uid, habits._id: req.params.hid, habits.entries.date: req.body.date })
+        .exec(function(err, user) {
+            if (err || !user) {
+                res.status(400).json({ error: "Could not find specified user" })
+            } else {
+                // found a previous edit, overwrite instead of appending new
+                
+            }
+        })
+    
+    User.update(
+        {
+            _id: req.params.uid,
+            habits._id: req.params.hid
+        },
+        {
+            $push: {
+            
+        }
+    }).
+});
 
 // add delete user
 // add update user

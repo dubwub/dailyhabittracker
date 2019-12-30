@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
 import axios from 'axios';
-import './Overview.css';
+
+import Habit from './Habit.js';
+import Header from './Header.js';
+
+const moment = require('moment');
 
 class Overview extends Component {
     constructor(props) {
@@ -14,6 +18,17 @@ class Overview extends Component {
             habits: [],
             new_habit_name: ""
         }
+    }
+
+    returnLastSevenDays() {
+        let days = []; 
+        
+        for (let i = 0; i < 7; i++) {
+            let newDate = moment().subtract(i, 'days');
+            days.push(newDate);
+        }
+
+        return days;
     }
 
     componentDidMount() {
@@ -71,32 +86,16 @@ class Overview extends Component {
     }
 
     render() {
-        return (<div>
-                <table className="habitTable">
-                    <thead><tr>Habits</tr></thead>
-                    <tbody>
-                    {this.state.habits.map((habit, index) =>
-                        <tr key={index}>
-                        <td><input type='button' value='x' className='btn' onClick={(e) => this.deleteHabit(habit._id, index)} />{habit.name}</td>
-                        </tr>)}
-                    </tbody>
-                </table>
-                <table className="calendarTable">
-                    <thead><tr>Calendar</tr></thead>
-                    <tbody>
-                    {this.state.habits.map((habit, index) =>
-                        <tr key={index}>
-                        <td>test</td>
-                        </tr>)
-                    }
-                    </tbody>
-                </table>
+        return (
+            <div>
+                <Header days={this.returnLastSevenDays()}/>
+                {this.state.habits.map((habit, index) => <Habit days={this.returnLastSevenDays()} key={habit._id} habit={habit} />)}
                 <form noValidate onSubmit={this.onSubmit}>
                     <input type='text' value={this.state.new_habit_name} onChange={this.onChange} />
                     <input type='submit' className='btn'/>
                 </form>
              </div>
-            );
+        );
     }
 }
 
