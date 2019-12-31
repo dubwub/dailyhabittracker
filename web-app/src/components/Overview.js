@@ -13,9 +13,10 @@ class Overview extends Component {
         super(props);
         this.state = {
             username: "",
-            journal_entries: [],
             habits: [],
-            new_habit_name: ""
+            entries: [],
+            new_habit_name: "",
+            user_id: "5e0a82dd179d3c3599e6fd8f"
         }
     }
 
@@ -32,13 +33,13 @@ class Overview extends Component {
 
     componentDidMount() {
         axios
-            .get('http://localhost:8082/api/users/5e041c1f66574a2b2cdc02f4')
+            .get('http://localhost:8082/api/users/' + this.state.user_id)
             .then(
                 res => {
                     this.setState({
                         ...this.state,
                         username: res.data.username,
-                        journal_entries: res.data.journal_entries,
+                        entries: res.data.entries,
                         habits: res.data.habits
                     })
                 }
@@ -63,14 +64,14 @@ class Overview extends Component {
         }
 
         axios
-            .put('http://localhost:8082/api/users/5e041c1f66574a2b2cdc02f4', data)
+            .put('http://localhost:8082/api/users/' + this.state.user_id, data)
             .then(res => {
                 console.log(res);
             }).catch(err => {console.log("error when adding habit")});
     }
 
     deleteHabit(habitid, pageindex) {
-        axios.delete('http://localhost:8082/api/users/5e041c1f66574a2b2cdc02f4/habit/' + habitid)
+        axios.delete('http://localhost:8082/api/users/' + this.state.user_id + '/habit/' + habitid)
             .then(res => {
                 let new_habits = [...this.state.habits];
                 new_habits.splice(pageindex, 1);
@@ -84,11 +85,18 @@ class Overview extends Component {
             .catch(err => {console.log("error when deleting habit")});
     }
 
+    getHabitEntries(habit, entries) {
+        return entries.filter((entry) => {
+            return entry["habit"] === habit;
+        });
+    }
+
     render() {
+        console.log(this.state.entries);
         return (
             <div>
                 <Header days={this.returnLastSevenDays()}/>
-                {this.state.habits.map((habit, index) => <Habit days={this.returnLastSevenDays()} key={habit._id} habit={habit} />)}
+                {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLastSevenDays()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit, this.state.entries)} />)}
                 <form noValidate onSubmit={this.onSubmit}>
                     <input type='text' value={this.state.new_habit_name} onChange={this.onChange} />
                     <input type='submit' className='btn'/>

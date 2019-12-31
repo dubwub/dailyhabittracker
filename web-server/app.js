@@ -8,6 +8,7 @@ const morgan = require('morgan');
 
 // routes
 const user_routes = require('./routes/api/users');
+// const entry_routes = require('./routes/api/entries');
 
 const app = express();
 app.use(morgan('combined')); // log all requests
@@ -39,6 +40,7 @@ app.use(cors({ origin: true, credentials: true }));
 
 app.get('/', (req, res) => res.send('Hello world!'));
 app.use('/api/users', user_routes);
+// app.use('/api/entries', entry_routes);
 
 const port = process.env.PORT || 8082;
 

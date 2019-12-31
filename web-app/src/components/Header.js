@@ -16,7 +16,7 @@ class Header extends Component {
             <div className="header">
                 <div className="header-padding" />
                 <div className="header-date-labels">
-                    { this.props.days.map((date, index) => <DateLabel key={index} date={date.format('MM/DD/YY')} />) }
+                    { this.props.days.map((date, index) => <DateLabel key={index} date={date.format('ddd MM/DD')} />) }
                 </div>
             </div>
         )

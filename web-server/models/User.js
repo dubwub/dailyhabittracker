@@ -11,11 +11,6 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	journal_entries: [{
-		date: Date,
-		rating: Number,
-		entry: String
-	}],
 	habits: [{
 		name: {
 			type: String,
@@ -23,11 +18,6 @@ const UserSchema = new mongoose.Schema({
 		},
 		order: Number,
 		entry_type: String,
-		entries: [{
-			date: Date,
-			entry: String,
-			note: String
-		}]
 	}]
 });
 

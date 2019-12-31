@@ -1,19 +1,31 @@
 const User = require('../../models/User');
+const Entry = require('../../models/Entry');
+
 const express = require('express');
 const router = express.Router();
-
-// @route GET /api/users/test
-// @description test users route
-// @access Public
-router.get('/test', (req, res) => res.send('user route testing'));
 
 // @route GET /api/users/:id
 // @description get user
 // @access Public (for now)
 router.get('/:id', (req, res) => {
-	User.findById(req.params.id)
-		.then(user => res.json(user)) // probably need to figure out if this will be really heavy
-		.catch(err => res.status(404).json({ nouserfound: 'No User found' }));
+    let output = {};
+
+    // first query user to get list of habits, then query entries to get all entries
+    User.findById(req.params.id)
+        .then(user => {
+            output['username'] = user['username'];
+            output['habits'] = user['habits'];
+            Entry.find({
+                user: req.params.id
+            }, function(err, entries) {
+                if (err) {
+                    res.status(400).json({ error: 'Error loading entries' });
+                } else {
+                    output['entries'] = entries;
+                    res.send(output);
+                }
+            });
+        }).catch(err => res.status(404).json({ nouserfound: 'No User Found' }));
 });
 
 // @route POST /api/users
@@ -55,40 +67,29 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 		.catch(err => res.status(400).json({ error: err }));
 });
 
-// @route POST /api/users/:uid/habit/:hid
-// @description post an update (date/entry/note)
-router.post('/:uid/habit/:hid', (req, res) => {
-    User.update(
-        { "_id": req.params.uid, "habits._id": req.params.hid, "habits.entries.date": req.body.date },
-        { $set: { "habits.entries.$.entry": req.body.entry } }
-    ).exec(function(err, result) {
-        console.log("update result: ");
-        console.log(result);
-        if (err) {
-            res.status(400).json({ error: "Error updating specified user" })
-        } else {
-            if (result.nModified === 0) { // no set happened, add a new entry
-                User.updateOne(
-                    {
-                        "_id": req.params.uid,
-                        "habits._id": req.params.hid
-                    },
-                    {
-                        $push: {
-                            "habits.$.entries": req.body
-                        }
-                    }).exec(function (err, callback) {
-                        console.log(err);
-                        if (err) {
-                            res.status(400).json({ error: err.errmsg });
-                        } else {
-                            res.json({ result: callback });
-                        }
-                    });
-            }
+router.post('/:uid/habit/:hid/entries', (req, res) => {
+    Entry.findOneAndUpdate({
+        "user": req.params.uid,
+        "habit": req.params.hid,
+        "date": req.body.date
+    }, {
+        $set: {
+            "entry": req.body.entry,
+            "note": req.body.note
         }
-    })
+    }, {
+        new: true,
+        upsert: true
+    }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
 });
+
+
+
+// ENTRY ENDPOINTS
+// upsert entry for user
+// upsert entry for user/habit pair
+// get all entries for user in date range
+// get all entries for user/habit pair in date range
 
 // add delete user
 // add update user
