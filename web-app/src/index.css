@@ -19,16 +19,23 @@ code {
 }
 
 .habit-header {
-    width: 100px;
+    width: 10%;
     height: 100px;
     color: red;
     display: inline-block;
+    float: left;
 }
 
 .habit-entries {
     height: 100px;
-    width: 700px;
-    display: inline-block;
+    width: 90%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .header {
@@ -38,25 +45,36 @@ code {
 }
 
 .header-padding {
-    width: 100px;
+    width: 10%;
     height: 50px;
     display: inline-block;
+    float: left;
 }
 
 .header-date-labels {
     height: 50px;
-    width: 700px;
-    display: inline-block;
+    width: 90%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .header-date-label {
     height: 50px;
     width: 100px;
     display: inline-block;
+    float: left;
+    flex: 0 0 auto;
 }
 
 .habit-entry {
     height: 100px;
     width: 100px;
     display: inline-block;
+    float: left;
+    flex: 0 0 auto;
 }

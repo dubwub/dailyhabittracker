@@ -4,7 +4,6 @@ import axios from 'axios';
 class HabitEntry extends Component {
     constructor(props) {
         super(props);
-        console.log(props);
         if (props.entry) {
             this.state = {
                 entry: props.entry
@@ -39,10 +38,18 @@ class HabitEntry extends Component {
             })
     }
 
+    checkboxIsChecked() {
+        if (this.state.entry === true || this.state.entry === "true") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     render() {
         return (
             <div className="habit-entry">
-                <input type="checkbox" ref="checkbox" checked={this.state.entry} onChange={() => this.postUpdate(this.props.habit, this.props.user, this.props.day)} />
+                <input type="checkbox" ref="checkbox" checked={this.checkboxIsChecked()} onChange={() => this.postUpdate(this.props.habit, this.props.user, this.props.day)} />
             </div>
         );
     }
@@ -53,23 +60,22 @@ class Habit extends Component {
         let map = {};
 
         for (let i = 0; i < entries.length; i++) {
-            map[entries[i]["date"]] = entries[i]["value"];
+            map[entries[i]["date"]] = entries[i]["entry"];
         }
-
+        console.log(map);
         return map;
     }
 
     render() {
         const dateMap = this.processEntries(this.props.entries);
-
         return (
             <div className="habit">
                 <div className="habit-header">
                     <div className="habit-name">
-                        { this.props.name }
+                        <h5>{ this.props.habit.name }</h5>
                     </div>
                     <div className="habit-description">
-                        { this.props.description }
+                        <h6>description goes here</h6>
                     </div>
                 </div>
                 <div className="habit-entries">

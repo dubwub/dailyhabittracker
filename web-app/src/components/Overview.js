@@ -20,10 +20,10 @@ class Overview extends Component {
         }
     }
 
-    returnLastSevenDays() {
+    returnLast30Days() {
         let days = []; 
         
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 30; i++) {
             let newDate = moment().subtract(i, 'days');
             days.push(newDate);
         }
@@ -86,17 +86,19 @@ class Overview extends Component {
     }
 
     getHabitEntries(habit, entries) {
-        return entries.filter((entry) => {
+        return entries.map((entry) => {
+            entry["date"] = moment(entry["date"]).format("MM/DD/YYYY");
+            return entry;
+        }).filter((entry) => {
             return entry["habit"] === habit;
         });
     }
 
     render() {
-        console.log(this.state.entries);
         return (
             <div>
-                <Header days={this.returnLastSevenDays()}/>
-                {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLastSevenDays()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit, this.state.entries)} />)}
+                <Header days={this.returnLast30Days()}/>
+                {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLast30Days()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit._id, this.state.entries)} />)}
                 <form noValidate onSubmit={this.onSubmit}>
                     <input type='text' value={this.state.new_habit_name} onChange={this.onChange} />
                     <input type='submit' className='btn'/>
