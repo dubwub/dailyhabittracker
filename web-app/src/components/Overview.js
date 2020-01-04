@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import '../App.css';
 import axios from 'axios';
 
 import Habit from './Habit.js';
 import Header from './Header.js';
+import DailyRetroContainer from './DailyRetroContainer.js';
 
 const moment = require('moment');
 
@@ -99,6 +99,7 @@ class Overview extends Component {
             <div>
                 <Header days={this.returnLast30Days()}/>
                 {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLast30Days()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit._id, this.state.entries)} />)}
+                <DailyRetroContainer user={this.state.user_id} days={this.returnLast30Days()} entries={this.getHabitEntries(undefined, this.state.entries)} />
                 <form noValidate onSubmit={this.onSubmit}>
                     <input type='text' value={this.state.new_habit_name} onChange={this.onChange} />
                     <input type='submit' className='btn'/>

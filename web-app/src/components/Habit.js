@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { syncScroll } from '../utils/habits.utils';
 
 class HabitEntry extends Component {
     constructor(props) {
@@ -48,7 +49,7 @@ class HabitEntry extends Component {
 
     render() {
         return (
-            <div className="habit-entry">
+            <div className="ctr-entry habit">
                 <input type="checkbox" ref="checkbox" checked={this.checkboxIsChecked()} onChange={() => this.postUpdate(this.props.habit, this.props.user, this.props.day)} />
             </div>
         );
@@ -69,8 +70,8 @@ class Habit extends Component {
     render() {
         const dateMap = this.processEntries(this.props.entries);
         return (
-            <div className="habit">
-                <div className="habit-header">
+            <div className="ctr habit">
+                <div className="ctr-header habit">
                     <div className="habit-name">
                         <h5>{ this.props.habit.name }</h5>
                     </div>
@@ -78,7 +79,7 @@ class Habit extends Component {
                         <h6>description goes here</h6>
                     </div>
                 </div>
-                <div className="habit-entries">
+                <div className="ctr-contents habit" onScroll={syncScroll}>
                     { this.props.days.map((date, index) => <HabitEntry user={this.props.user} key={index} day={date} habit={this.props.habit._id} entry={dateMap[date.format("MM/DD/YYYY")]}/>) }
                 </div>
             </div>

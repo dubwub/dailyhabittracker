@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { syncScroll } from '../utils/habits.utils';
 
 class DateLabel extends Component {
     render() {
         return (
-            <div className="header-date-label">
+            <div className="ctr-entry header">
                 { this.props.date }    
             </div>
         )
@@ -13,9 +14,9 @@ class DateLabel extends Component {
 class Header extends Component {
     render() {
         return (
-            <div className="header">
-                <div className="header-padding" />
-                <div className="header-date-labels">
+            <div className="ctr header">
+                <div className="ctr-header header" />
+                <div className="ctr-contents header" onScroll={syncScroll}>
                     { this.props.days.map((date, index) => <DateLabel key={index} date={date.format('ddd MM/DD')} />) }
                 </div>
             </div>
