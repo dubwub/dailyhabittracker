@@ -63,11 +63,11 @@ class Habit extends Component {
         for (let i = 0; i < entries.length; i++) {
             map[entries[i]["date"]] = entries[i]["entry"];
         }
-        console.log(map);
         return map;
     }
 
     render() {
+        console.log('rendering habit');
         const dateMap = this.processEntries(this.props.entries);
         return (
             <div className="ctr habit">

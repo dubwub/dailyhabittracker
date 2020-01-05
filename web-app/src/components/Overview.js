@@ -85,21 +85,36 @@ class Overview extends Component {
             .catch(err => {console.log("error when deleting habit")});
     }
 
+    mongoDateToMoment(date) {
+        console.log(typeof date);
+        return moment("" + (date.getMonth() + 1) + "/" + (date.getDate()) + "/" + (1900 + date.getYear()), "MM/DD/YYYY");
+    }
+
     getHabitEntries(habit, entries) {
         return entries.map((entry) => {
-            entry["date"] = moment(entry["date"]).format("MM/DD/YYYY");
+            entry["date"] = this.mongoDateToMoment(entry["date"]).format("MM/DD/YYYY");
             return entry;
         }).filter((entry) => {
             return entry["habit"] === habit;
         });
     }
 
+    getDailyRetros(entries) {
+        return entries.map((entry) => {
+            entry["date"] = this.mongoDateToMoment(entry["date"]).format("MM/DD/YYYY");
+            return entry;
+        }).filter((entry) => {
+            return !entry["habit"]  
+        });
+    }
+
     render() {
+        console.log(this.getDailyRetros(this.state.entries));
         return (
             <div>
                 <Header days={this.returnLast30Days()}/>
                 {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLast30Days()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit._id, this.state.entries)} />)}
-                <DailyRetroContainer user={this.state.user_id} days={this.returnLast30Days()} entries={this.getHabitEntries(undefined, this.state.entries)} />
+                <DailyRetroContainer user={this.state.user_id} days={this.returnLast30Days()} entries={this.getDailyRetros(this.state.entries)} />
                 <form noValidate onSubmit={this.onSubmit}>
                     <input type='text' value={this.state.new_habit_name} onChange={this.onChange} />
                     <input type='submit' className='btn'/>

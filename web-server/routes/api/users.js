@@ -67,6 +67,7 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 		.catch(err => res.status(400).json({ error: err }));
 });
 
+// post habit entry
 router.post('/:uid/habit/:hid/entries', (req, res) => {
     Entry.findOneAndUpdate({
         "user": req.params.uid,
@@ -83,7 +84,22 @@ router.post('/:uid/habit/:hid/entries', (req, res) => {
     }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
 });
 
-
+// post daily retro
+router.post('/:uid/entries', (req, res) => {
+    Entry.findOneAndUpdate({
+        "user": req.params.uid,
+        "habit": null,
+        "date": req.body.date
+    }, {
+        $set: {
+            "entry": req.body.entry,
+            "note": req.body.note
+        }
+    }, {
+        new: true,
+        upsert: true
+    }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
+});
 
 // ENTRY ENDPOINTS
 // upsert entry for user
