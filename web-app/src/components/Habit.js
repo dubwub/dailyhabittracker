@@ -67,7 +67,6 @@ class Habit extends Component {
     }
 
     render() {
-        console.log('rendering habit');
         const dateMap = this.processEntries(this.props.entries);
         return (
             <div className="ctr habit">

@@ -36,10 +36,17 @@ class Overview extends Component {
             .get('http://localhost:8082/api/users/' + this.state.user_id)
             .then(
                 res => {
+                    let entries = res.data.entries.map((entry) => {
+                        // TODO: super hacky with lots of assumptions that could easily break :(
+                        // why is this reading as string? could i read as a date format from mongoose?
+                        entry["date"] = moment(entry["date"].substring(0, 10)).format('MM/DD/YYYY');
+                        return entry;
+                    });
+                    
                     this.setState({
                         ...this.state,
                         username: res.data.username,
-                        entries: res.data.entries,
+                        entries: entries,
                         habits: res.data.habits
                     })
                 }
@@ -85,31 +92,19 @@ class Overview extends Component {
             .catch(err => {console.log("error when deleting habit")});
     }
 
-    mongoDateToMoment(date) {
-        console.log(typeof date);
-        return moment("" + (date.getMonth() + 1) + "/" + (date.getDate()) + "/" + (1900 + date.getYear()), "MM/DD/YYYY");
-    }
-
     getHabitEntries(habit, entries) {
-        return entries.map((entry) => {
-            entry["date"] = this.mongoDateToMoment(entry["date"]).format("MM/DD/YYYY");
-            return entry;
-        }).filter((entry) => {
+        return entries.filter((entry) => {
             return entry["habit"] === habit;
         });
     }
 
     getDailyRetros(entries) {
-        return entries.map((entry) => {
-            entry["date"] = this.mongoDateToMoment(entry["date"]).format("MM/DD/YYYY");
-            return entry;
-        }).filter((entry) => {
+        return entries.filter((entry) => {
             return !entry["habit"]  
         });
     }
 
     render() {
-        console.log(this.getDailyRetros(this.state.entries));
         return (
             <div>
                 <Header days={this.returnLast30Days()}/>

@@ -21,8 +21,6 @@ class DailyRetroContainer extends Component {i
     }
 
     componentWillReceiveProps(props) {
-        console.log('receiving props');
-        console.log(props);
         this.setState({
             ...this.state,
             entries: this.processEntries(props.entries)
@@ -70,8 +68,6 @@ class DailyRetroContainer extends Component {i
     }
 
     render() {
-        console.log('this state');
-        console.log(this.state);
         let selected_entry = ((this.state.entries && this.state.selected_day in this.state.entries) ? this.state.entries[this.state.selected_day] : "");
  
         return (
