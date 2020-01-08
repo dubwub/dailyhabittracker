@@ -8,7 +8,10 @@ class DailyRetroContainer extends Component {i
     processEntries(entries) {
         let map = {};
         for (let i = 0; i < entries.length; i++) {
-            map[entries[i]["date"]] = entries[i]["note"];
+            map[entries[i]["date"]] = {
+                "entry": entries[i]["entry"],
+                "note": entries[i]["note"]
+            };
         }
         return map;
     }
@@ -41,6 +44,14 @@ class DailyRetroContainer extends Component {i
         return day.format('MM/DD/YYYY') === this.state.selected_day;
     }
 
+    dayHasEntry(day) {
+        day = day.format('MM/DD/YYYY');
+        if (this.state.entries) {
+            return (typeof this.state.entries[day] !== "undefined") && (this.state.entries[day].note !== "");
+        }
+        return false;
+    }
+
     updateRetroForSelectedDay(user, e) {
         const entry = 10;
         const data = {
@@ -67,19 +78,37 @@ class DailyRetroContainer extends Component {i
             })
     }
 
+    getEntryForDay(day) {
+        day = day.format('MM/DD/YYYY');
+        if (this.state.entries && this.state.entries[day]) {
+            return this.state.entries[day].entry;
+        }
+        return "-";
+    }
+
     render() {
-        let selected_entry = ((this.state.entries && this.state.selected_day in this.state.entries) ? this.state.entries[this.state.selected_day] : "");
- 
+        let selected_note = ((this.state.entries && this.state.selected_day in this.state.entries) ? this.state.entries[this.state.selected_day].note : "");
+
         return (
             <div className="ctr retro">
                 <div className="retro-top">
                     <div className="ctr-header retro-top" />
                     <div className="ctr-contents retro-top" onScroll={syncScroll}>
-                        { this.props.days.map((date, index) => <div className={"ctr-entry retro-top" + (this.isSelectedDay(date) ? " retro-top-selected" : "")} onClick={() => this.updateDaySelection(date)} date={date} key={index}>{date.format('MM/DD/YY')}</div>) }
+                        { this.props.days.map((date, index) => <div className={"ctr-entry retro-top" + (this.isSelectedDay(date) ? " retro-top-selected" : "") + (this.dayHasEntry(date) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(date)} date={date} key={index}>{date.format('MM/DD/YY')}
+                            <select value={this.getEntryForDay(date)}>
+                                <option value="-">-</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>) }
                     </div>
                 </div>
                 <div className="retro-bottom">
-                    <textarea style={{"width":"100%", "height":"100%"}} ref="retro-textbox" value={selected_entry} onChange={(e) => this.updateRetroForSelectedDay(this.props.user, e)}/>
+                    <textarea style={{"width":"100%", "height":"100%"}} ref="retro-textbox" value={selected_note} onChange={(e) => this.updateRetroForSelectedDay(this.props.user, e)}/>
                 </div>
             </div>
         )
