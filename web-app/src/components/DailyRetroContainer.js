@@ -52,19 +52,24 @@ class DailyRetroContainer extends Component {i
         return false;
     }
 
-    updateRetroForSelectedDay(user, e) {
-        const entry = 10;
-        const data = {
-            entry: entry,
-            date: this.state.selected_day,
-            note: e.target.value
+    updateEntryForSelectedDay(user, field, e) {
+        let data = {
+            date: this.state.selected_day
         };
+        if (this.state.selected_day in this.state.entries) { // set payload to default from state
+            data["entry"] = this.state.entries[this.state.selected_day].entries || "-";
+            data["note"] = this.state.entries[this.state.selected_day].note || "";
+        }
+        data[field] = e.target.value; // field is entry (1-10) or note (string)
 
         console.log("Posting daily retro for " + data.date + ", entry: " + data.entry + ", note: " + data.note);
         axios.post('http://localhost:8082/api/users/' + user + '/entries', data)
             .then(res => {
                 let entries = this.state.entries;
-                entries[this.state.selected_day] = data.note;
+                if (!entries[this.state.selected_day]) {
+                    entries[this.state.selected_day] = {};
+                }
+                entries[this.state.selected_day][field] = data[field];
 
                 this.setState({
                     ...this.state,
@@ -87,7 +92,10 @@ class DailyRetroContainer extends Component {i
     }
 
     render() {
-        let selected_note = ((this.state.entries && this.state.selected_day in this.state.entries) ? this.state.entries[this.state.selected_day].note : "");
+        let selected_note = "";
+        if (this.state.entries && this.state.selected_day in this.state.entries && this.state.entries[this.state.selected_day].note) {
+            selected_note = this.state.entries[this.state.selected_day].note;
+        }
 
         return (
             <div className="ctr retro">
@@ -95,7 +103,7 @@ class DailyRetroContainer extends Component {i
                     <div className="ctr-header retro-top" />
                     <div className="ctr-contents retro-top" onScroll={syncScroll}>
                         { this.props.days.map((date, index) => <div className={"ctr-entry retro-top" + (this.isSelectedDay(date) ? " retro-top-selected" : "") + (this.dayHasEntry(date) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(date)} date={date} key={index}>{date.format('MM/DD/YY')}
-                            <select value={this.getEntryForDay(date)}>
+                            <select value={this.getEntryForDay(date)} onChange={(e) => this.updateEntryForSelectedDay(this.props.user, "entry", e)}>
                                 <option value="-">-</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -108,7 +116,7 @@ class DailyRetroContainer extends Component {i
                     </div>
                 </div>
                 <div className="retro-bottom">
-                    <textarea style={{"width":"100%", "height":"100%"}} ref="retro-textbox" value={selected_note} onChange={(e) => this.updateRetroForSelectedDay(this.props.user, e)}/>
+                    <textarea style={{"width":"100%", "height":"100%"}} ref="retro-textbox" value={selected_note} onChange={(e) => this.updateEntryForSelectedDay(this.props.user, "note", e)}/>
                 </div>
             </div>
         )
