@@ -53,6 +53,27 @@ router.put('/:id', (req, res) => {
 	}).catch(err => res.status(400).json({ error: err }));
 });
 
+// @route POST /api/users/:uid/habit/:hid
+// @description modify user habit with clean fields
+router.post('/:uid/habit/:hid', (req, res) => {
+    let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
+    const validFields = ["name", "description", "entry_type", "color"];
+    validFields.forEach((field) => {
+        if (req.body[field]) {
+            cleanedRequest[field] = req.body[field];
+        }
+    });
+
+    User.update({
+        _id: req.params.uid,
+        habits: { $elemMatch: { _id: req.params.hid } },
+    },
+    {
+        $set: cleanedRequest
+    }).then( _ => res.json({ msg: 'Habit updated successfully' }))
+        .catch(err => res.status(400).json({ msg: 'Habit not updated successfully', error: err}));
+});
+
 // @route DELETE /api/users/:uid/habit/:hid
 // @description delete habit <hid>
 // @access PUBLIC (to make into only user)

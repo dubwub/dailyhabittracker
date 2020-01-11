@@ -18,6 +18,8 @@ const UserSchema = new mongoose.Schema({
 		},
 		order: Number,
 		entry_type: String,
+        description: String,
+        color: String
 	}]
 });
 
