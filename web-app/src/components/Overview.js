@@ -15,7 +15,6 @@ class Overview extends Component {
             username: "",
             habits: [],
             entries: [],
-            new_habit_name: "",
             user_id: "5e0a82dd179d3c3599e6fd8f"
         }
     }
@@ -55,16 +54,11 @@ class Overview extends Component {
             })
     }
 
-    onChange = e => {
-        this.setState({
-            ...this.state,
-            new_habit_name: e.target.value
-        })
-    }
-
     onSubmit = e => {
         const data = {
-            name: this.state.new_habit_name,
+            name: this.refs['habit-name'].value,
+            description: this.refs['habit-description'].value,
+            color: this.refs['habit-color'].value,
             order: 1,
             entry_type: "default",
             entries: []
@@ -111,8 +105,10 @@ class Overview extends Component {
                 {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLast30Days()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit._id, this.state.entries)} />)}
                 <DailyRetroContainer user={this.state.user_id} days={this.returnLast30Days()} entries={this.getDailyRetros(this.state.entries)} />
                 <form noValidate onSubmit={this.onSubmit}>
-                    <input type='text' value={this.state.new_habit_name} onChange={this.onChange} />
-                    <input type='submit' className='btn'/>
+                    <input type="text" ref="habit-name" placeholder="Name of habit" />
+                    <input type="text" ref="habit-description" placeholder="Habit description" />
+                    <input type="text" ref="habit-color" placeholder="Color of habit (red/blue)" />
+                    <input type='submit' className='btn' />
                 </form>
              </div>
         );

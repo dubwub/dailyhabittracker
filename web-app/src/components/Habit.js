@@ -100,15 +100,18 @@ class Habit extends Component {
     }
 
     render() {
+        const description = this.props.habit.description || "";
+        const color = this.props.habit.color || "";
+
         const dateMap = this.processEntries(this.props.entries);
         return (
             <div className="ctr habit">
                 <div className="ctr-header habit">
-                    <div className="habit-name">
+                    <div className="habit-name" style={{"color": color}}>
                         <h5>{ this.props.habit.name }</h5>
                     </div>
-                    <div className="habit-description">
-                        <h6>description goes here</h6>
+                    <div className="habit-description" style={{"color": color}}>
+                        <h6>{ description }</h6>
                     </div>
                 </div>
                 <div className="ctr-contents habit" onScroll={syncScroll}>
