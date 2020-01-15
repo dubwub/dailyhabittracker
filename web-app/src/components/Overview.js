@@ -15,8 +15,7 @@ class Overview extends Component {
             username: "",
             habits: [],
             entries: [],
-            user_id: "5e0a82dd179d3c3599e6fd8f"
-        }
+      }
     }
 
     returnLast30Days() {
@@ -55,21 +54,7 @@ class Overview extends Component {
     }
 
     onSubmit = e => {
-        const data = {
-            name: this.refs['habit-name'].value,
-            description: this.refs['habit-description'].value,
-            color: this.refs['habit-color'].value,
-            order: 1,
-            entry_type: "default",
-            entries: []
-        }
-
-        axios
-            .put('http://localhost:8082/api/users/' + this.state.user_id, data)
-            .then(res => {
-                console.log(res);
-            }).catch(err => {console.log("error when adding habit")});
-    }
+            }
 
     deleteHabit(habitid, pageindex) {
         axios.delete('http://localhost:8082/api/users/' + this.state.user_id + '/habit/' + habitid)

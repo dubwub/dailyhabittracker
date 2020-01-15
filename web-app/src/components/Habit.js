@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { syncScroll } from '../utils/habits.utils';
 
+// TODO: how's the best way to handle complex edit forms
 const states = ["", "x", "X", "o", "O"];
 
 class HabitEntry extends Component {
@@ -29,32 +30,10 @@ class HabitEntry extends Component {
         if (stateIndex === states.length - 1) {
             stateIndex = -1;
         }
-
-        this.setState({
-            ...this.state,
-            entry: states[stateIndex + 1]
-        }, () => {
-            const entry = this.state.entry;
-            const data = {
-                entry: entry,
-                date: day.format('MM/DD/YYYY'),
-                note: ""
-            };
-            
-            console.log("Posting update for " + habit + " on " + data.date + ", entry: " + data.entry);
-            axios.post('http://localhost:8082/api/users/' + user + '/habit/' + habit + '/entries', data)
-                .then((res) => {
-                    console.log("Update posted successfully");
-                    console.log(res);   
-                }).catch(err => {
-                    console.log("Update had an error");
-                    console.log(err);
-                })
-        });
     }
 
     getClassName() {
-            }
+    }
 
     render() {
         let entryDisplay = this.state.entry || "";
@@ -83,7 +62,7 @@ class HabitEntry extends Component {
 
         return (
             <div className="ctr-entry habit">
-                <div className={className} onClick={() => this.postUpdate(this.props.habit, this.props.user, this.props.day)}>{entryDisplay}</div>
+            <div className={className} onClick={() => this.postUpdate(this.props.habit, this.props.user, this.props.day)}>{entryDisplay}</div>
             </div>
         );
     }
@@ -106,17 +85,17 @@ class Habit extends Component {
         const dateMap = this.processEntries(this.props.entries);
         return (
             <div className="ctr habit">
-                <div className="ctr-header habit">
-                    <div className="habit-name" style={{"color": color}}>
-                        <h5>{ this.props.habit.name }</h5>
-                    </div>
-                    <div className="habit-description" style={{"color": color}}>
-                        <h6>{ description }</h6>
-                    </div>
-                </div>
-                <div className="ctr-contents habit" onScroll={syncScroll}>
-                    { this.props.days.map((date, index) => <HabitEntry user={this.props.user} key={index} day={date} habit={this.props.habit._id} entry={dateMap[date.format("MM/DD/YYYY")]}/>) }
-                </div>
+            <div className="ctr-header habit">
+            <div className="habit-name" style={{"color": color}}>
+            <h5>{ this.props.habit.name }</h5>
+            </div>
+            <div className="habit-description" style={{"color": color}}>
+            <h6>{ description }</h6>
+            </div>
+            </div>
+            <div className="ctr-contents habit" onScroll={syncScroll}>
+            { this.props.days.map((date, index) => <HabitEntry user={this.props.user} key={index} day={date} habit={this.props.habit._id} entry={dateMap[date.format("MM/DD/YYYY")]}/>) }
+            </div>
             </div>
         )
     }
