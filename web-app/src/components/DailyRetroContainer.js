@@ -2,99 +2,39 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import { syncScroll } from '../utils/habits.utils';
 
+import { connect } from 'react-redux';
+import * as mapDispatchToProps from '../actions/index.actions.js'; 
+
 const moment = require('moment');
 
 class DailyRetroContainer extends Component {i
-    processEntries(entries) {
-        let map = {};
-        for (let i = 0; i < entries.length; i++) {
-            map[entries[i]["date"]] = {
-                "entry": entries[i]["entry"],
-                "note": entries[i]["note"]
-            };
-        }
-        return map;
-    }
-
     constructor(props) {
         super(props);
         this.state = {
-            selected_day: moment().format('MM/DD/YYYY')
+            selected_day: props.days && props.days.length > 0 ? props.days[0] : moment().format('MM/DD/YYYY')
         }
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({
-            ...this.state,
-            entries: this.processEntries(props.entries)
-        });
-    }
-
     updateDaySelection(day) {
-        let selected_day = day.format('MM/DD/YYYY');
-        console.log("changing selected day to: " + selected_day);
+        console.log("changing selected day to: " + day);
                      
         this.setState({
             ...this.state,
-            selected_day: selected_day
+            selected_day: day
         });
     }
 
-    isSelectedDay(day) {
-        return day.format('MM/DD/YYYY') === this.state.selected_day;
-    }
-
     dayHasEntry(day) {
-        day = day.format('MM/DD/YYYY');
-        if (this.state.entries) {
-            return (typeof this.state.entries[day] !== "undefined") && (this.state.entries[day].note !== "");
+        if (this.props.entries) {
+            return (typeof this.props.entries[day] !== "undefined") && (this.props.entries[day].note !== "");
         }
         return false;
     }
 
-    updateEntryForSelectedDay(user, field, e) {
-        let data = {
-            date: this.state.selected_day
-        };
-        if (this.state.selected_day in this.state.entries) { // set payload to default from state
-            data["entry"] = this.state.entries[this.state.selected_day].entries || "-";
-            data["note"] = this.state.entries[this.state.selected_day].note || "";
-        }
-        data[field] = e.target.value; // field is entry (1-10) or note (string)
-
-        console.log("Posting daily retro for " + data.date + ", entry: " + data.entry + ", note: " + data.note);
-        axios.post('http://localhost:8082/api/users/' + user + '/entries', data)
-            .then(res => {
-                let entries = this.state.entries;
-                if (!entries[this.state.selected_day]) {
-                    entries[this.state.selected_day] = {};
-                }
-                entries[this.state.selected_day][field] = data[field];
-
-                this.setState({
-                    ...this.state,
-                    entries: entries
-                });
-                console.log("Update posted successfully");
-                console.log(res);   
-            }).catch(err => {
-                console.log("Update had an error");
-                console.log(err);
-            })
-    }
-
-    getEntryForDay(day) {
-        day = day.format('MM/DD/YYYY');
-        if (this.state.entries && this.state.entries[day]) {
-            return this.state.entries[day].entry;
-        }
-        return "-";
-    }
-
     render() {
         let selected_note = "";
-        if (this.state.entries && this.state.selected_day in this.state.entries && this.state.entries[this.state.selected_day].note) {
-            selected_note = this.state.entries[this.state.selected_day].note;
+        if (this.state.selected_day in this.props.entries && this.props.entries[this.state.selected_day].note) {
+            selected_note = this.props.entries[this.state.selected_day].note;
         }
 
         return (
@@ -102,14 +42,18 @@ class DailyRetroContainer extends Component {i
                 <div className="retro-top">
                     <div className="ctr-header retro-top" />
                     <div className="ctr-contents retro-top" onScroll={syncScroll}>
-                        { this.props.days.map((date, index) => <div className={"ctr-entry retro-top" + (this.isSelectedDay(date) ? " retro-top-selected" : "") + (this.dayHasEntry(date) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(date)} date={date} key={index}>{date.format('MM/DD/YY')}
-                            <select value={this.getEntryForDay(date)} onChange={(e) => this.updateEntryForSelectedDay(this.props.user, "entry", e)}>
-                                <option value="-">-</option>
+                        { this.props.days.map((day, index) => <div className={"ctr-entry retro-top" + (day === this.state.selected_day ? " retro-top-selected" : "") + (this.dayHasEntry(day) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(day)} day={day} key={index}>{day.format('MM/DD/YY')}
+                            <select value={this.props.entries[day] ? this.props.entries[day]["entry"] : ""} onChange={(e) => this.props.updateEntry(undefined, this.state.selected_day, e.target.value)}>
+                                <option value=""></option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                                 <option value="5">5</option>
+                                <option value="6">5</option>
+                                <option value="7">5</option>
+                                <option value="8">5</option>
+                                <option value="9">5</option>
                                 <option value="10">10</option>
                             </select>
                         </div>) }
@@ -123,4 +67,11 @@ class DailyRetroContainer extends Component {i
     }
 }
 
-export default DailyRetroContainer;
+function mapStateToProps(state) {
+    return {
+        days: state.days,
+        entries: state.entries["daily-retro"] ? state.entries["daily-retro"] : {}
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DailyRetroContainer);

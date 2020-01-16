@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { syncScroll } from '../utils/habits.utils';
+import { connect } from 'react-redux';
+import * as mapDispatchToProps from '../actions/index.actions.js'; 
 
 class DateLabel extends Component {
     render() {
         return (
             <div className="ctr-entry header">
-                { this.props.date }    
+                { this.props.day }    
             </div>
         )
     }
@@ -17,11 +19,17 @@ class Header extends Component {
             <div className="ctr header">
                 <div className="ctr-header header" />
                 <div className="ctr-contents header" onScroll={syncScroll}>
-                    { this.props.days.map((date, index) => <DateLabel key={index} date={date.format('ddd MM/DD')} />) }
+                    { this.props.days.map((day, index) => <DateLabel key={index} day={day.format('ddd MM/DD')} />) }
                 </div>
             </div>
         )
     }
 }
 
-export default Header;
+function mapStateToProps(state) {
+    return {
+        days: state.days
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

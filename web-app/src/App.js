@@ -8,8 +8,9 @@ import reduxThunk from 'redux-thunk';
 
 import Overview from './components/Overview';
 
+// initial state with days and such is set in the reducers
 import reducers from './reducers/index.reducers';
-const store = createStore(reducers, {}, compose(applyMiddleware(reduxThunk)));
+const store = createStore(reducers, undefined, compose(applyMiddleware(reduxThunk)));
 
 class App extends Component {
 	render() {

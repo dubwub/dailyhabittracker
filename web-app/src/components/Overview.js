@@ -6,57 +6,28 @@ import Habit from './Habit.js';
 import Header from './Header.js';
 import DailyRetroContainer from './DailyRetroContainer.js';
 
+import { connect } from 'react-redux';
+import * as mapDispatchToProps from '../actions/index.actions.js'; 
+
 const moment = require('moment');
 
 class Overview extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            username: "",
-            habits: [],
-            entries: [],
-      }
-    }
-
-    returnLast30Days() {
-        let days = []; 
-        
-        for (let i = 0; i < 30; i++) {
-            let newDate = moment().subtract(i, 'days');
-            days.push(newDate);
-        }
-
-        return days;
-    }
-
-    componentDidMount() {
-        axios
-            .get('http://localhost:8082/api/users/' + this.state.user_id)
-            .then(
-                res => {
-                    let entries = res.data.entries.map((entry) => {
-                        // TODO: super hacky with lots of assumptions that could easily break :(
-                        // why is this reading as string? could i read as a date format from mongoose?
-                        entry["date"] = moment(entry["date"].substring(0, 10)).format('MM/DD/YYYY');
-                        return entry;
-                    });
-                    
-                    this.setState({
-                        ...this.state,
-                        username: res.data.username,
-                        entries: entries,
-                        habits: res.data.habits
-                    })
-                }
-            ).catch(err => {
-                console.log("Error loading admin user overview")
-            })
+        this.props.loadUser(this.props.days);
     }
 
     onSubmit = e => {
-            }
+        this.props.createHabit(
+            this.refs["habit-name"].value,
+            this.refs["habit-description"].value,
+            this.refs["habit-color"].value
+        );
+    }
 
-    deleteHabit(habitid, pageindex) {
+    /* deleteHabit(habit, pageindex) {
+        this.props.deleteHabit(habit);
+        
         axios.delete('http://localhost:8082/api/users/' + this.state.user_id + '/habit/' + habitid)
             .then(res => {
                 let new_habits = [...this.state.habits];
@@ -69,7 +40,7 @@ class Overview extends Component {
                 }
             })
             .catch(err => {console.log("error when deleting habit")});
-    }
+    } */
 
     getHabitEntries(habit, entries) {
         return entries.filter((entry) => {
@@ -84,20 +55,28 @@ class Overview extends Component {
     }
 
     render() {
-        return (
-            <div>
-                <Header days={this.returnLast30Days()}/>
-                {this.state.habits.map((habit, index) => <Habit user={this.state.user_id} days={this.returnLast30Days()} key={habit._id} habit={habit} entries={this.getHabitEntries(habit._id, this.state.entries)} />)}
-                <DailyRetroContainer user={this.state.user_id} days={this.returnLast30Days()} entries={this.getDailyRetros(this.state.entries)} />
+        if (this.props.habitOrder) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
+            return (
+                <div>
+                <Header />
+                {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)}
+                <DailyRetroContainer />
                 <form noValidate onSubmit={this.onSubmit}>
                     <input type="text" ref="habit-name" placeholder="Name of habit" />
                     <input type="text" ref="habit-description" placeholder="Habit description" />
                     <input type="text" ref="habit-color" placeholder="Color of habit (red/blue)" />
                     <input type='submit' className='btn' />
                 </form>
-             </div>
-        );
+                </div>
+            );
+        } else { // wait, cuz we're loading
+            return (<div>loading</div>);
+        }
     }
 }
 
-export default Overview;
+function mapStateToProps(state) {
+    return state; 
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Overview);

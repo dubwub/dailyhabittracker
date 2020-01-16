@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 // optimal state:
 // -- habits: list of habit objects
 // -- entries: 
@@ -25,11 +27,24 @@
     }
 
     reducers needed:
-    * CRUD habit
-    * CRUD entry
-**/
+ * CRUD habit
+ * CRUD entry
+ **/
+
+function returnLast30Days() {
+    let days = []; 
+
+    for (let i = 0; i < 30; i++) {
+        let newDate = moment().subtract(i, 'days');
+        days.push(newDate);
+    }
+
+    return days;
+}
+
 
 let INITIAL_STATE = {
+    days: returnLast30Days(), // ordered list of all days (in moment fmt) that we should be loading on the page
     habitOrder: [],
     habits: {},
     entries: {}
@@ -38,7 +53,12 @@ let INITIAL_STATE = {
 export default function(state = INITIAL_STATE, action) {
     switch (action.type) {
         case "LOAD_USER":
-            return action.payload;
+            return {
+                ...state,
+                habitOrder: action.payload.habitOrder,
+                habits: action.payload.habits,
+                entries: action.payload.entries
+            };
             break;
         case "CREATE_HABIT":
             state["habits"][action.payload._id] = action.payload;
@@ -58,7 +78,7 @@ export default function(state = INITIAL_STATE, action) {
                 habits: state["habits"]
             };
             break;
-        case "REMOVE_HABIT":
+        case "DELETE_HABIT":
             delete state["habits"][action.payload._id];
             return {
                 ...state,
