@@ -90,15 +90,16 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 
 // post habit entry
 router.post('/:uid/habit/:hid/entries', (req, res) => {
+    let set_params = {};
+    if (typeof req.body.entry !== "undefined") set_params["entry"] = req.body.entry;
+    if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
+    
     Entry.findOneAndUpdate({
         "user": req.params.uid,
         "habit": req.params.hid,
         "date": req.body.date
     }, {
-        $set: {
-            "entry": req.body.entry,
-            "note": req.body.note
-        }
+        $set: set_params
     }, {
         new: true,
         upsert: true
@@ -107,15 +108,16 @@ router.post('/:uid/habit/:hid/entries', (req, res) => {
 
 // post daily retro
 router.post('/:uid/entries', (req, res) => {
+    let set_params = {};
+    if (typeof req.body.entry !== "undefined") set_params["entry"] = req.body.entry;
+    if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
+    
     Entry.findOneAndUpdate({
         "user": req.params.uid,
         "habit": null,
         "date": req.body.date
     }, {
-        $set: {
-            "entry": req.body.entry,
-            "note": req.body.note
-        }
+        $set: set_params
     }, {
         new: true,
         upsert: true

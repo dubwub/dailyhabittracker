@@ -47,17 +47,21 @@ let INITIAL_STATE = {
     days: returnLast30Days(), // ordered list of all days (in moment fmt) that we should be loading on the page
     habitOrder: [],
     habits: {},
-    entries: {}
+    entries: {},
+    user: undefined
 };
 
 export default function(state = INITIAL_STATE, action) {
+    let habit; // used below for update_note/entry
+    
     switch (action.type) {
         case "LOAD_USER":
             return {
                 ...state,
                 habitOrder: action.payload.habitOrder,
                 habits: action.payload.habits,
-                entries: action.payload.entries
+                entries: action.payload.entries,
+                user: action.payload.user 
             };
             break;
         case "CREATE_HABIT":
@@ -86,25 +90,27 @@ export default function(state = INITIAL_STATE, action) {
                 habits: state["habits"]
             };
             break;
-        case "UPDATE_ENTRY":
-            if (!state["entries"][action.payload.habit][action.payload.date]) {
-                state["entries"][action.payload.habit][action.payload.date] = {};
-            }
-            state["entries"][action.payload.habit][action.payload.date]["entry"] = action.payload.entry;
+        case "UPDATE_ENTRY": {
+            habit = action.payload.habit || "daily-retro";
+            let new_habit_entries = Object.assign({}, state["entries"][habit]);
+            new_habit_entries[action.payload.date]["entry"] = action.payload.entry;
+            state["entries"][habit] = new_habit_entries;
             return {
                 ...state,
                 entries: state["entries"]
             };
             break;
-        case "UPDATE_NOTE":
-            if (!state["entries"][action.payload.habit][action.payload.date]) {
-                state["entries"][action.payload.habit][action.payload.date] = {};
-            }
-            state["entries"][action.payload.habit][action.payload.date]["note"] = action.payload.note;
+        }
+        case "UPDATE_NOTE": {
+            habit = action.payload.habit || "daily-retro";
+            let new_habit_entries = Object.assign({}, state["entries"][habit]);
+            new_habit_entries[action.payload.date]["note"] = action.payload.note;
+            state["entries"][habit] = new_habit_entries;
             return {
                 ...state,
                 entries: state["entries"]
             };
+        }
             break;
         default:
             return state;

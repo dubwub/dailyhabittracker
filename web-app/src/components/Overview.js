@@ -55,7 +55,7 @@ class Overview extends Component {
     }
 
     render() {
-        if (this.props.habitOrder) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
+        if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
             return (
                 <div>
                 <Header />

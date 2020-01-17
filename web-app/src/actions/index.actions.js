@@ -4,6 +4,10 @@ const moment = require('moment');
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e0a82dd179d3c3599e6fd8f";
 
+function _momentDateFromMongo(day) {
+    return moment(day.substring(0, 10), "YYYY-MM-DD");
+}
+
 export function loadUser(days) {
     return async function(dispatch) {
         const res = await axios.get('http://localhost:8082/api/users/' + user_id);
@@ -42,7 +46,7 @@ export function loadUser(days) {
         const raw_entries = res.data.entries.map((entry) => {
             // TODO: super hacky with lots of assumptions that could easily break :(
             // why is this reading as string? could i read as a date format from mongoose?
-            entry["date"] = moment(entry["date"].substring(0, 10)).format('MM/DD/YYYY');
+            entry["date"] = _momentDateFromMongo(entry["date"]).format('MM/DD/YYYY');
             return entry;
         });
 
@@ -60,6 +64,7 @@ export function loadUser(days) {
         dispatch({
             type: "LOAD_USER",
             payload: {
+                user: user_id,
                 days: days,
                 habits: habits,
                 entries: entries,
@@ -80,7 +85,8 @@ export function createHabit(name, description, color) {
     }
 
     return async function(dispatch) {
-        const res = await axios.put('http://localhost:8082/api/users/' + user_id, data);
+        let res = await axios.put('http://localhost:8082/api/users/' + user_id, data);
+        res.data["date"] = _momentDateFromMongo(res.data["date"]);
         dispatch({
             type: "CREATE_HABIT",
             payload: res.data
@@ -99,7 +105,8 @@ export function updateEntry(habit, day, entry) {
             'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
             'http://localhost:8082/api/users/' + user_id + '/entries';
 
-        const res = await axios.post(URL, data);
+        let res = await axios.post(URL, data);
+        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
         dispatch({
             type: "UPDATE_ENTRY",
             payload: res.data
@@ -119,7 +126,8 @@ export function updateNote(habit, day, note) {
             'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
             'http://localhost:8082/api/users/' + user_id + '/entries';
 
-        const res = await axios.post(URL, data);
+        let res = await axios.post(URL, data);
+        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
         dispatch({
             type: "UPDATE_NOTE",
             payload: res.data

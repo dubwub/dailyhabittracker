@@ -33,6 +33,7 @@ class Habit extends Component {
     }
 
     getNextHabitValue(value) {
+        value = value || "";
         let stateIndex = states.indexOf(value);
         if (stateIndex === states.length - 1) {
             stateIndex = -1;
@@ -60,8 +61,8 @@ class Habit extends Component {
                             return (
                                 <div className="ctr-entry habit" key={day_fmt}>
                                     <div 
-                                        className={this.habitEntryClassName("entry")}
-                                        onClick={() => this.props.updateEntry(this.props.habit, day_fmt, this.getNextHabitValue("entry"))}>
+                                        className={this.habitEntryClassName(this.props.entries[day_fmt]["entry"])}
+                                        onClick={() => this.props.updateEntry(this.props.habit, day, this.getNextHabitValue(this.props.entries[day_fmt]["entry"]))}>
                                         {this.props.entries[day_fmt]["entry"]}
                                     </div>
                                 </div>
