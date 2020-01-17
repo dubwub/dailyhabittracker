@@ -19,7 +19,7 @@ class Header extends Component {
             <div className="ctr header">
                 <div className="ctr-header header" />
                 <div className="ctr-contents header" onScroll={syncScroll}>
-                    { this.props.days.map((day, index) => <DateLabel key={index} day={day.format('ddd MM/DD')} />) }
+                    { this.props.days.map((day, index) => <DateLabel key={index} day={day.format('ddd M/D')} />) }
                 </div>
             </div>
         )

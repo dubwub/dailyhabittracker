@@ -29,6 +29,7 @@ export function loadUser(days) {
         // setup habits/habit-orders to get ready for loading entries
         const raw_habits = res.data.habits;
         raw_habits.forEach((habit) => {
+            console.log("adding: " + habit._id);
             habitOrder.push(habit._id);
             habits[habit._id] = habit;
             entries[habit._id] = {};
@@ -86,9 +87,25 @@ export function createHabit(name, description, color) {
 
     return async function(dispatch) {
         let res = await axios.put('http://localhost:8082/api/users/' + user_id, data);
-        res.data["date"] = _momentDateFromMongo(res.data["date"]);
         dispatch({
             type: "CREATE_HABIT",
+            payload: res.data
+        });
+    }
+}
+
+export function updateHabit(habit, name, description, color) {
+    const data = {
+        name: name,
+        description: description,
+        color: color
+    };
+
+    return async function(dispatch) {
+        let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/habit/' + habit, data);
+        console.log(res.data);
+        dispatch({
+            type: "UPDATE_HABIT",
             payload: res.data
         });
     }

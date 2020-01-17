@@ -38,7 +38,7 @@ class DailyRetroContainer extends Component {
                 <div className="retro-top">
                     <div className="ctr-header retro-top" />
                     <div className="ctr-contents retro-top" onScroll={syncScroll}>
-                        { this.props.days.map((day, index) => <div className={"ctr-entry retro-top" + (index === this.state.selected_day_index ? " retro-top-selected" : "") + (this.dayHasEntry(day) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(index)} day={day} key={index}>{day.format('MM/DD/YY')}
+                        { this.props.days.map((day, index) => <div className={"ctr-entry retro-top" + (index === this.state.selected_day_index ? " retro-top-selected" : "") + (this.dayHasEntry(day) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(index)} day={day} key={index}>{day.format('M/D')}
                             <select value={this.props.entries[day.format("MM/DD/YYYY")]["entry"] || ""} onChange={(e) => this.props.updateEntry(undefined, this.props.days[this.state.selected_day_index], e.target.value)}>
                                 <option value=""></option>
                                 <option value="1">1</option>

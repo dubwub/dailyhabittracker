@@ -75,13 +75,14 @@ export default function(state = INITIAL_STATE, action) {
                 entries: state["entries"]
             };
             break;
-        case "UPDATE_HABIT":
+        case "UPDATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
             return {
                 ...state,
                 habits: state["habits"]
             };
             break;
+        }
         case "DELETE_HABIT":
             delete state["habits"][action.payload._id];
             return {

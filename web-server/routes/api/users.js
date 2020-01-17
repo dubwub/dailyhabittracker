@@ -46,11 +46,9 @@ router.put('/:id', (req, res) => {
 			$push: {
 				habits: req.body
 			}
-	}).then( test => {
-		console.log("console log when pushing new habit");
-		console.log(test);
-		res.json({ msg: 'Habit added successfully' });
-	}).catch(err => res.status(400).json({ error: err }));
+	}).then( output => {
+	    res.send(output);
+    }).catch(err => res.status(400).json({ error: err }));
 });
 
 // @route POST /api/users/:uid/habit/:hid
@@ -63,15 +61,27 @@ router.post('/:uid/habit/:hid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
+    cleanedRequest["_id"] = req.params.hid; // just making sure we don't overwrite old _id
 
-    User.update({
+    User.findOneAndUpdate({
         _id: req.params.uid,
-        habits: { $elemMatch: { _id: req.params.hid } },
+        habits: { 
+            "$elemMatch": {
+                _id: req.params.hid 
+            }
+        }
     },
     {
-        $set: cleanedRequest
-    }).then( _ => res.json({ msg: 'Habit updated successfully' }))
-        .catch(err => res.status(400).json({ msg: 'Habit not updated successfully', error: err}));
+        $set: {
+            "habits.$": cleanedRequest
+        }
+    }).then( (user) => {
+        user["habits"].forEach((habit) => {
+            if (habit._id.toString() === req.params.hid) {
+                res.send(habit);
+            }
+        });   
+    }).catch(err => res.status(400).json({ msg: 'Habit not updated successfully', error: err}));
 });
 
 // @route DELETE /api/users/:uid/habit/:hid
