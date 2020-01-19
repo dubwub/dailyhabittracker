@@ -103,7 +103,6 @@ export function updateHabit(habit, name, description, color) {
 
     return async function(dispatch) {
         let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/habit/' + habit, data);
-        console.log(res.data);
         dispatch({
             type: "UPDATE_HABIT",
             payload: res.data

@@ -75,13 +75,18 @@ router.post('/:uid/habit/:hid', (req, res) => {
         $set: {
             "habits.$": cleanedRequest
         }
-    }).then( (user) => {
+    },
+    {
+        new: true
+    },
+    function(err, user) {
+        if (err) { res.status(500).json({error: err}); }
         user["habits"].forEach((habit) => {
             if (habit._id.toString() === req.params.hid) {
                 res.send(habit);
             }
-        });   
-    }).catch(err => res.status(400).json({ msg: 'Habit not updated successfully', error: err}));
+        });  
+    })
 });
 
 // @route DELETE /api/users/:uid/habit/:hid
