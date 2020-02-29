@@ -8,22 +8,28 @@ import DailyRetroContainer from './DailyRetroContainer.js';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-
+import { Button } from "@blueprintjs/core";
 import * as moment from "moment";
 import { Props } from "../types/types"; 
 
 class Overview extends React.Component<Props>{
+    private inputHabitName = React.createRef<HTMLInputElement>();
+    private inputHabitDescription = React.createRef<HTMLInputElement>();
+    private inputHabitColor = React.createRef<HTMLInputElement>();
+    
     constructor(props: Props) {
         super(props);
         this.props.loadUser(this.props.days);
     }
 
     onSubmit = (e: any) => {
-        this.props.createHabit(
-            this.refs["habit-name"].value,
-            this.refs["habit-description"].value,
-            this.refs["habit-color"].value
-        );
+        if (this.inputHabitName.current && this.inputHabitDescription.current && this.inputHabitColor.current) {
+            this.props.createHabit(
+                this.inputHabitName.current.value,
+                this.inputHabitDescription.current.value,
+                this.inputHabitColor.current.value
+            );
+        }
     }
 
     /* deleteHabit(habit, pageindex) {
@@ -43,14 +49,14 @@ class Overview extends React.Component<Props>{
             .catch(err => {console.log("error when deleting habit")});
     } */
 
-    getHabitEntries(habit, entries) {
-        return entries.filter((entry) => {
+    getHabitEntries(habit: string, entries: any) {
+        return entries.filter((entry: any) => {
             return entry["habit"] === habit;
         });
     }
 
-    getDailyRetros(entries) {
-        return entries.filter((entry) => {
+    getDailyRetros(entries: any) {
+        return entries.filter((entry: any) => {
             return !entry["habit"]  
         });
     }
@@ -63,10 +69,10 @@ class Overview extends React.Component<Props>{
                 {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)}
                 <DailyRetroContainer />
                 <form noValidate onSubmit={this.onSubmit}>
-                    <input type="text" ref="habit-name" placeholder="Name of habit" />
-                    <input type="text" ref="habit-description" placeholder="Habit description" />
-                    <input type="text" ref="habit-color" placeholder="Color of habit (red/blue)" />
-                    <input type='submit' className='btn' />
+                    <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
+                    <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
+                    <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
+                    <input type='submit' className='bp3-button bp3-intent-primary' />
                 </form>
                 </div>
             );
@@ -76,7 +82,7 @@ class Overview extends React.Component<Props>{
     }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: any) {
     return state; 
 }
 

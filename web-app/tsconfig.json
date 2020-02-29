@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-    "sourceMap": true,
-    "jsx": "preserve",
     "target": "es5",
     "lib": [
       "dom",
@@ -15,15 +12,14 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "jsx": "react"
   },
   "include": [
     "src"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }

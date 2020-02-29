@@ -3,9 +3,12 @@ import axios from 'axios';
 import { syncScroll } from '../utils/habits.utils';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
+import { Button } from "@blueprintjs/core";
 
-// TODO: how's the best way to handle complex edit forms
-const states = ["", "x", "X", "o", "O"];
+// assumptions
+const MIN_HABIT_SCORE = 1;
+const DEFAULT_HABIT_SCORE = 3;
+const MAX_HABIT_SCORE = 5;
 
 class Habit extends Component { 
     
@@ -26,35 +29,38 @@ class Habit extends Component {
     }
 
     habitEntryClassName(value) {
+        // TODO: remove bp3-intent-primary, hack to get the text inside to be white
+        let className = "bp3-minimal bp3-outlined habit-entry ";
         switch (value) {
-            case "":
-                return "habit-entry neutral";
+            case 1:
+                return className + "very-negative bp3-icon-heart-broken";
                 break;
-            case "x":
-                return "habit-entry positive";
+            case 2:
+                return className + "negative bp3-icon-cross";
                 break;
-            case "X":
-                return "habit-entry very-positive";
+            case 3:
+                return className + "neutral";
                 break;
-            case "o":
-                return "habit-entry negative";
+            case 4:
+                return className + "positive bp3-icon-tick";
                 break;
-            case "O":
-                return "habit-entry very-negative";
+            case 5:
+                return className + "very-positive bp3-icon-clean";
                 break;
             default:
-                return "habit-entry neutral";
-                break;
+                return className + "neutral";
         }
     }
 
     getNextHabitValue(value) {
-        value = value || "";
-        let stateIndex = states.indexOf(value);
-        if (stateIndex === states.length - 1) {
-            stateIndex = -1;
+        value = value || DEFAULT_HABIT_SCORE;
+        value++;
+
+        if (value > MAX_HABIT_SCORE) {
+            value = MIN_HABIT_SCORE;
         }
-        return states[stateIndex + 1];
+
+        return value;
     }
     
     render() {
@@ -92,11 +98,10 @@ class Habit extends Component {
                             let value = this.props.entries[day_fmt]["entry"];
                             return (
                                 <div className={"ctr-entry " + className} key={day_fmt}>
-                                    <div 
+                                    <Button    
                                         className={this.habitEntryClassName(this.props.entries[day_fmt]["entry"])}
                                         onClick={() => this.props.updateEntry(this.props.habit, day, this.getNextHabitValue(this.props.entries[day_fmt]["entry"]))}>
-                                        {this.props.entries[day_fmt]["entry"]}
-                                    </div>
+                                    </Button>
                                 </div>
                             )
                         })
