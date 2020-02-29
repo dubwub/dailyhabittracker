@@ -1,4 +1,5 @@
 web-app/node_modules/**/*
+web-app-typescript/node_modules/**/*
 web-server/node_modules/**/*
 web-server/config/default.json
 .expo/*

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -9,15 +9,16 @@ import DailyRetroContainer from './DailyRetroContainer.js';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 
-const moment = require('moment');
+import * as moment from "moment";
+import { Props } from "../types/types"; 
 
-class Overview extends Component {
-    constructor(props) {
+class Overview extends React.Component<Props>{
+    constructor(props: Props) {
         super(props);
         this.props.loadUser(this.props.days);
     }
 
-    onSubmit = e => {
+    onSubmit = (e: any) => {
         this.props.createHabit(
             this.refs["habit-name"].value,
             this.refs["habit-description"].value,
