@@ -65,15 +65,21 @@ class Overview extends React.Component<Props>{
         if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
             return (
                 <div>
-                <Header />
-                {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)}
-                <DailyRetroContainer />
-                <form noValidate onSubmit={this.onSubmit}>
-                    <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
-                    <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
-                    <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
-                    <input type='submit' className='bp3-button bp3-intent-primary' />
-                </form>
+                    <div className="layout-header">
+                        <Header />
+                    </div>
+                    <div className="layout-body footer-visible">
+                        {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)} 
+                    </div>
+                    <div className="layout-footer">
+                        <DailyRetroContainer />
+                        <form noValidate onSubmit={this.onSubmit}>
+                            <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
+                            <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
+                            <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
+                            <input type='submit' className='bp3-button bp3-intent-primary' />
+                        </form>
+                    </div>
                 </div>
             );
         } else { // wait, cuz we're loading

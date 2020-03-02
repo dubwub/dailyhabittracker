@@ -59,7 +59,6 @@ code {
 
 .ctr {
     margin: 10px;
-    border-style: solid;
 }
 
 .ctr-header {
@@ -101,6 +100,40 @@ code {
 
 .header {
     height: 50px;
+}
+
+.layout-header {
+    height: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 2px solid black;
+    z-index: 100;
+    background-color: white;
+    overflow: hidden;
+}
+
+.layout-body {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    width: 100%;
+    border: 2px solid red;
+    overflow: auto;
+    height: calc(100% - 350px); // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
+}
+
+.layout-footer {
+    height: 250px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border: 2px solid green;
+    z-index: 100;
+    background-color: white;
+    overflow: hidden;
 }
 
 .retro {
