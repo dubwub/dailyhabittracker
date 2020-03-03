@@ -130,26 +130,6 @@ export function updateEntry(habit, day, value, note) {
     }
 }
 
-// export function updateNote(habit, day, note) {
-//     return async function(dispatch) {
-//         const data = {
-//             note: note,
-//             date: day.format('MM/DD/YYYY')
-//         };
-        
-//         const URL = habit ? 
-//             'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
-//             'http://localhost:8082/api/users/' + user_id + '/entries';
-
-//         let res = await axios.post(URL, data);
-//         res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
-//         dispatch({
-//             type: "UPDATE_NOTE",
-//             payload: res.data
-//         });
-//     }
-// }
-
 export function selectEntry(date, habit) {
     return (dispatch) => dispatch({
         type: "SELECT_NEW_ENTRY",

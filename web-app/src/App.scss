@@ -129,11 +129,17 @@ code {
     width: 100%;
     border: 2px solid red;
     overflow: auto;
-    height: calc(100% - 350px); // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
+    // TODO: make this work for other browsers
+    // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
+    &.footer-visible {
+        height: calc(100% - 350px); 
+    }
+    &.footer-invisible {
+        height: calc(100% - 150px);
+    }
 }
 
 .layout-footer {
-    height: 250px;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -142,6 +148,12 @@ code {
     z-index: 100;
     background-color: white;
     overflow: hidden;
+    &.footer-visible {
+        height: 250px;
+    }
+    &.footer-invisible {
+        height: 50px;
+    }
 }
 
 .retro {

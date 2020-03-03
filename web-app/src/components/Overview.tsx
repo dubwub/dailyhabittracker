@@ -63,23 +63,39 @@ class Overview extends React.Component<Props>{
 
     render() {
         if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
+            const hasSelectedEntry = (this.props.habitOfSelectedEntry || this.props.dayOfSelectedEntry);
+            const footerStatus = hasSelectedEntry ? "footer-visible" : "footer-invisible";
+            const footerDiv = hasSelectedEntry ? (
+                <div className={"layout-footer " + footerStatus}>
+                    <EntryEditContainer />
+                    <form noValidate onSubmit={this.onSubmit}>
+                        <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
+                        <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
+                        <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
+                        <input type='submit' className='bp3-button bp3-intent-primary' />
+                    </form>
+                </div>
+            ) : (
+                <div className={"layout-footer " + footerStatus}>
+                    <form noValidate onSubmit={this.onSubmit}>
+                        <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
+                        <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
+                        <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
+                        <input type='submit' className='bp3-button bp3-intent-primary' />
+                    </form>
+                </div>
+            )
+        
+
             return (
                 <div>
                     <div className="layout-header">
                         <Header />
                     </div>
-                    <div className="layout-body footer-visible">
+                    <div className={"layout-body " + footerStatus}>
                         {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)} 
                     </div>
-                    <div className="layout-footer">
-                        <EntryEditContainer />
-                        <form noValidate onSubmit={this.onSubmit}>
-                            <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
-                            <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
-                            <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
-                            <input type='submit' className='bp3-button bp3-intent-primary' />
-                        </form>
-                    </div>
+                    {footerDiv}
                 </div>
             );
         } else { // wait, cuz we're loading

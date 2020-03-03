@@ -25,6 +25,8 @@ export interface Props {
     habits: Habit[]
     entries: Entry[]
     user: string
+    dayOfSelectedEntry: moment.Moment
+    habitOfSelectedEntry: String
 
     // functions from index.actions
     loadUser: any
