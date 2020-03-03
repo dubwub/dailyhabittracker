@@ -33,26 +33,17 @@ class DailyRetroContainer extends Component {
     }
 
     render() {
+        let displayText = "";
+        if (this.props.dayOfSelectedEntry) {
+            displayText = "Selected day: " + this.props.dayOfSelectedEntry.format("MM/DD") + ", habit: " + this.props.habitOfSelectedEntry;
+        }
+
         return (
             <div className="ctr retro">
                 <div className="retro-top">
-                    <div className="ctr-header retro-top" />
-                    <div className="ctr-contents retro-top" onScroll={syncScroll}>
-                        { this.props.days.map((day, index) => <div className={"ctr-entry retro-top" + (index === this.state.selected_day_index ? " retro-top-selected" : "") + (this.dayHasEntry(day) ? " retro-top-has-entry":"")} onClick={() => this.updateDaySelection(index)} day={day} key={index}>{day.format('M/D')}
-                            <select value={this.props.entries[day.format("MM/DD/YYYY")]["entry"] || ""} onChange={(e) => this.props.updateEntry(undefined, this.props.days[this.state.selected_day_index], e.target.value)}>
-                                <option value=""></option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
-                        </div>) }
+                    <div>
+                        <b>{displayText}</b>
+                        Add selector
                     </div>
                 </div>
                 <div className="retro-bottom">
@@ -67,7 +58,9 @@ class DailyRetroContainer extends Component {
 function mapStateToProps(state) {
     return {
         days: state.days,
-        entries: state.entries["daily-retro"]
+        entries: state.entries["daily-retro"],
+        dayOfSelectedEntry: state.dayOfSelectedEntry,
+        habitOfSelectedEntry: state.habitOfSelectedEntry
     };
 }
 

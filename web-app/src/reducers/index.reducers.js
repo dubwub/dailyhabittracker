@@ -48,6 +48,7 @@ let INITIAL_STATE = {
     habitOrder: [],
     habits: {},
     entries: {},
+    selectedEntry: {}, // date and habit (daily-retro or uid)
     user: undefined
 };
 
@@ -55,6 +56,13 @@ export default function(state = INITIAL_STATE, action) {
     let habit; // used below for update_note/entry
     
     switch (action.type) {
+        case "UPDATE_SELECTED_ENTRY":
+            return {
+                ...state,
+                dayOfSelectedEntry: action.payload.dayOfSelectedEntry,
+                habitOfSelectedEntry: action.payload.habitOfSelectedEntry
+            };
+            break;
         case "LOAD_USER":
             return {
                 ...state,

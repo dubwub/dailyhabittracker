@@ -150,3 +150,13 @@ export function updateNote(habit, day, note) {
         });
     }
 }
+
+export function selectEntry(day, habit) {
+    return (dispatch) => dispatch({
+        type: "UPDATE_SELECTED_ENTRY",
+        payload: {
+            dayOfSelectedEntry: day,
+            habitOfSelectedEntry: habit
+        }
+    });
+}
