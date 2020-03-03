@@ -106,7 +106,7 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 // post habit entry
 router.post('/:uid/habit/:hid/entries', (req, res) => {
     let set_params = {};
-    if (typeof req.body.entry !== "undefined") set_params["entry"] = req.body.entry;
+    if (typeof req.body.value !== "undefined") set_params["value"] = req.body.value;
     if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
     
     Entry.findOneAndUpdate({
@@ -124,7 +124,7 @@ router.post('/:uid/habit/:hid/entries', (req, res) => {
 // post daily retro
 router.post('/:uid/entries', (req, res) => {
     let set_params = {};
-    if (typeof req.body.entry !== "undefined") set_params["entry"] = req.body.entry;
+    if (typeof req.body.value !== "undefined") set_params["value"] = req.body.value;
     if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
     
     Entry.findOneAndUpdate({

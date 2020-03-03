@@ -7,8 +7,8 @@ class DateLabel extends Component {
     render() {
         let className = "ctr-entry header-date-label";
         if (
-            this.props.dayOfSelectedEntry &&
-            this.props.dayOfSelectedEntry.format('MM/DD/YYYY') === this.props.day.format('MM/DD/YYYY') && this.props.habitOfSelectedEntry === "daily-retro") {
+            this.props.dateOfSelectedEntry &&
+            this.props.dateOfSelectedEntry.format('MM/DD/YYYY') === this.props.day.format('MM/DD/YYYY') && this.props.habitOfSelectedEntry === "daily-retro") {
             className += " retro-top-selected";
         }
         return (
@@ -38,8 +38,8 @@ class Header extends Component {
                     {
                         this.props.days.map((day, index) => (
                                 <div onClick={() => this.props.selectEntry(day, "daily-retro")} key={index}>
-                                    <DateLabel dayOfSelectedEntry={this.props.dayOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} day={day} />
-                                    <DailyRetro dayOfSelectedEntry={this.props.dayOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} value={this.props.entries[day.format("MM/DD/YYYY")]["entry"] || -1} />
+                                    <DateLabel dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} day={day} />
+                                    <DailyRetro dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} value={this.props.entries[day.format("MM/DD/YYYY")]["value"] || -1} />
                                 </div>    
                             )
                         )
@@ -51,11 +51,10 @@ class Header extends Component {
 }
 
 function mapStateToProps(state) {
-    console.log("rerender");
     return {
         days: state.days,
         entries: state.entries["daily-retro"],
-        dayOfSelectedEntry: state.dayOfSelectedEntry,
+        dateOfSelectedEntry: state.dateOfSelectedEntry,
         habitOfSelectedEntry: state.habitOfSelectedEntry
     };
 }

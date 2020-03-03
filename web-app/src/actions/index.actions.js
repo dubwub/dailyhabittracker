@@ -21,7 +21,7 @@ export function loadUser(days) {
         days.forEach((day) => { // TODO: merge with raw_habits
             const day_fmt = day.format('MM/DD/YYYY');
             entries["daily-retro"][day_fmt] = {
-                entry: undefined,
+                value: undefined,
                 note: undefined
             };
         });
@@ -29,7 +29,6 @@ export function loadUser(days) {
         // setup habits/habit-orders to get ready for loading entries
         const raw_habits = res.data.habits;
         raw_habits.forEach((habit) => {
-            console.log("adding: " + habit._id);
             habitOrder.push(habit._id);
             habits[habit._id] = habit;
             entries[habit._id] = {};
@@ -37,7 +36,7 @@ export function loadUser(days) {
             days.forEach((day) => {
                 const day_fmt = day.format('MM/DD/YYYY');
                 entries[habit._id][day_fmt] = {
-                    entry: undefined,
+                    value: undefined,
                     note: undefined
                 };
             });
@@ -57,7 +56,7 @@ export function loadUser(days) {
             const habit_id = entry["habit"] ? entry["habit"] : "daily-retro";
 
             entries[habit_id][entry["date"]] = {
-                entry: entry["entry"],
+                value: entry["value"],
                 note: entry["note"]
             };
         });
@@ -110,14 +109,15 @@ export function updateHabit(habit, name, description, color) {
     }
 }
 
-export function updateEntry(habit, day, entry) {
+export function updateEntry(habit, day, value, note) {
     return async function(dispatch) {
-        const data = {
-            entry: entry,
+        let data = {
             date: day.format('MM/DD/YYYY')
         };
+        if (value) { data["value"] = value; }
+        if (note) { data["note"] = note; }
 
-        const URL = habit ? 
+        const URL = (habit && habit !== "daily-retro") ? 
             'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
             'http://localhost:8082/api/users/' + user_id + '/entries';
 
@@ -127,35 +127,34 @@ export function updateEntry(habit, day, entry) {
             type: "UPDATE_ENTRY",
             payload: res.data
         });
-
     }
 }
 
-export function updateNote(habit, day, note) {
-    return async function(dispatch) {
-        const data = {
-            note: note,
-            date: day.format('MM/DD/YYYY')
-        };
+// export function updateNote(habit, day, note) {
+//     return async function(dispatch) {
+//         const data = {
+//             note: note,
+//             date: day.format('MM/DD/YYYY')
+//         };
         
-        const URL = habit ? 
-            'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
-            'http://localhost:8082/api/users/' + user_id + '/entries';
+//         const URL = habit ? 
+//             'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
+//             'http://localhost:8082/api/users/' + user_id + '/entries';
 
-        let res = await axios.post(URL, data);
-        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
-        dispatch({
-            type: "UPDATE_NOTE",
-            payload: res.data
-        });
-    }
-}
+//         let res = await axios.post(URL, data);
+//         res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
+//         dispatch({
+//             type: "UPDATE_NOTE",
+//             payload: res.data
+//         });
+//     }
+// }
 
-export function selectEntry(day, habit) {
+export function selectEntry(date, habit) {
     return (dispatch) => dispatch({
-        type: "UPDATE_SELECTED_ENTRY",
+        type: "SELECT_NEW_ENTRY",
         payload: {
-            dayOfSelectedEntry: day,
+            dateOfSelectedEntry: date,
             habitOfSelectedEntry: habit
         }
     });

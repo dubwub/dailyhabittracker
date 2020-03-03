@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import Habit from './Habit.js';
 import Header from './Header.js';
-import DailyRetroContainer from './DailyRetroContainer.js';
+import EntryEditContainer from './EntryEditContainer.js';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
@@ -72,7 +72,7 @@ class Overview extends React.Component<Props>{
                         {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)} 
                     </div>
                     <div className="layout-footer">
-                        <DailyRetroContainer />
+                        <EntryEditContainer />
                         <form noValidate onSubmit={this.onSubmit}>
                             <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
                             <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />

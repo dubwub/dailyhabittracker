@@ -56,10 +56,10 @@ export default function(state = INITIAL_STATE, action) {
     let habit; // used below for update_note/entry
     
     switch (action.type) {
-        case "UPDATE_SELECTED_ENTRY":
+        case "SELECT_NEW_ENTRY":
             return {
                 ...state,
-                dayOfSelectedEntry: action.payload.dayOfSelectedEntry,
+                dateOfSelectedEntry: action.payload.dateOfSelectedEntry,
                 habitOfSelectedEntry: action.payload.habitOfSelectedEntry
             };
             break;
@@ -102,7 +102,7 @@ export default function(state = INITIAL_STATE, action) {
         case "UPDATE_ENTRY": {
             habit = action.payload.habit || "daily-retro";
             let new_habit_entries = Object.assign({}, state["entries"][habit]);
-            new_habit_entries[action.payload.date]["entry"] = action.payload.entry;
+            new_habit_entries[action.payload.date] = action.payload;
             state["entries"][habit] = new_habit_entries;
             return {
                 ...state,
@@ -110,17 +110,17 @@ export default function(state = INITIAL_STATE, action) {
             };
             break;
         }
-        case "UPDATE_NOTE": {
-            habit = action.payload.habit || "daily-retro";
-            let new_habit_entries = Object.assign({}, state["entries"][habit]);
-            new_habit_entries[action.payload.date]["note"] = action.payload.note;
-            state["entries"][habit] = new_habit_entries;
-            return {
-                ...state,
-                entries: state["entries"]
-            };
-        }
-            break;
+        // case "UPDATE_NOTE": {
+        //     habit = action.payload.habit || "daily-retro";
+        //     let new_habit_entries = Object.assign({}, state["entries"][habit]);
+        //     new_habit_entries[action.payload.date]["note"] = action.payload.note;
+        //     state["entries"][habit] = new_habit_entries;
+        //     return {
+        //         ...state,
+        //         entries: state["entries"]
+        //     };
+        //     break;
+        // }
         default:
             return state;
     }

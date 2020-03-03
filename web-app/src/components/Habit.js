@@ -95,12 +95,12 @@ class Habit extends Component {
                     { 
                         this.props.days.map((day) => {
                             const day_fmt = day.format("MM/DD/YYYY");
-                            let value = this.props.entries[day_fmt]["entry"];
+                            let value = this.props.entries[day_fmt]["value"];
                             return (
                                 <div className={"ctr-entry " + className} key={day_fmt}>
                                     <Button    
-                                        className={this.habitEntryClassName(this.props.entries[day_fmt]["entry"])}
-                                        onClick={() => this.props.updateEntry(this.props.habit, day, this.getNextHabitValue(this.props.entries[day_fmt]["entry"]))}>
+                                        className={this.habitEntryClassName(this.props.entries[day_fmt]["value"])}
+                                        onClick={() => this.props.updateEntry(this.props.habit, day, this.getNextHabitValue(this.props.entries[day_fmt]["value"]), undefined)}>
                                     </Button>
                                 </div>
                             )
