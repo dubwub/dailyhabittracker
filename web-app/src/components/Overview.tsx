@@ -99,7 +99,7 @@ class Overview extends React.Component<Props>{
                 </div>
             );
         } else { // wait, cuz we're loading
-            return (<div>loading</div>);
+            return (<div>Loading...</div>);
         }
     }
 }
