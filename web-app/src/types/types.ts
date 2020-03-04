@@ -34,5 +34,6 @@ export interface Props {
     updateHabit: any
     updateEntry: any
     updateNote: any
+    selectHabitForEdit: any
 }
 

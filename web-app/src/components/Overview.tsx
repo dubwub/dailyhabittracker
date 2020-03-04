@@ -5,6 +5,7 @@ import axios from 'axios';
 import Habit from './Habit.js';
 import Header from './Header.js';
 import EntryEditContainer from './EntryEditContainer.js';
+import HabitEditDialog from './HabitEditDialog';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
@@ -20,16 +21,6 @@ class Overview extends React.Component<Props>{
     constructor(props: Props) {
         super(props);
         this.props.loadUser(this.props.days);
-    }
-
-    onSubmit = (e: any) => {
-        if (this.inputHabitName.current && this.inputHabitDescription.current && this.inputHabitColor.current) {
-            this.props.createHabit(
-                this.inputHabitName.current.value,
-                this.inputHabitDescription.current.value,
-                this.inputHabitColor.current.value
-            );
-        }
     }
 
     /* deleteHabit(habit, pageindex) {
@@ -68,34 +59,27 @@ class Overview extends React.Component<Props>{
             const footerDiv = hasSelectedEntry ? (
                 <div className={"layout-footer " + footerStatus}>
                     <EntryEditContainer />
-                    <form noValidate onSubmit={this.onSubmit}>
-                        <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
-                        <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
-                        <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
-                        <input type='submit' className='bp3-button bp3-intent-primary' />
-                    </form>
                 </div>
             ) : (
-                <div className={"layout-footer " + footerStatus}>
-                    <form noValidate onSubmit={this.onSubmit}>
-                        <input type="text" className="bp3-input" ref={this.inputHabitName} placeholder="Name of habit" />
-                        <input type="text" className="bp3-input" ref={this.inputHabitDescription} placeholder="Habit description" />
-                        <input type="text" ref={this.inputHabitColor} placeholder="Color of habit (red/blue)" />
-                        <input type='submit' className='bp3-button bp3-intent-primary' />
-                    </form>
+                <div>
                 </div>
             )
         
 
             return (
                 <div>
-                    <div className="layout-header">
-                        <Header />
+                    <HabitEditDialog />
+                    <div>
+                        <div className="layout-header">
+                            <Header />
+                        </div>
+                        <div className={"layout-body " + footerStatus}>
+                            {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)}
+                            <Button icon="add"
+                                    onClick={() => this.props.selectHabitForEdit(undefined, true)} > Create new habit </Button>
+                        </div>
+                        {footerDiv}
                     </div>
-                    <div className={"layout-body " + footerStatus}>
-                        {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)} 
-                    </div>
-                    {footerDiv}
                 </div>
             );
         } else { // wait, cuz we're loading

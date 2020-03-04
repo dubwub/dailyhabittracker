@@ -40,22 +40,29 @@ router.get('/:id', (req, res) => {
 // @route PUT /api/users/:id
 // @description add a habit to user
 // @access Public (to make user)
-router.put('/:id', (req, res) => {
-	console.log(req.body);
-	User.findByIdAndUpdate(req.params.id, {
-			$push: {
-				habits: req.body
-			}
-	}).then( output => {
-	    res.send(output);
-    }).catch(err => res.status(400).json({ error: err }));
+router.put('/:id', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    const newHabit = user.habits.create(req.body);
+    user.habits.push(newHabit);
+    const updatedUser = await user.save();
+
+    if (updatedUser) { res.send(newHabit); }
+    else { res.status(400).json({ error: err }); }
+    
+    // User.findByIdAndUpdate(req.params.id, {
+	// 		$push: {
+	// 			habits: req.body
+	// 		}
+	// }).then( output => {
+	//     res.send(output);
+    // }).catch(err => res.status(400).json({ error: err }));
 });
 
 // @route POST /api/users/:uid/habit/:hid
 // @description modify user habit with clean fields
 router.post('/:uid/habit/:hid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
-    const validFields = ["name", "description", "entry_type", "color"];
+    const validFields = ["title", "description", "order", "thresholds", "entry_type", "color"];
     validFields.forEach((field) => {
         if (req.body[field]) {
             cleanedRequest[field] = req.body[field];
@@ -138,14 +145,5 @@ router.post('/:uid/entries', (req, res) => {
         upsert: true
     }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
 });
-
-// ENTRY ENDPOINTS
-// upsert entry for user
-// upsert entry for user/habit pair
-// get all entries for user in date range
-// get all entries for user/habit pair in date range
-
-// add delete user
-// add update user
 
 module.exports = router;

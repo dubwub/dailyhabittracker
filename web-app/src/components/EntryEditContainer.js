@@ -15,9 +15,7 @@ class EntryEditContainer extends Component {
         if (props.days.length === 0) {
             console.log("BIG ERROR (this should be thrown): WHY IS DAYS 0???"); 
         }
-        this.state = {
-            
-        }
+        
     }
 
     dayHasEntry(day) {

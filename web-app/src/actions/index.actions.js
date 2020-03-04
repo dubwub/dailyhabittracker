@@ -2,7 +2,7 @@ import axios from 'axios';
 const moment = require('moment');
 
 // TODO: when signup/login is implemented, remove this hardcoded id
-const user_id = "5e0a82dd179d3c3599e6fd8f";
+const user_id = "5e6030bf510e06e154f566ce";
 
 function _momentDateFromMongo(day) {
     return moment(day.substring(0, 10), "YYYY-MM-DD");
@@ -74,14 +74,15 @@ export function loadUser(days) {
     }
 }
 
-export function createHabit(name, description, color) {
+export function createHabit(title, description, color, thresholds) {
     const data = {
-        name: name,
+        title: title,
         description: description,
         color: color, 
         order: 1,
-        entry_type: "default",
-        entries: []
+        entry_type: "integer",
+        entries: [],
+        thresholds: thresholds
     }
 
     return async function(dispatch) {
@@ -93,11 +94,13 @@ export function createHabit(name, description, color) {
     }
 }
 
-export function updateHabit(habit, name, description, color) {
+export function updateHabit(habit, title, description, color, thresholds) {
     const data = {
-        name: name,
+        title: title,
         description: description,
-        color: color
+        color: color,
+        entry_type: "integer",
+        thresholds: thresholds
     };
 
     return async function(dispatch) {
@@ -138,4 +141,14 @@ export function selectEntry(date, habit) {
             habitOfSelectedEntry: habit
         }
     });
+}
+
+export function selectHabitForEdit(habit, showDialog) {
+    return (dispatch) => dispatch({
+        type: "SELECT_NEW_HABIT",
+        payload: {
+            habit: habit,
+            showHabitEditDialog: showDialog
+        }
+    })
 }

@@ -1,36 +1,5 @@
 const moment = require('moment');
 
-// optimal state:
-// -- habits: list of habit objects
-// -- entries: 
-
-/** things that need to be looked up:
-    1: need to be able to add an entry for a day and a habit
-    2: need to find entry for a day/habit
-    3 (eventually): find all entries for a certain habit for calendar view
-    4 (eventually): be able to easily calculate streak (same habit over days)
-
-    thus, state:
-
-    {
-            habitOrder: [ habit uids ],
-            habits: {
-                map of habit uid to body
-            }
-            entries: {
-                map of habit uid (could be day-retro-10/26/1991 for "null" habit uids) to {
-                    day: {
-                        entry details
-                    }
-                }
-            }
-    }
-
-    reducers needed:
- * CRUD habit
- * CRUD entry
- **/
-
 function returnLast30Days() {
     let days = []; 
 
@@ -49,7 +18,11 @@ let INITIAL_STATE = {
     habits: {},
     entries: {},
     selectedEntry: {}, // date and habit (daily-retro or uid)
-    user: undefined
+    user: undefined,
+
+    // HabitEditDialog
+    showHabitEditDialog: false, // true 
+    selectedHabitForEdit: undefined, // if defined, this is habit ID and dialog is open 
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -61,6 +34,13 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 dateOfSelectedEntry: action.payload.dateOfSelectedEntry,
                 habitOfSelectedEntry: action.payload.habitOfSelectedEntry
+            };
+            break;
+        case "SELECT_NEW_HABIT":
+            return {
+                ...state,
+                selectedHabitForEdit: action.payload.habit,
+                showHabitEditDialog: action.payload.showHabitEditDialog,
             };
             break;
         case "LOAD_USER":
@@ -75,6 +55,15 @@ export default function(state = INITIAL_STATE, action) {
         case "CREATE_HABIT":
             state["habits"][action.payload._id] = action.payload;
             state["entries"][action.payload._id] = {};
+
+            // pre-load all days for new habit
+            state["days"].forEach((day) => {
+                const day_fmt = day.format('MM/DD/YYYY');
+                state["entries"][action.payload._id][day_fmt] = {
+                    value: undefined,
+                    note: undefined
+                };
+            });            
 
             return {
                 ...state,
@@ -110,17 +99,6 @@ export default function(state = INITIAL_STATE, action) {
             };
             break;
         }
-        // case "UPDATE_NOTE": {
-        //     habit = action.payload.habit || "daily-retro";
-        //     let new_habit_entries = Object.assign({}, state["entries"][habit]);
-        //     new_habit_entries[action.payload.date]["note"] = action.payload.note;
-        //     state["entries"][habit] = new_habit_entries;
-        //     return {
-        //         ...state,
-        //         entries: state["entries"]
-        //     };
-        //     break;
-        // }
         default:
             return state;
     }

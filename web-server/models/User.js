@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema({
             {
                 icon: String,
                 color: String,
+                condition: String, // lt (lessthan), le (lessthan or equal to), eq, ge, gt, between
                 minValue: Number,
                 maxValue: Number
             }

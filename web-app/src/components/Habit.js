@@ -21,11 +21,7 @@ class Habit extends Component {
     }
 
     toggleEditMode() {
-        console.log("Toggling: " + this.props.habit + " to edit mode: " + !this.state.edit_mode);
-        this.setState({
-            ...this.state,
-            edit_mode: !this.state.edit_mode
-        });
+        this.props.selectHabitForEdit(this.props.habit);
     }
 
     habitEntryClassName(value) {
@@ -65,39 +61,27 @@ class Habit extends Component {
     
     render() {
         const color = this.props.color || "";
-        const className = this.state.edit_mode ? "habit-edit-mode" : "habit";
-
-        let editForm = (<div></div>);
-        if (this.state.edit_mode) {
-            editForm = (
-                <div>
-                    <input type="text" ref="habit-name" placeholder="Name of habit" />
-                    <input type="text" ref="habit-description" placeholder="Habit description" />
-                    <input type="text" ref="habit-color" placeholder="Color of habit (red/blue)" />
-                    <input type='submit' className='btn' onClick={() => this.props.updateHabit(this.props.habit, this.refs["habit-name"].value, this.refs["habit-description"].value, this.refs["habit-color"].value)}/>
-                </div>
-            );
-        }
 
         return (
-            <div className={"ctr " + className}>
-                <div className={"ctr-header " + className}>
-                    <div className="habit-name" style={{"color": color}}>
-                        <h5>{ this.props.name }</h5>
+            <div className={"ctr habit"}>
+                <div className={"ctr-header habit"}>
+                    <div className="habit-title" style={{"color": color}}>
+                        <h5>{ this.props.title }</h5>
                     </div>
                     <div className="habit-description" style={{"color": color}}>
                         <h6>{ this.props.description || "" }</h6>
-                        <input type="button" onClick={() => this.toggleEditMode()} value={"Toggle edit mode: " + this.state.edit_mode}/>
-                        { editForm }
+                        <Button 
+                            onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
+                            icon={"edit"} />
                     </div>
                 </div>
-                <div className={"ctr-contents " + className} onScroll={syncScroll}>
+                <div className={"ctr-contents habit"} onScroll={syncScroll}>
                     { 
                         this.props.days.map((day) => {
                             const day_fmt = day.format("MM/DD/YYYY");
                             let value = this.props.entries[day_fmt]["value"];
                             return (
-                                <div className={"ctr-entry " + className} key={day_fmt}>
+                                <div className={"ctr-entry habit"} key={day_fmt}>
                                     <Button    
                                         className={this.habitEntryClassName(this.props.entries[day_fmt]["value"])}
                                         onClick={() => this.props.updateEntry(this.props.habit, day, this.getNextHabitValue(this.props.entries[day_fmt]["value"]), undefined)}>
@@ -116,7 +100,7 @@ class Habit extends Component {
 function mapStateToProps(state, ownProps) {
     return {
         days: state["days"],
-        name: state["habits"][ownProps.habit]["name"],
+        title: state["habits"][ownProps.habit]["title"],
         description: state["habits"][ownProps.habit]["description"],
         color: state["habits"][ownProps.habit]["color"],
         entries: state["entries"][ownProps.habit]
