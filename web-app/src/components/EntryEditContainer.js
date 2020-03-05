@@ -15,39 +15,47 @@ class EntryEditContainer extends Component {
         if (props.days.length === 0) {
             console.log("BIG ERROR (this should be thrown): WHY IS DAYS 0???"); 
         }
-        
-    }
 
-    dayHasEntry(day) {
-        return this.props.entries[day.format("MM/DD/YYYY")]["entry"] || this.props.entries[day.format("MM/DD/YYYY")]["note"];
-    }
-
-    displayValue() {
-        if (this.props.dateOfSelectedEntry && this.props.habitOfSelectedEntry) {
-            return this.props.entries[this.props.habitOfSelectedEntry][this.props.dateOfSelectedEntry.format("MM/DD/YYYY")]["value"];
-        } else {
-            return -1;
+        this.state = {
+            selectedHabit: undefined,
+            selectedDate: undefined,
+            editedValue: undefined,
+            editedNote: undefined,
         }
     }
 
-    displayNote() {
-        if (this.props.dateOfSelectedEntry && this.props.habitOfSelectedEntry) {
-            return this.props.entries[this.props.habitOfSelectedEntry][this.props.dateOfSelectedEntry.format("MM/DD/YYYY")]["note"] || "";
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.selectedHabit !== prevState.selectedHabit || nextProps.selectedDate !== prevState.selectedDate) {
+            const date_fmt = nextProps.selectedDate.format("MM/DD/YYYY");
+            return {
+                ...prevState,
+                selectedHabit: nextProps.selectedHabit || "daily-retro",
+                selectedDate: nextProps.selectedDate,
+                editedValue: nextProps.entries[nextProps.selectedHabit][date_fmt].value || -1,
+                editedNote: nextProps.entries[nextProps.selectedHabit][date_fmt].note || "",
+            }
         } else {
-            return "";
+            return null;
         }
     }
 
     onValueChange(value, note) {
         // quick note, if value or note are undefined, they will not be set, so you don't have to worry about
         // accidentally setting the value if you only want to update the note.
-        this.props.updateEntry(this.props.habitOfSelectedEntry, this.props.dateOfSelectedEntry, value, note);
+        let newState = {
+            ...this.state
+        };
+        if (value) { newState["editedValue"] = value; }
+        if (note) { newState["editedNote"] = note; }
+
+        this.setState(newState);
+        this.props.updateEntry(this.props.selectedHabit, this.props.selectedDate, value, note);
     }
 
     render() {
         let displayText = "";
-        if (this.props.dateOfSelectedEntry) {
-            displayText = "Selected day: " + this.props.dateOfSelectedEntry.format("MM/DD") + ", habit: " + this.props.habitOfSelectedEntry;
+        if (this.props.selectedDate) {
+            displayText = "Selected day: " + this.props.selectedDate.format("MM/DD") + ", habit: " + this.props.selectedHabit;
         }
 
         return (
@@ -57,14 +65,14 @@ class EntryEditContainer extends Component {
                         <b>{displayText}</b>
                         <NumericInput
                             allowNumericCharactersOnly={false}
-                            value={this.displayValue()}
+                            value={this.state.editedValue}
                             onValueChange={(value) => this.onValueChange(value, undefined)}
                         />
                     </div>
                 </div>
                 <div className="retro-bottom">
                     <TextArea style={{"width":"100%", "height":"100%"}}
-                        value={this.displayNote()} 
+                        value={this.state.editedNote} 
                         onChange={(e) => this.onValueChange(undefined, e.target.value)}
                         />
                 </div>
@@ -77,8 +85,8 @@ function mapStateToProps(state) {
     return {
         days: state.days,
         entries: state.entries,
-        dateOfSelectedEntry: state.dateOfSelectedEntry,
-        habitOfSelectedEntry: state.habitOfSelectedEntry
+        selectedDate: state.dateOfSelectedEntry,
+        selectedHabit: state.habitOfSelectedEntry
     };
 }
 

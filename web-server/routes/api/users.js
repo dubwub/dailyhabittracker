@@ -48,14 +48,6 @@ router.put('/:id', async (req, res) => {
 
     if (updatedUser) { res.send(newHabit); }
     else { res.status(400).json({ error: err }); }
-    
-    // User.findByIdAndUpdate(req.params.id, {
-	// 		$push: {
-	// 			habits: req.body
-	// 		}
-	// }).then( output => {
-	//     res.send(output);
-    // }).catch(err => res.status(400).json({ error: err }));
 });
 
 // @route POST /api/users/:uid/habit/:hid

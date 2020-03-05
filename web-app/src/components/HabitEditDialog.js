@@ -40,7 +40,7 @@ const DEFAULT_THRESHOLDS = [
     {
         icon: "clean",
         color: "#D99E0B",
-        condition: "gt",
+        condition: "ge",
         minValue: 5,
         maxValue: undefined
     }
