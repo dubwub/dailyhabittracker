@@ -3,6 +3,7 @@
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 @import "~@blueprintjs/core/lib/scss/variables";
+@import "../node_modules/react-day-picker/lib/style";
 
 body {
   margin: 0;
@@ -40,7 +41,7 @@ code {
 }
 
 .ctr-entry {
-    height: 100px;
+    height: 15px; // TODO: this gets overwritten in the habit-level but not at the top level? need to restructure
     width: 100px;
     display: inline-block;
     float: left;
@@ -60,19 +61,19 @@ code {
 }
 
 .header {
-    height: 100px;
+    height: 150px;
 }
 
-.header-date-label {
-    height: 50%;
+.header-top {
+    height: 50px;
 }
 
-.header-retro {
-    height: 50%;
+.header-event {
+    height: 80px;
 }
 
 .layout-header {
-    height: 100px;
+    height: 150px;
     position: absolute;
     top: 0;
     left: 0;
@@ -85,7 +86,7 @@ code {
 
 .layout-body {
     position: absolute;
-    top: 100px;
+    top: 150px;
     left: 0;
     width: 100%;
     border: 2px solid red;
@@ -93,10 +94,10 @@ code {
     // TODO: make this work for other browsers
     // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
     &.footer-visible {
-        height: calc(100% - 350px); 
+        height: calc(100% - 400px); 
     }
     &.footer-invisible {
-        height: calc(100% - 150px);
+        height: calc(100% - 200px);
     }
 }
 
@@ -140,24 +141,4 @@ code {
 .habit-entry {
     width: 100%;
     height: 100%;
-
-    // &.neutral {
-    //     background-color: $light-gray5;
-    // }
-
-    // &.positive {
-    //     background-color: $forest5;
-    // }
-
-    // &.very-positive {
-    //     background-color: $forest1;
-    // }
-
-    // &.negative {
-    //     background-color: $vermilion5;
-    // }
-
-    // &.very-negative {
-    //     background-color: $vermilion1;
-    // }
 }

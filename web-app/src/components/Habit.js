@@ -85,17 +85,6 @@ class Habit extends Component {
         }
     }
 
-    // getNextHabitValue(value) {
-    //     value = value || DEFAULT_HABIT_SCORE;
-    //     value++;
-
-    //     if (value > MAX_HABIT_SCORE) {
-    //         value = MIN_HABIT_SCORE;
-    //     }
-
-    //     return value;
-    // }
-    
     render() {
         const color = this.props.color || "";
 

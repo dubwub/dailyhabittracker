@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 import { syncScroll } from '../utils/habits.utils';
-import { NumericInput, TextArea } from '@blueprintjs/core';
+import { Button, NumericInput, TextArea } from '@blueprintjs/core';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
@@ -62,6 +62,15 @@ class EntryEditContainer extends Component {
             <div className="ctr retro">
                 <div className="retro-top">
                     <div>
+                        <Button icon="collapse-all"
+                                intent="primary"
+                                style={{
+                                    "position": "absolute",
+                                    "top": 0,
+                                    "right": 0
+                                }}
+                                onClick={() => this.props.selectEntry(undefined, undefined)}
+                                >Collapse</Button>
                         <b>{displayText}</b>
                         <NumericInput
                             allowNumericCharactersOnly={false}

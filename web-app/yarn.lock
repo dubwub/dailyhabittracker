@@ -996,7 +996,7 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@blueprintjs/core@^3.24.0":
+"@blueprintjs/core@^3.23.0", "@blueprintjs/core@^3.24.0":
   version "3.24.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-3.24.0.tgz#593a2b289bb94224f3a924eb1b3065ea3c4ca00a"
   integrity sha512-qW29DDPjzYsT27J6n97C0jZ1ifvEEziwNC98UhaKdSE7I8qxbLsb+ft2JOop+pEX4ab67T1lhQKAiQjWCPKZng==
@@ -1012,6 +1012,16 @@
     react-transition-group "^2.9.0"
     resize-observer-polyfill "^1.5.1"
     tslib "~1.10.0"
+
+"@blueprintjs/datetime@^3.15.2":
+  version "3.15.2"
+  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/@blueprintjs/datetime/-/datetime-3.15.2.tgz#c0beffa287cdad7d7521db23ef2918491156044b"
+  integrity sha1-wL7/oofNrX11Idsj7ykYSRFWBEs=
+  dependencies:
+    "@blueprintjs/core" "^3.23.0"
+    classnames "^2.2"
+    react-day-picker "7.3.2"
+    tslib "~1.9.0"
 
 "@blueprintjs/icons@^3.14.0":
   version "3.14.0"
@@ -8910,6 +8920,13 @@ react-app-polyfill@^1.0.5:
     regenerator-runtime "^0.13.3"
     whatwg-fetch "^3.0.0"
 
+react-day-picker@7.3.2:
+  version "7.3.2"
+  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/react-day-picker/-/react-day-picker-7.3.2.tgz#b9b9b0000ba53b2c9df9bccb79664862aba6b60a"
+  integrity sha1-ubmwAAulOyyd+bzLeWZIYqumtgo=
+  dependencies:
+    prop-types "^15.6.2"
+
 react-dev-utils@^10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-10.0.0.tgz#bd2d16426c7e4cbfed1b46fb9e2ac98ec06fcdfa"
@@ -10609,6 +10626,11 @@ tslib@^1.8.1, tslib@^1.9.0, tslib@~1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
+
+tslib@~1.9.0:
+  version "1.9.3"
+  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
+  integrity sha1-1+TdeSRdhUKMTX5IIqeZF5VMooY=
 
 tsutils@^3.17.1:
   version "3.17.1"
