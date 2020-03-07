@@ -29,8 +29,8 @@ class EventEditDialog extends Component {
                     showDialog: nextProps.showDialog,
                     editedTitle: nextProps.event.title,
                     editedColor: nextProps.event.color,
-                    editedStartDate: nextProps.event.startDate,
-                    editedEndDate: nextProps.event.endDate,
+                    editedStartDate: nextProps.event.startDate.toDate(),
+                    editedEndDate: nextProps.event.endDate.toDate(),
                 };
             } else { // create new Event
                 return {
@@ -165,7 +165,18 @@ class EventEditDialog extends Component {
 }
 
 function mapStateToProps(state) {
+    // TODO: should I just keep the entire event in here? otherwise i'm iterating an array twice
+    // it does denormalize event, idk
     let event = undefined;
+    if (state.selectedEventForEdit) {
+        for (let i = 0; i < state.events.length; i++) {
+            if (state.events[i]._id === state.selectedEventForEdit) {
+                event = state.events[i];
+                break;
+            }
+        }
+    }
+    
     return {
         selectedEventForEdit: state.selectedEventForEdit,
         showDialog: state.showEventEditDialog,

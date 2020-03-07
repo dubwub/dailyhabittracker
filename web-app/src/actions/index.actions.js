@@ -4,6 +4,7 @@ const moment = require('moment');
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e6030bf510e06e154f566ce";
 
+// TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
     return moment(day.substring(0, 10), "YYYY-MM-DD");
 }
@@ -102,23 +103,6 @@ export function createHabit(title, description, color, thresholds) {
     }
 }
 
-export function createEvent(title, color, startDate, endDate) {
-    const data = {
-        title: title,
-        color: color,
-        startDate: startDate,
-        endDate: endDate,
-    };
-
-    return async function(dispatch) {
-        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/events', data);
-        dispatch({
-            type: "CREATE_EVENT",
-            payload: res.data
-        });
-    }
-}
-
 export function updateHabit(habit, title, description, color, thresholds) {
     const data = {
         title: title,
@@ -137,20 +121,73 @@ export function updateHabit(habit, title, description, color, thresholds) {
     }
 }
 
+export function deleteHabit(habit) {
+    return async function(dispatch) {
+        let res = await axios.delete('http://localhost:8082/api/users/' + user_id + '/habit/' + habit);
+        if (res.status === 200) {
+            dispatch({
+                type: "DELETE_HABIT",
+                payload: habit,
+            })
+        }
+    }
+}
+
+export function createEvent(title, color, startDate, endDate) {
+    const data = {
+        title: title,
+        color: color,
+        startDate: startDate,
+        endDate: endDate,
+    };
+
+    return async function(dispatch) {
+        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/events', data);
+        console.log(res.data.startDate);
+        const payload = {
+            ...res.data,
+            startDate: _momentDateFromMongo(res.data.startDate),
+            endDate: _momentDateFromMongo(res.data.endDate),
+        }
+
+        dispatch({
+            type: "CREATE_EVENT",
+            payload: payload
+        });
+    }
+}
+
 export function updateEvent(event, title, color, startDate, endDate) {
     const data = {
         title: title,
         color: color,
-        startDate: startDate.format("MM/DD/YYYY"),
-        endDate: endDate.format("MM/DD/YYYY"),
+        startDate: startDate,
+        endDate: endDate,
     };
 
     return async function(dispatch) {
         let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/events/' + event, data);
+        const payload = {
+            ...res.data,
+            startDate: _momentDateFromMongo(res.data.startDate),
+            endDate: _momentDateFromMongo(res.data.endDate),
+        }
         dispatch({
             type: "UPDATE_EVENT",
-            payload: res.data
+            payload: payload
         });
+    }
+}
+
+export function deleteEvent(event) {
+    return async function(dispatch) {
+        let res = await axios.delete('http://localhost:8082/api/users/' + user_id + '/events/' + event);
+        if (res.status === 200) {
+            dispatch({
+                type: "DELETE_EVENT",
+                payload: event,
+            })
+        }
     }
 }
 

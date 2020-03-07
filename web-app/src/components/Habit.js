@@ -93,6 +93,9 @@ class Habit extends Component {
                         <Button 
                             onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
                             icon={"edit"} />
+                        <Button
+                            onClick={() => this.props.deleteHabit(this.props.habit)}
+                            icon={"delete"} />
                     </div>
                 </div>
                 <div className={"ctr-contents habit"} onScroll={syncScroll}>

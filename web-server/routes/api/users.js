@@ -66,16 +66,20 @@ router.put('/:id', async (req, res) => {
 // @description add an event to user
 // @access Public (to make user)
 router.put('/:id/events', async (req, res) => {
-    req.body["user"] = req.params.id;
-    const newEvent = Event.create(req.body);
-    const newEventSaved = await newEvent.save();
-    if (newEventSaved) { res.send(newEvent); }
-    else { res.status(400).json({ error: err }); }
+    const params = {
+        ...req.body,
+        user: req.params.id,
+    };
+    let newEvent = new Event(params);
+    newEvent.save(function(err, event) {
+        if (err) { res.status(400).json({error: err}) }
+        else { res.send(event); }
+    });
 });
 
 // @route POST /api/users/:uid/events/:eid
 // @description modify event with clean fields
-router.post('/:uid/habit/:eid', (req, res) => {
+router.post('/:uid/events/:eid', (req, res) => {
     req.body["user"] = req.params.id;
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
     const validFields = ["title", "color", "startDate", "endDate"];
@@ -85,23 +89,29 @@ router.post('/:uid/habit/:eid', (req, res) => {
         }
     });
     cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
-
     Event.findOneAndUpdate({
-        _id: req.params.eid,
-        user: req.params.uid,
-    },
-    {
-        $set: {
-            "$": cleanedRequest
+            _id: req.params.eid,
+            user: req.params.uid,
+        },
+        {
+            $set: cleanedRequest
+        },
+        {
+            new: true
+        },
+        function(err, event) {
+            if (err) { res.status(500).json({error: err}); }
+            res.send(event);  
         }
-    },
-    {
-        new: true
-    },
-    function(err, event) {
-        if (err) { res.status(500).json({error: err}); }
-        res.send(event);  
-    })
+    )
+});
+
+// @route DELETE /api/users/:uid/event/:eid
+// @description delete event <eid>
+// @access PUBLIC (to make into only user)
+router.delete('/:uid/events/:eid', (req, res) => {
+	Event.findByIdAndDelete(req.params.eid).then( _ => res.json({ msg: 'Event removed successfully' }))
+		.catch(err => res.status(400).json({ error: err }));
 });
 
 // @route POST /api/users/:uid/habit/:hid
@@ -152,8 +162,17 @@ router.delete('/:uid/habit/:hid', (req, res) => {
 				_id: req.params.hid
 			}
 		}
-	}).then( _ => res.json({ msg: 'Habit removed successfully' }))
-		.catch(err => res.status(400).json({ error: err }));
+	}).then( _ => {
+        Entry.deleteMany({
+            user: req.params.uid,
+            habit: req.params.hid,
+        }, function(err, result) {
+            if (err) { res.status(400).json({ error: err}) }
+            else {
+                res.json({ msg: 'Habit removed successfully' })
+            }
+        })
+    }).catch(err => res.status(400).json({ error: err }));
 });
 
 // post habit entry

@@ -93,21 +93,28 @@ export default function(state = INITIAL_STATE, action) {
             };
         }
         case "UPDATE_EVENT": {
+            let events = [...state.events];
             for (let i = 0; i < state.events.length; i++) {
-                if (action.payload._id === state.events._id) {
-                    state.events[i] = action.payload;
+                if (action.payload._id === state.events[i]._id) {
+                    events[i] = action.payload;
                 }
             }
             return {
                 ...state,
-                events: state.events,
+                events: events,
+            };
+        }
+        case "DELETE_EVENT": {
+            return {
+                ...state,
+                events: state.events.filter((event) => (event._id !== action.payload))
             };
         }
         case "DELETE_HABIT":
-            delete state["habits"][action.payload._id];
+            delete state["habits"][action.payload];
             return {
                 ...state,
-                habitOrder: state["habitOrder"].filter((entry) => entry !== action.payload._id),
+                habitOrder: state["habitOrder"].filter((entry) => entry !== action.payload),
                 habits: state["habits"]
             };
         case "UPDATE_ENTRY": {

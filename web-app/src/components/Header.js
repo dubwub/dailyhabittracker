@@ -43,15 +43,20 @@ class Events extends Component {
         let timeAfterEnding = truncStartDate.diff(this.props.startDate, "days");
         
         return (
-            <div key={index} style={{"width": "100%", "height": "20px"}}>
+            // TODO: deleting an event brings up the dialog
+            <div key={index} style={{"width": "100%", "height": "30px"}}>
                 <div style={{"display": "inline-block", "width": timeBeforeToday*100, "height": 20}}>
                 </div>
-                <Tag style={{
-                    "display": "inline-block",
-                    "width": (durationOfEvent+1)*100,
-                    "height": 20,
-                    "backgroundColor": event.color,
-                }}>
+                <Tag 
+                    interactive={true}
+                    large={true}
+                    style={{
+                        "width": (durationOfEvent+1)*100,
+                        "backgroundColor": event.color,
+                    }}
+                    onRemove={() => this.props.deleteEvent(event._id)}
+                    onClick={() => this.props.selectEventForEdit(event._id, true)}
+                >
                     {event.title}
                 </Tag>
                 <div style={{"display": "inline-block", "width": timeAfterEnding*100, "height": 20}}>
@@ -73,7 +78,6 @@ class Events extends Component {
 
 class Header extends Component {
     render() {
-        console.log(this.props.events);
         return (
             <div className="ctr header">
                 <div className="ctr-header header">
@@ -93,7 +97,10 @@ class Header extends Component {
                 <div className="ctr-contents header-event" onScroll={syncScroll}>
                     <Events events={this.props.events}
                             endDate={this.props.days[0]}
-                            startDate={this.props.days[this.props.days.length - 1]} />
+                            startDate={this.props.days[this.props.days.length - 1]}
+                            selectEventForEdit={this.props.selectEventForEdit} 
+                            deleteEvent={this.props.deleteEvent}
+                            />
                 </div>
             </div>
         )
