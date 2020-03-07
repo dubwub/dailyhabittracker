@@ -17,12 +17,17 @@ let INITIAL_STATE = {
     habitOrder: [],
     habits: {},
     entries: {},
+    events: [],
     selectedEntry: {}, // date and habit (daily-retro or uid)
     user: undefined,
 
     // HabitEditDialog
-    showHabitEditDialog: false, // true 
-    selectedHabitForEdit: undefined, // if defined, this is habit ID and dialog is open 
+    showHabitEditDialog: false,
+    selectedHabitForEdit: undefined,
+
+    // EventEditDialog
+    showEventEditDialog: false,
+    selectedEventForEdit: undefined,
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -35,23 +40,27 @@ export default function(state = INITIAL_STATE, action) {
                 dateOfSelectedEntry: action.payload.dateOfSelectedEntry,
                 habitOfSelectedEntry: action.payload.habitOfSelectedEntry
             };
-            break;
         case "SELECT_NEW_HABIT":
             return {
                 ...state,
                 selectedHabitForEdit: action.payload.habit,
                 showHabitEditDialog: action.payload.showHabitEditDialog,
             };
-            break;
+        case "SELECT_NEW_EVENT":
+            return {
+                ...state,
+                selectedEventForEdit: action.payload.event,
+                showEventEditDialog: action.payload.showEventEditDialog,
+            }
         case "LOAD_USER":
             return {
                 ...state,
                 habitOrder: action.payload.habitOrder,
                 habits: action.payload.habits,
                 entries: action.payload.entries,
-                user: action.payload.user 
+                user: action.payload.user,
+                events: action.payload.events,
             };
-            break;
         case "CREATE_HABIT":
             state["habits"][action.payload._id] = action.payload;
             state["entries"][action.payload._id] = {};
@@ -71,14 +80,28 @@ export default function(state = INITIAL_STATE, action) {
                 habits: state["habits"],
                 entries: state["entries"]
             };
-            break;
+        case "CREATE_EVENT":
+            return {
+                ...state,
+                events: state.events.concat([action.payload]),
+            };
         case "UPDATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
             return {
                 ...state,
                 habits: state["habits"]
             };
-            break;
+        }
+        case "UPDATE_EVENT": {
+            for (let i = 0; i < state.events.length; i++) {
+                if (action.payload._id === state.events._id) {
+                    state.events[i] = action.payload;
+                }
+            }
+            return {
+                ...state,
+                events: state.events,
+            };
         }
         case "DELETE_HABIT":
             delete state["habits"][action.payload._id];
@@ -87,7 +110,6 @@ export default function(state = INITIAL_STATE, action) {
                 habitOrder: state["habitOrder"].filter((entry) => entry !== action.payload._id),
                 habits: state["habits"]
             };
-            break;
         case "UPDATE_ENTRY": {
             habit = action.payload.habit || "daily-retro";
             let new_habit_entries = Object.assign({}, state["entries"][habit]);
@@ -97,7 +119,6 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 entries: state["entries"]
             };
-            break;
         }
         default:
             return state;

@@ -1,23 +1,16 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-
 import Habit from './Habit.js';
 import Header from './Header.js';
 import EntryEditContainer from './EntryEditContainer.js';
 import HabitEditDialog from './HabitEditDialog';
+import EventEditDialog from './EventEditDialog';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button } from "@blueprintjs/core";
-import * as moment from "moment";
 import { Props } from "../types/types"; 
 
-class Overview extends React.Component<Props>{
-    private inputHabitName = React.createRef<HTMLInputElement>();
-    private inputHabitDescription = React.createRef<HTMLInputElement>();
-    private inputHabitColor = React.createRef<HTMLInputElement>();
-    
+class Overview extends React.Component<Props>{    
     constructor(props: Props) {
         super(props);
         this.props.loadUser(this.props.days);
@@ -69,6 +62,7 @@ class Overview extends React.Component<Props>{
             return (
                 <div>
                     <HabitEditDialog />
+                    <EventEditDialog />
                     <div>
                         <div className="layout-header">
                             <Header />

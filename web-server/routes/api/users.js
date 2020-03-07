@@ -1,5 +1,6 @@
 const User = require('../../models/User');
 const Entry = require('../../models/Entry');
+const Event = require('../../models/Event');
 
 const express = require('express');
 const router = express.Router();
@@ -22,7 +23,18 @@ router.get('/:id', (req, res) => {
                     res.status(400).json({ error: 'Error loading entries' });
                 } else {
                     output['entries'] = entries;
-                    res.send(output);
+
+                    // TODO: can I do this without nesting? probably with async, right?
+                    Event.find({
+                        user: req.params.id
+                    }, function(err, events) {
+                        if (err) {
+                            res.status(400).json({ error: 'Error loading events' });
+                        } else {
+                            output['events'] = events;
+                            res.send(output);
+                        }
+                    })
                 }
             });
         }).catch(err => res.status(404).json({ nouserfound: 'No User Found' }));
@@ -50,11 +62,53 @@ router.put('/:id', async (req, res) => {
     else { res.status(400).json({ error: err }); }
 });
 
+// @route PUT /api/users/:id/events
+// @description add an event to user
+// @access Public (to make user)
+router.put('/:id/events', async (req, res) => {
+    req.body["user"] = req.params.id;
+    const newEvent = Event.create(req.body);
+    const newEventSaved = await newEvent.save();
+    if (newEventSaved) { res.send(newEvent); }
+    else { res.status(400).json({ error: err }); }
+});
+
+// @route POST /api/users/:uid/events/:eid
+// @description modify event with clean fields
+router.post('/:uid/habit/:eid', (req, res) => {
+    req.body["user"] = req.params.id;
+    let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
+    const validFields = ["title", "color", "startDate", "endDate"];
+    validFields.forEach((field) => {
+        if (req.body[field]) {
+            cleanedRequest[field] = req.body[field];
+        }
+    });
+    cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
+
+    Event.findOneAndUpdate({
+        _id: req.params.eid,
+        user: req.params.uid,
+    },
+    {
+        $set: {
+            "$": cleanedRequest
+        }
+    },
+    {
+        new: true
+    },
+    function(err, event) {
+        if (err) { res.status(500).json({error: err}); }
+        res.send(event);  
+    })
+});
+
 // @route POST /api/users/:uid/habit/:hid
 // @description modify user habit with clean fields
 router.post('/:uid/habit/:hid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
-    const validFields = ["title", "description", "order", "thresholds", "entry_type", "color"];
+    const validFields = ["title", "description", "order", "thresholds", "entryType", "color"];
     validFields.forEach((field) => {
         if (req.body[field]) {
             cleanedRequest[field] = req.body[field];

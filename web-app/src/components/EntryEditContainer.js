@@ -1,12 +1,8 @@
-import axios from 'axios';
 import React, { Component } from 'react';
-import { syncScroll } from '../utils/habits.utils';
 import { Button, NumericInput, TextArea } from '@blueprintjs/core';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-
-const moment = require('moment');
 
 class EntryEditContainer extends Component {
     constructor(props) {

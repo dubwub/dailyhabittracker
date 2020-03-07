@@ -61,6 +61,13 @@ export function loadUser(days) {
             };
         });
 
+        // preprocess incoming events
+        const events = res.data.events.map((event) => {
+            event["startDate"] = _momentDateFromMongo(event["startDate"]);
+            event["endDate"] = _momentDateFromMongo(event["endDate"]);
+            return event;
+        });
+
         dispatch({
             type: "LOAD_USER",
             payload: {
@@ -68,6 +75,7 @@ export function loadUser(days) {
                 days: days,
                 habits: habits,
                 entries: entries,
+                events: events,
                 habitOrder: habitOrder
             }
         });
@@ -94,6 +102,23 @@ export function createHabit(title, description, color, thresholds) {
     }
 }
 
+export function createEvent(title, color, startDate, endDate) {
+    const data = {
+        title: title,
+        color: color,
+        startDate: startDate,
+        endDate: endDate,
+    };
+
+    return async function(dispatch) {
+        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/events', data);
+        dispatch({
+            type: "CREATE_EVENT",
+            payload: res.data
+        });
+    }
+}
+
 export function updateHabit(habit, title, description, color, thresholds) {
     const data = {
         title: title,
@@ -107,6 +132,23 @@ export function updateHabit(habit, title, description, color, thresholds) {
         let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/habit/' + habit, data);
         dispatch({
             type: "UPDATE_HABIT",
+            payload: res.data
+        });
+    }
+}
+
+export function updateEvent(event, title, color, startDate, endDate) {
+    const data = {
+        title: title,
+        color: color,
+        startDate: startDate.format("MM/DD/YYYY"),
+        endDate: endDate.format("MM/DD/YYYY"),
+    };
+
+    return async function(dispatch) {
+        let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/events/' + event, data);
+        dispatch({
+            type: "UPDATE_EVENT",
             payload: res.data
         });
     }
@@ -149,6 +191,16 @@ export function selectHabitForEdit(habit, showDialog) {
         payload: {
             habit: habit,
             showHabitEditDialog: showDialog
+        }
+    })
+}
+
+export function selectEventForEdit(event, showDialog) {
+    return (dispatch) => dispatch({
+        type: "SELECT_NEW_EVENT",
+        payload: {
+            event: event,
+            showEventEditDialog: showDialog
         }
     })
 }

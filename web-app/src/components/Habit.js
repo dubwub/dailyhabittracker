@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { syncScroll } from '../utils/habits.utils';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button } from "@blueprintjs/core";
-
-// assumptions
-// const MIN_HABIT_SCORE = 1;
-// const DEFAULT_HABIT_SCORE = 3;
-// const MAX_HABIT_SCORE = 5;
 
 class Habit extends Component { 
     

@@ -1,12 +1,8 @@
-import axios from 'axios';
 import React, { Component } from 'react';
-import { syncScroll } from '../utils/habits.utils';
 import { Button, Dialog, FormGroup, ControlGroup, TextArea, InputGroup, Icon, NumericInput, HTMLSelect } from '@blueprintjs/core';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-
-const moment = require('moment');
 
 const DEFAULT_THRESHOLDS = [
     {
