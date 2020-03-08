@@ -16,6 +16,8 @@ let INITIAL_STATE = {
     days: returnLast30Days(), // ordered list of all days (in moment fmt) that we should be loading on the page
     habitOrder: [],
     habits: {},
+    categoryOrder: [],
+    categories: {},
     entries: {},
     events: [],
     selectedEntry: {}, // date and habit (daily-retro or uid)
@@ -28,6 +30,9 @@ let INITIAL_STATE = {
     // EventEditDialog
     showEventEditDialog: false,
     selectedEventForEdit: undefined,
+
+    // CategoryEditDialog
+    showCategoryEditDialog: false,
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -57,6 +62,8 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 habitOrder: action.payload.habitOrder,
                 habits: action.payload.habits,
+                categoryOrder: action.payload.categoryOrder,
+                categories: action.payload.categories,
                 entries: action.payload.entries,
                 user: action.payload.user,
                 events: action.payload.events,
@@ -80,6 +87,14 @@ export default function(state = INITIAL_STATE, action) {
                 habits: state["habits"],
                 entries: state["entries"]
             };
+        case "CREATE_CATEGORY":
+            state["categories"][action.payload._id] = action.payload;            
+
+            return {
+                ...state,
+                categoryOrder: state.habitOrder.concat([action.payload._id]),
+                categories: state["categories"],
+            };
         case "CREATE_EVENT":
             return {
                 ...state,
@@ -90,6 +105,13 @@ export default function(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 habits: state["habits"]
+            };
+        }
+        case "UPDATE_CATEGORY": {
+            state["categories"][action.payload._id] = action.payload;
+            return {
+                ...state,
+                categories: state["categories"]
             };
         }
         case "UPDATE_EVENT": {
@@ -117,6 +139,20 @@ export default function(state = INITIAL_STATE, action) {
                 habitOrder: state["habitOrder"].filter((entry) => entry !== action.payload),
                 habits: state["habits"]
             };
+        case "DELETE_CATEGORY":
+            delete state["categories"][action.payload];
+
+            for (let i = 0; i < state["habitOrder"].length; i++) {
+                if (state["habits"][state["habitOrder"][i]].category === action.payload) {
+                    state["habits"][state["habitOrder"][i]].category = undefined;
+                }
+            }
+
+            return {
+                ...state,
+                categoryOrder: state["categoryOrder"].filter((category) => category !== action.payload),
+                habits: state["habits"]
+            };
         case "UPDATE_ENTRY": {
             habit = action.payload.habit || "daily-retro";
             let new_habit_entries = Object.assign({}, state["entries"][habit]);
@@ -126,6 +162,12 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 entries: state["entries"]
             };
+        }
+        case "TOGGLE_SHOW_CATEGORY_EDIT_DIALOG": {
+            return {
+                ...state,
+                showCategoryEditDialog: action.payload,
+            }
         }
         default:
             return state;

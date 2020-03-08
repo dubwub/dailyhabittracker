@@ -1,8 +1,10 @@
+// TODO: split into separate files
+
 import axios from 'axios';
 const moment = require('moment');
 
 // TODO: when signup/login is implemented, remove this hardcoded id
-const user_id = "5e6030bf510e06e154f566ce";
+const user_id = "5e655ef5b15885349dec3c6e";
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
@@ -16,6 +18,8 @@ export function loadUser(days) {
         
         let habitOrder = [];
         let habits = {};
+        let categoryOrder = [];
+        let categories = {};
         let entries = {
             "daily-retro": {}
         };
@@ -41,6 +45,12 @@ export function loadUser(days) {
                     note: undefined
                 };
             });
+        });
+
+        const raw_categories = res.data.categories;
+        raw_categories.forEach((category) => {
+            categoryOrder.push(category._id);
+            categories[category._id] = category;
         });
 
         // preprocess incoming entries
@@ -74,19 +84,88 @@ export function loadUser(days) {
             payload: {
                 user: user_id,
                 days: days,
+                categoryOrder: categoryOrder,
+                categories: categories,
+                habitOrder: habitOrder,
                 habits: habits,
                 entries: entries,
                 events: events,
-                habitOrder: habitOrder
             }
         });
     }
 }
 
-export function createHabit(title, description, color, thresholds) {
+/////////// CATEGORY ACTIONS ///////////
+
+export function createCategory(title, icon, order, color) {
+    const data = {
+        title: title,
+        icon: icon,
+        color: color,
+        order: 1
+    }
+
+    return async function(dispatch) {
+        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/category', data);
+        dispatch({
+            type: "CREATE_CATEGORY",
+            payload: res.data
+        });
+    }
+}
+
+export function updateCategory(category, title, icon, order, color) {
+    let data = {};
+    if (title) { data["title"] = title; }
+    if (icon) { data["icon"] = icon; }
+    if (order) { data["order"] = order; }
+    if (color) { data["color"] = color; }
+
+    return async function(dispatch) {
+        let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/category/' + category, data);
+        dispatch({
+            type: "UPDATE_CATEGORY",
+            payload: res.data
+        });
+    }
+}
+
+export function deleteCategory(category) {
+    return async function(dispatch) {
+        let res = await axios.delete('http://localhost:8082/api/users/' + user_id + '/category/' + category);
+        if (res.status === 200) {
+            dispatch({
+                type: "DELETE_CATEGORY",
+                payload: category,
+            })
+        }
+    }
+}
+
+export function toggleShowCategoryEditDialog(showCategoryEditDialog) {
+    return (dispatch) => dispatch({
+        type: "TOGGLE_SHOW_CATEGORY_EDIT_DIALOG",
+        payload: showCategoryEditDialog,
+    })
+}
+
+/////////// HABIT ACTIONS ///////////
+
+export function selectHabitForEdit(habit, showDialog) {
+    return (dispatch) => dispatch({
+        type: "SELECT_NEW_HABIT",
+        payload: {
+            habit: habit,
+            showHabitEditDialog: showDialog
+        }
+    })
+}
+
+export function createHabit(title, description, category, color, thresholds) {
     const data = {
         title: title,
         description: description,
+        category: category,
         color: color, 
         order: 1,
         entry_type: "integer",
@@ -95,7 +174,7 @@ export function createHabit(title, description, color, thresholds) {
     }
 
     return async function(dispatch) {
-        let res = await axios.put('http://localhost:8082/api/users/' + user_id, data);
+        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/habit', data);
         dispatch({
             type: "CREATE_HABIT",
             payload: res.data
@@ -103,15 +182,16 @@ export function createHabit(title, description, color, thresholds) {
     }
 }
 
-export function updateHabit(habit, title, description, color, thresholds) {
+export function updateHabit(habit, title, description, category, color, thresholds) {
     const data = {
         title: title,
         description: description,
+        category: category,
         color: color,
         entry_type: "integer",
         thresholds: thresholds
     };
-
+    
     return async function(dispatch) {
         let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/habit/' + habit, data);
         dispatch({
@@ -132,6 +212,8 @@ export function deleteHabit(habit) {
         }
     }
 }
+
+/////////// EVENT ACTIONS ///////////
 
 export function createEvent(title, color, startDate, endDate) {
     const data = {
@@ -191,6 +273,8 @@ export function deleteEvent(event) {
     }
 }
 
+/////////// ENTRY ACTIONS ///////////
+
 export function updateEntry(habit, day, value, note) {
     return async function(dispatch) {
         let data = {
@@ -220,16 +304,6 @@ export function selectEntry(date, habit) {
             habitOfSelectedEntry: habit
         }
     });
-}
-
-export function selectHabitForEdit(habit, showDialog) {
-    return (dispatch) => dispatch({
-        type: "SELECT_NEW_HABIT",
-        payload: {
-            habit: habit,
-            showHabitEditDialog: showDialog
-        }
-    })
 }
 
 export function selectEventForEdit(event, showDialog) {

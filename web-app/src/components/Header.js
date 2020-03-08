@@ -82,6 +82,7 @@ class Header extends Component {
             <div className="ctr header">
                 <div className="ctr-header header">
                     <Button icon="add" onClick={() => this.props.selectEventForEdit(undefined, true)}>Add New Event</Button>
+                    <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Categories</Button>
                 </div>
                 <div className="ctr-contents header-top" onScroll={syncScroll}>
                     {

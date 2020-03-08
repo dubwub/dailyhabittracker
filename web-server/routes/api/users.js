@@ -1,3 +1,4 @@
+// TODO: split into separate files
 const User = require('../../models/User');
 const Entry = require('../../models/Entry');
 const Event = require('../../models/Event');
@@ -16,6 +17,7 @@ router.get('/:id', (req, res) => {
         .then(user => {
             output['username'] = user['username'];
             output['habits'] = user['habits'];
+            output['categories'] = user['categories'];
             Entry.find({
                 user: req.params.id
             }, function(err, entries) {
@@ -49,10 +51,102 @@ router.get('/:id', (req, res) => {
 //		.catch(err => res.status(400).json({ error: 'Unable to add this user' }));
 //});
 
-// @route PUT /api/users/:id
+////////// CATEGORY ROUTES //////////
+
+// @route PUT /api/users/:id/category
+// @description add a category to user
+// @access Public (to make user)
+router.put('/:id/category', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    const newCategory = user.categories.create(req.body);
+    user.categories.push(newCategory);
+    const updatedUser = await user.save();
+
+    if (updatedUser) { res.send(newCategory); }
+    else { res.status(400).json({ error: err }); }
+});
+
+// @route POST /api/users/:uid/category/:cid
+// @description modify user category with clean fields
+router.post('/:uid/category/:cid', (req, res) => {
+    let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
+    const validFields = ["title", "icon", "order", "color"];
+    validFields.forEach((field) => {
+        if (req.body[field]) {
+            cleanedRequest[field] = req.body[field];
+        }
+    });
+    cleanedRequest["_id"] = req.params.cid; // just making sure we don't overwrite old _id
+
+    User.findOneAndUpdate({
+            _id: req.params.uid,
+            categories: { 
+                "$elemMatch": {
+                    _id: req.params.cid 
+                }
+            }
+        },
+        {
+            $set: {
+                "categories.$": cleanedRequest
+            }
+        },
+        {
+            new: true
+        },
+        function(err, user) {
+            if (err) { res.status(500).json({error: err}); }
+            user["categories"].forEach((category) => {
+                if (category._id.toString() === req.params.cid) {
+                    res.send(category);
+                }
+            });  
+        }
+    )
+});
+
+// @route DELETE /api/users/:uid/category/:cid
+// @description delete category <cid>
+// @access PUBLIC (to make into only user)
+router.delete('/:uid/category/:cid', (req, res) => {
+	User.findByIdAndUpdate(req.params.uid, {
+		$pull: {
+			categories: {
+				_id: req.params.cid
+			}
+		}
+	}).then( _ => {
+        User.findOneAndUpdate({
+                _id: req.params.uid,
+                habits: { 
+                    "$elemMatch": {
+                        category: req.params.cid 
+                    }
+                }
+            },
+            {
+                $set: {
+                    "habits.$.category": undefined
+                }
+            },
+            {
+                new: true
+            },
+            function(err, user) {
+                if (err) { res.status(500).json({error: err}); }
+                res.json({ msg: "Category removed successfully" });
+            }
+        );
+    }).catch(err => res.status(400).json({ error: err }));
+});
+
+
+////////// HABIT ROUTES //////////
+
+// @route PUT /api/users/:id/habit
 // @description add a habit to user
 // @access Public (to make user)
-router.put('/:id', async (req, res) => {
+router.put('/:id/habit', async (req, res) => {
     const user = await User.findById(req.params.id);
     const newHabit = user.habits.create(req.body);
     user.habits.push(newHabit);
@@ -62,63 +156,11 @@ router.put('/:id', async (req, res) => {
     else { res.status(400).json({ error: err }); }
 });
 
-// @route PUT /api/users/:id/events
-// @description add an event to user
-// @access Public (to make user)
-router.put('/:id/events', async (req, res) => {
-    const params = {
-        ...req.body,
-        user: req.params.id,
-    };
-    let newEvent = new Event(params);
-    newEvent.save(function(err, event) {
-        if (err) { res.status(400).json({error: err}) }
-        else { res.send(event); }
-    });
-});
-
-// @route POST /api/users/:uid/events/:eid
-// @description modify event with clean fields
-router.post('/:uid/events/:eid', (req, res) => {
-    req.body["user"] = req.params.id;
-    let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
-    const validFields = ["title", "color", "startDate", "endDate"];
-    validFields.forEach((field) => {
-        if (req.body[field]) {
-            cleanedRequest[field] = req.body[field];
-        }
-    });
-    cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
-    Event.findOneAndUpdate({
-            _id: req.params.eid,
-            user: req.params.uid,
-        },
-        {
-            $set: cleanedRequest
-        },
-        {
-            new: true
-        },
-        function(err, event) {
-            if (err) { res.status(500).json({error: err}); }
-            res.send(event);  
-        }
-    )
-});
-
-// @route DELETE /api/users/:uid/event/:eid
-// @description delete event <eid>
-// @access PUBLIC (to make into only user)
-router.delete('/:uid/events/:eid', (req, res) => {
-	Event.findByIdAndDelete(req.params.eid).then( _ => res.json({ msg: 'Event removed successfully' }))
-		.catch(err => res.status(400).json({ error: err }));
-});
-
 // @route POST /api/users/:uid/habit/:hid
 // @description modify user habit with clean fields
 router.post('/:uid/habit/:hid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
-    const validFields = ["title", "description", "order", "thresholds", "entryType", "color"];
+    const validFields = ["title", "description", "category", "order", "thresholds", "entryType", "color"];
     validFields.forEach((field) => {
         if (req.body[field]) {
             cleanedRequest[field] = req.body[field];
@@ -174,6 +216,62 @@ router.delete('/:uid/habit/:hid', (req, res) => {
         })
     }).catch(err => res.status(400).json({ error: err }));
 });
+
+////////// EVENT ROUTES //////////
+
+// @route PUT /api/users/:id/events
+// @description add an event to user
+// @access Public (to make user)
+router.put('/:id/events', async (req, res) => {
+    const params = {
+        ...req.body,
+        user: req.params.id,
+    };
+    let newEvent = new Event(params);
+    newEvent.save(function(err, event) {
+        if (err) { res.status(400).json({error: err}) }
+        else { res.send(event); }
+    });
+});
+
+// @route POST /api/users/:uid/events/:eid
+// @description modify event with clean fields
+router.post('/:uid/events/:eid', (req, res) => {
+    req.body["user"] = req.params.id;
+    let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
+    const validFields = ["title", "color", "startDate", "endDate"];
+    validFields.forEach((field) => {
+        if (req.body[field]) {
+            cleanedRequest[field] = req.body[field];
+        }
+    });
+    cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
+    Event.findOneAndUpdate({
+            _id: req.params.eid,
+            user: req.params.uid,
+        },
+        {
+            $set: cleanedRequest
+        },
+        {
+            new: true
+        },
+        function(err, event) {
+            if (err) { res.status(500).json({error: err}); }
+            res.send(event);  
+        }
+    )
+});
+
+// @route DELETE /api/users/:uid/event/:eid
+// @description delete event <eid>
+// @access PUBLIC (to make into only user)
+router.delete('/:uid/events/:eid', (req, res) => {
+	Event.findByIdAndDelete(req.params.eid).then( _ => res.json({ msg: 'Event removed successfully' }))
+		.catch(err => res.status(400).json({ error: err }));
+});
+
+////////// ENTRY ROUTES //////////
 
 // post habit entry
 router.post('/:uid/habit/:hid/entries', (req, res) => {

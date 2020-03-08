@@ -50,6 +50,7 @@ class HabitEditDialog extends Component {
             selectedHabit: undefined,
             editedTitle: "Short display title of habit",
             editedDescription: "How do I know if I completed this habit?",
+            editedCategory: undefined,
             editedColor: "Habit color",
             editedThresholds: DEFAULT_THRESHOLDS
         }
@@ -63,6 +64,7 @@ class HabitEditDialog extends Component {
                     selectedHabit: nextProps.selectedHabitForEdit,
                     editedTitle: nextProps.habit.title,
                     editedDescription: nextProps.habit.description,
+                    editedCategory: nextProps.habit.category,
                     editedColor: nextProps.habit.color,
                     editedThresholds: nextProps.habit.thresholds
                 };
@@ -72,6 +74,7 @@ class HabitEditDialog extends Component {
                     selectedHabit: undefined,
                     editedTitle: "Short display title of habit",
                     editedDescription: "How do I know if I completed this habit?",
+                    editedCategory: undefined,
                     editedColor: "Habit color",
                     editedThresholds: DEFAULT_THRESHOLDS
                 }
@@ -86,6 +89,7 @@ class HabitEditDialog extends Component {
             ...this.state,
             editedTitle: this.props.habit.title,
             editedDescription: this.props.habit.description,
+            editedCategory: this.props.habit.category,
             editedColor: this.props.habit.color,
             editedThresholds: this.props.habit.thresholds
         })
@@ -118,6 +122,13 @@ class HabitEditDialog extends Component {
         this.setState({
             ...this.state,
             editedThresholds: newThresholds
+        })
+    }
+
+    modifyCategory(category) {
+        this.setState({
+            ...this.state,
+            editedCategory: category,
         })
     }
 
@@ -154,6 +165,7 @@ class HabitEditDialog extends Component {
                 this.props.selectedHabitForEdit,
                 this.state.editedTitle,
                 this.state.editedDescription,
+                this.state.editedCategory,
                 this.state.editedColor,
                 this.state.editedThresholds,
             );
@@ -162,6 +174,7 @@ class HabitEditDialog extends Component {
             this.props.createHabit(
                 this.state.editedTitle,
                 this.state.editedDescription,
+                this.state.editedCategory,
                 this.state.editedColor,
                 this.state.editedThresholds,
             )
@@ -211,6 +224,24 @@ class HabitEditDialog extends Component {
                             value={this.state.editedDescription}
                             onChange={(e) => this.modifyDescription(e.target.value)}
                             />
+                    </FormGroup>
+                    <FormGroup label="Edit category">
+                        <HTMLSelect value={this.state.editedCategory}
+                                    onChange={(e) => this.modifyCategory(e.target.value)}
+                                    options={
+                                        [{
+                                            key: -1,
+                                            label: "No category",
+                                            value: undefined,
+                                        }].concat(this.props.categoryOrder.map((cid, index) => {
+                                            return {
+                                                key: index,
+                                                label: this.props.categories[cid].title,
+                                                value: cid
+                                            };
+                                        }))
+                                    }>
+                        </HTMLSelect>
                     </FormGroup>
                     <FormGroup
                         label="Edit Habit Color">
@@ -297,6 +328,8 @@ function mapStateToProps(state) {
         habit = state.habits[state.selectedHabitForEdit];
     }
     return {
+        categoryOrder: state.categoryOrder,
+        categories: state.categories,
         selectedHabitForEdit: state.selectedHabitForEdit,
         showDialog: state.showHabitEditDialog,
         habit: habit,

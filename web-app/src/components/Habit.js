@@ -4,12 +4,7 @@ import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button } from "@blueprintjs/core";
 
-class Habit extends Component { 
-    
-    constructor(props) {
-        super(props);
-    }
-
+class Habit extends Component {
     toggleEditMode() {
         this.props.selectHabitForEdit(this.props.habit, true);
     }
@@ -82,6 +77,8 @@ class Habit extends Component {
     render() {
         const color = this.props.color || "";
 
+        let categoryDisplay = this.props.category ? this.props.category.title : "no category";
+
         return (
             <div className={"ctr habit"}>
                 <div className={"ctr-header habit"}>
@@ -90,6 +87,7 @@ class Habit extends Component {
                     </div>
                     <div className="habit-description" style={{"color": color}}>
                         <h6>{ this.props.description || "" }</h6>
+                        <h6>{ categoryDisplay }</h6>
                         <Button 
                             onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
                             icon={"edit"} />
@@ -125,6 +123,7 @@ class Habit extends Component {
 function mapStateToProps(state, ownProps) {
     return {
         days: state["days"],
+        category: state["habits"][ownProps.habit]["category"] ? state["categories"][state["habits"][ownProps.habit]["category"]] : undefined,
         title: state["habits"][ownProps.habit]["title"],
         description: state["habits"][ownProps.habit]["description"],
         color: state["habits"][ownProps.habit]["color"],

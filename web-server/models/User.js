@@ -24,7 +24,8 @@ const UserSchema = new mongoose.Schema({
 		title: {
 			type: String,
 			required: true
-		},
+        },
+        category: {type: mongoose.Schema.Types.ObjectId},
 		order: Number,
 		entry_type: String,
         description: String,

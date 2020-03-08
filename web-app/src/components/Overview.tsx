@@ -4,6 +4,7 @@ import Header from './Header.js';
 import EntryEditContainer from './EntryEditContainer.js';
 import HabitEditDialog from './HabitEditDialog';
 import EventEditDialog from './EventEditDialog';
+import CategoryEditDialog from './CategoryEditDialog';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
@@ -63,6 +64,7 @@ class Overview extends React.Component<Props>{
                 <div>
                     <HabitEditDialog />
                     <EventEditDialog />
+                    <CategoryEditDialog />
                     <div>
                         <div className="layout-header">
                             <Header />
