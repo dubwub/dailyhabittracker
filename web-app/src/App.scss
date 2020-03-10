@@ -24,14 +24,13 @@ code {
 }
 
 .ctr-header {
-    width: 20%;
-    display: inline-block;
-    float: left;   
+    // width: 20%;
+    width: 250px;
+    float: left;
 }
 
 .ctr-contents {
     height: 100px;
-    width: 80%;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -64,7 +63,7 @@ code {
     height: 150px;
 }
 
-.header-top {
+.header-date-labels {
     height: 50px;
 }
 
@@ -90,7 +89,7 @@ code {
     left: 0;
     width: 100%;
     border: 2px solid red;
-    overflow: auto;
+    overflow: hidden;
     // TODO: make this work for other browsers
     // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
     &.footer-visible {

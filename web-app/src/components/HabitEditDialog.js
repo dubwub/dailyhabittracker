@@ -51,6 +51,7 @@ class HabitEditDialog extends Component {
             editedTitle: "Short display title of habit",
             editedDescription: "How do I know if I completed this habit?",
             editedCategory: undefined,
+            editedOrder: -1,
             editedColor: "Habit color",
             editedThresholds: DEFAULT_THRESHOLDS
         }
@@ -65,6 +66,7 @@ class HabitEditDialog extends Component {
                     editedTitle: nextProps.habit.title,
                     editedDescription: nextProps.habit.description,
                     editedCategory: nextProps.habit.category,
+                    editedOrder: nextProps.habit.order,
                     editedColor: nextProps.habit.color,
                     editedThresholds: nextProps.habit.thresholds
                 };
@@ -75,6 +77,7 @@ class HabitEditDialog extends Component {
                     editedTitle: "Short display title of habit",
                     editedDescription: "How do I know if I completed this habit?",
                     editedCategory: undefined,
+                    editedOrder: -1,
                     editedColor: "Habit color",
                     editedThresholds: DEFAULT_THRESHOLDS
                 }
@@ -90,6 +93,7 @@ class HabitEditDialog extends Component {
             editedTitle: this.props.habit.title,
             editedDescription: this.props.habit.description,
             editedCategory: this.props.habit.category,
+            editedOrder: this.props.habit.order,
             editedColor: this.props.habit.color,
             editedThresholds: this.props.habit.thresholds
         })
@@ -132,6 +136,13 @@ class HabitEditDialog extends Component {
         })
     }
 
+    modifyOrder(order) {
+        this.setState({
+            ...this.state,
+            editedOrder: order,
+        })
+    }
+
     modifyTitle(title) {
         this.setState({
             ...this.state,
@@ -166,6 +177,7 @@ class HabitEditDialog extends Component {
                 this.state.editedTitle,
                 this.state.editedDescription,
                 this.state.editedCategory,
+                this.state.editedOrder,
                 this.state.editedColor,
                 this.state.editedThresholds,
             );
@@ -175,6 +187,7 @@ class HabitEditDialog extends Component {
                 this.state.editedTitle,
                 this.state.editedDescription,
                 this.state.editedCategory,
+                this.state.editedOrder,
                 this.state.editedColor,
                 this.state.editedThresholds,
             )
@@ -242,6 +255,10 @@ class HabitEditDialog extends Component {
                                         }))
                                     }>
                         </HTMLSelect>
+                    </FormGroup>
+                    <FormGroup label="Edit order">
+                        <NumericInput value={this.state.editedOrder}
+                                      onValueChange={(value) => this.modifyOrder(value)}/>
                     </FormGroup>
                     <FormGroup
                         label="Edit Habit Color">

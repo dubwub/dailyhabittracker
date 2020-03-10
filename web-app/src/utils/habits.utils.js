@@ -1,5 +1,6 @@
 export function syncScroll(e) {
     const ctr_contents = document.getElementsByClassName("ctr-contents")
+    console.log(ctr_contents);
 
     let element = e.target;
     let scroll = element.scrollLeft;

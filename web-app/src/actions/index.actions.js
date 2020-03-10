@@ -161,13 +161,13 @@ export function selectHabitForEdit(habit, showDialog) {
     })
 }
 
-export function createHabit(title, description, category, color, thresholds) {
+export function createHabit(title, description, category, order, color, thresholds) {
     const data = {
         title: title,
         description: description,
         category: category,
         color: color, 
-        order: 1,
+        order: order,
         entry_type: "integer",
         entries: [],
         thresholds: thresholds
@@ -182,11 +182,12 @@ export function createHabit(title, description, category, color, thresholds) {
     }
 }
 
-export function updateHabit(habit, title, description, category, color, thresholds) {
+export function updateHabit(habit, title, description, category, order, color, thresholds) {
     const data = {
         title: title,
         description: description,
         category: category,
+        order: order,
         color: color,
         entry_type: "integer",
         thresholds: thresholds

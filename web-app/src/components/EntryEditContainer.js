@@ -51,7 +51,13 @@ class EntryEditContainer extends Component {
     render() {
         let displayText = "";
         if (this.props.selectedDate) {
-            displayText = "Selected day: " + this.props.selectedDate.format("MM/DD") + ", habit: " + this.props.selectedHabit;
+            displayText = "Selected day: " + this.props.selectedDate.format("MM/DD");
+        }
+        if (this.props.selectedHabit !== "daily-retro") {
+            const habit = this.props.habits[this.props.selectedHabit];
+            displayText += ", habit-title: " + habit.title + ", habit-description: " + habit.description;
+        } else {
+            displayText += " (daily-retro)";
         }
 
         return (
@@ -90,6 +96,7 @@ function mapStateToProps(state) {
     return {
         days: state.days,
         entries: state.entries,
+        habits: state.habits,
         selectedDate: state.dateOfSelectedEntry,
         selectedHabit: state.habitOfSelectedEntry
     };

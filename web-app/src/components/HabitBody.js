@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { syncScroll } from '../utils/habits.utils';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button } from "@blueprintjs/core";
+import { Button, Icon } from "@blueprintjs/core";
 
-class Habit extends Component {
+class HabitBody extends Component {
     toggleEditMode() {
         this.props.selectHabitForEdit(this.props.habit, true);
     }
@@ -78,39 +78,34 @@ class Habit extends Component {
         const color = this.props.color || "";
 
         return (
-            <div className={"ctr habit"}>
-                <div className={"ctr-header habit"}>
-                    <div className="habit-title" style={{"color": color}}>
-                        <h5>{ this.props.title }</h5>
-                    </div>
-                    <div className="habit-description" style={{"color": color}}>
-                        <h6>{ this.props.description || "" }</h6>
-                        <Button 
-                            onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
-                            icon={"edit"} />
-                        <Button
-                            onClick={() => this.props.deleteHabit(this.props.habit)}
-                            icon={"delete"} />
-                    </div>
-                </div>
-                <div className={"ctr-contents habit"} onScroll={syncScroll}>
-                    { 
-                        this.props.days.map((day) => {
-                            const day_fmt = day.format("MM/DD/YYYY");
-                            let value = this.props.entries[day_fmt]["value"];
-                            return (
-                                <div className={"ctr-entry habit"} key={day_fmt}>
-                                    <Button    
-                                        className={"bp3-minimal bp3-outlined habit-entry"}
-                                        icon={this.habitEntryStyle(value).icon}
-                                        style={{"backgroundColor": this.habitEntryStyle(value).color}}
-                                        onClick={() => this.props.selectEntry(day, this.props.habit)}>
-                                    </Button>
-                                </div>
+            <div className={"ctr-contents habit"} onScroll={syncScroll}>
+                { 
+                    this.props.days.map((day) => {
+                        const day_fmt = day.format("MM/DD/YYYY");
+                        let value = this.props.entries[day_fmt]["value"];
+
+                        let helperIcons = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
+                            (
+                                <Icon icon="annotation" 
+                                      style={{position: "absolute", bottom: 10, right: 10}}
+                                />
+                            ) : (
+                                <span />    
                             )
-                        })
-                    }
-                </div>
+
+                        return (
+                            <div className={"ctr-entry habit"} key={day_fmt}>
+                                <Button    
+                                    className={"bp3-minimal bp3-outlined habit-entry"}
+                                    icon={this.habitEntryStyle(value).icon}
+                                    style={{"backgroundColor": this.habitEntryStyle(value).color, position: "relative"}}
+                                    onClick={() => this.props.selectEntry(day, this.props.habit)}>
+                                    { helperIcons }
+                                </Button>
+                            </div>
+                        )
+                    })
+                }
             </div>
         )
     }
@@ -121,12 +116,9 @@ function mapStateToProps(state, ownProps) {
     return {
         days: state["days"],
         category: state["habits"][ownProps.habit]["category"] ? state["categories"][state["habits"][ownProps.habit]["category"]] : undefined,
-        title: state["habits"][ownProps.habit]["title"],
-        description: state["habits"][ownProps.habit]["description"],
-        color: state["habits"][ownProps.habit]["color"],
         thresholds: state["habits"][ownProps.habit]["thresholds"],
         entries: state["entries"][ownProps.habit]
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Habit);
+export default connect(mapStateToProps, mapDispatchToProps)(HabitBody);

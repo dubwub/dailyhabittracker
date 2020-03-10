@@ -1,7 +1,8 @@
 import * as React from 'react';
-import Habit from './Habit.js';
-import Header from './Header.js';
-import EntryEditContainer from './EntryEditContainer.js';
+import Header from './Header';
+import HabitHeader from './HabitHeader';
+import HabitBody from './HabitBody';
+import EntryEditContainer from './EntryEditContainer';
 import HabitEditDialog from './HabitEditDialog';
 import EventEditDialog from './EventEditDialog';
 import CategoryEditDialog from './CategoryEditDialog';
@@ -10,6 +11,24 @@ import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button, Icon } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
+
+// below are helper functions used for display
+
+function _generateSortedHabitOrder(habitOrder: any, habits: any) {
+    habitOrder.sort((h1: any, h2: any) => {
+        if (habits[h1]["order"] !== habits[h2]["order"]) { return habits[h1]["order"] < habits[h2]["order"]; }
+        else { return habits[h1]["title"].localeCompare(habits[h2]["title"]); }
+    });
+    return habitOrder;
+}
+
+function _generateSortedCategoryOrder(categoryOrder: any, categories: any) {
+    categoryOrder.sort((cat1: any, cat2: any) => {
+        if (categories[cat1]["order"] !== categories[cat2]["order"]) { return categories[cat1]["order"] - categories[cat2]["order"]; }
+        else { return categories[cat1]["title"].localeCompare(categories[cat2]["title"]); }
+    });
+    return categoryOrder;
+}
 
 class Overview extends React.Component<Props>{    
     constructor(props: Props) {
@@ -71,21 +90,31 @@ class Overview extends React.Component<Props>{
                         </div>
                         <div className={"layout-body " + footerStatus}>
                             <table>
-                                    {
-                                        this.props.enrichedCategories.map((category: any, index: number) => {
-                                            let categoryHeaderIcon = category.icon ? category.icon : "help";
-                                            return (
-                                                <tbody key={index}>
-                                                    <tr><th rowSpan={category.habits.length + 1} scope={"rowgroup"}>
-                                                        <Icon
-                                                            style={{"width": 20, "height": 100*(category.habits.length), "backgroundColor": category.color}}
-                                                            icon={categoryHeaderIcon} />
-                                                    </th></tr>
-                                                    {category.habits.map((habit: any, index: number) => <tr key={index}><td><Habit habit={habit._id} /></td></tr>)}
-                                                </tbody>
-                                            )
-                                        })
-                                    }
+                                {
+                                    this.props.enrichedCategories.map((category: any, index: number) => {
+                                        let categoryHeaderIcon = category.icon ? category.icon : "help";
+                                        return (
+                                            <tbody key={index}>
+                                                <tr><th rowSpan={category.habits.length + 1} scope={"rowgroup"}>
+                                                    <Icon
+                                                        style={{width: 20, height: 100*(category.habits.length), "backgroundColor": category.color}}
+                                                        icon={categoryHeaderIcon} />
+                                                </th></tr>
+
+                                                {category.habits.map((habit: any, index: number) => 
+                                                    <tr key={index}>
+                                                        <td style={{minWidth: 230, maxHeight: 100}}>
+                                                            <HabitHeader habit={habit._id} />
+                                                        </td>
+                                                        {/* needs to be able to handle resizing windows */}
+                                                        <td style={{maxWidth: window.innerWidth - 250}}>
+                                                            <HabitBody habit={habit._id} />
+                                                        </td>
+                                                    </tr>)}
+                                            </tbody>
+                                        )
+                                    })
+                                }
                             </table>
                             <Button icon="add"
                                     onClick={() => this.props.selectHabitForEdit(undefined, true)} > Create new habit </Button>
@@ -101,28 +130,29 @@ class Overview extends React.Component<Props>{
 }
 
 function mapStateToProps(state: any) {
+    const habitOrder: any = _generateSortedHabitOrder(state.habitOrder, state.habits);
+    const categoryOrder: any = _generateSortedCategoryOrder(state.categoryOrder, state.categories);
     // TODO: optimize this?
-    let enrichedCategories = state.categoryOrder.map((category: any) => {
+    let enrichedCategories = categoryOrder.map((category: any) => {
         let output = {
             ...state.categories[category],
             habits: [],
         }
-        for (let i = 0; i < state.habitOrder.length; i++) {
-            if (state.habits[state.habitOrder[i]]["category"] === category) {
-                output.habits.push(state.habits[state.habitOrder[i]]);
+        for (let i = 0; i < habitOrder.length; i++) {
+            if (state.habits[habitOrder[i]]["category"] === category) {
+                output.habits.push(state.habits[habitOrder[i]]);
             }
         }
         return output;
     })
     let uncategorizedHabits = [];
-    for (let i = 0; i < state.habitOrder.length; i++) {
-        if (!state.habits[state.habitOrder[i]]["category"]) {
-            uncategorizedHabits.push(state.habits[state.habitOrder[i]]);
+    for (let i = 0; i < habitOrder.length; i++) {
+        if (!state.habits[habitOrder[i]]["category"]) {
+            uncategorizedHabits.push(state.habits[habitOrder[i]]);
         }
     }
     enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits }]);
     enrichedCategories = enrichedCategories.filter((category: any) => (category.habits.length > 0));
-    console.log(enrichedCategories);
     return {
         ...state,
         enrichedCategories: enrichedCategories

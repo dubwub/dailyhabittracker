@@ -1,10 +1,38 @@
 import React, { Component } from 'react';
 import { syncScroll } from '../utils/habits.utils';
 import { connect } from 'react-redux';
-import { Button, Tag } from '@blueprintjs/core';
+import { Button, Colors, Icon, Tag } from '@blueprintjs/core';
 
 import * as mapDispatchToProps from '../actions/index.actions.js';
 import * as moment from "moment";
+
+const styles = [
+    {
+        "backgroundColor": Colors.RED1,
+        "color": Colors.WHITE,
+        "position": "relative",
+    },
+    {
+        "backgroundColor": Colors.RED3,
+        "color": Colors.WHITE,
+        "position": "relative",
+    },
+    {
+        "backgroundColor": Colors.ORANGE3,
+        "color": Colors.BLACK,
+        "position": "relative",
+    },
+    {
+        "backgroundColor": Colors.GREEN3,
+        "color": Colors.BLACK,
+        "position": "relative",
+    },
+    {
+        "backgroundColor": Colors.GREEN1,
+        "color": Colors.WHITE,
+        "position": "relative",
+    }
+];
 
 class DateLabel extends Component {
     render() {
@@ -23,10 +51,24 @@ class DateLabel extends Component {
 }
 
 class DailyRetro extends Component {
+
+    getStyleFromValue() {
+        let minValue = 0;
+        for (let i = 0; i < styles.length; i++) {
+            minValue += 2; // TODO: magic number
+            if (this.props.entry && this.props.entry.value && this.props.entry.value <= minValue) {
+                return styles[i];
+            }
+        }
+        return styles[0];
+    }
+
     render() {
         return (
-            <div className="ctr-entry header-retro">
-                { this.props.value }
+            <div className="ctr-entry header-retro" style={this.getStyleFromValue()}>
+                { this.props.entry && this.props.entry.value ? this.props.entry.value : -1 }
+                { this.props.entry && this.props.entry.note ?
+                    (<Icon icon="annotation" style={{position: "absolute", right: 0}} />) : (<span />) }
             </div>
         )
     }
@@ -82,14 +124,14 @@ class Header extends Component {
             <div className="ctr header">
                 <div className="ctr-header header">
                     <Button icon="add" onClick={() => this.props.selectEventForEdit(undefined, true)}>Add New Event</Button>
-                    <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Categories</Button>
+                    <br/> <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Categories</Button>
                 </div>
-                <div className="ctr-contents header-top" onScroll={syncScroll}>
+                <div className="ctr-contents header-date-labels" onScroll={syncScroll}>
                     {
                         this.props.days.map((day, index) => (
                                 <div onClick={() => this.props.selectEntry(day, "daily-retro")} key={index}>
                                     <DateLabel dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} day={day} />
-                                    <DailyRetro dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} value={this.props.entries[day.format("MM/DD/YYYY")]["value"] || -1} />
+                                    <DailyRetro dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} entry={this.props.entries[day.format("MM/DD/YYYY")]} />
                                 </div>    
                             )
                         )
