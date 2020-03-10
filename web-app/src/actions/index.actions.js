@@ -191,7 +191,7 @@ export function updateHabit(habit, title, description, category, color, threshol
         entry_type: "integer",
         thresholds: thresholds
     };
-    
+
     return async function(dispatch) {
         let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/habit/' + habit, data);
         dispatch({

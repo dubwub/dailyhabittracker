@@ -27,6 +27,7 @@ export interface Props {
     user: string
     dayOfSelectedEntry: moment.Moment
     habitOfSelectedEntry: String
+    enrichedCategories: any
 
     // functions from index.actions
     loadUser: any

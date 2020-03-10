@@ -80,7 +80,7 @@ router.post('/:uid/category/:cid', (req, res) => {
 
     User.findOneAndUpdate({
             _id: req.params.uid,
-            categories: { 
+            categories  : { 
                 "$elemMatch": {
                     _id: req.params.cid 
                 }

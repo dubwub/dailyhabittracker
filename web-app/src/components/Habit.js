@@ -77,8 +77,6 @@ class Habit extends Component {
     render() {
         const color = this.props.color || "";
 
-        let categoryDisplay = this.props.category ? this.props.category.title : "no category";
-
         return (
             <div className={"ctr habit"}>
                 <div className={"ctr-header habit"}>
@@ -87,7 +85,6 @@ class Habit extends Component {
                     </div>
                     <div className="habit-description" style={{"color": color}}>
                         <h6>{ this.props.description || "" }</h6>
-                        <h6>{ categoryDisplay }</h6>
                         <Button 
                             onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
                             icon={"edit"} />

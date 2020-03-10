@@ -39,25 +39,28 @@ export default function(state = INITIAL_STATE, action) {
     let habit; // used below for update_note/entry
     
     switch (action.type) {
-        case "SELECT_NEW_ENTRY":
+        case "SELECT_NEW_ENTRY": {
             return {
                 ...state,
                 dateOfSelectedEntry: action.payload.dateOfSelectedEntry,
                 habitOfSelectedEntry: action.payload.habitOfSelectedEntry
             };
-        case "SELECT_NEW_HABIT":
+        }
+        case "SELECT_NEW_HABIT": {
             return {
                 ...state,
                 selectedHabitForEdit: action.payload.habit,
                 showHabitEditDialog: action.payload.showHabitEditDialog,
             };
-        case "SELECT_NEW_EVENT":
+        }
+        case "SELECT_NEW_EVENT": {
             return {
                 ...state,
                 selectedEventForEdit: action.payload.event,
                 showEventEditDialog: action.payload.showEventEditDialog,
             }
-        case "LOAD_USER":
+        }
+        case "LOAD_USER": {
             return {
                 ...state,
                 habitOrder: action.payload.habitOrder,
@@ -68,7 +71,8 @@ export default function(state = INITIAL_STATE, action) {
                 user: action.payload.user,
                 events: action.payload.events,
             };
-        case "CREATE_HABIT":
+        }
+        case "CREATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
             state["entries"][action.payload._id] = {};
 
@@ -87,19 +91,22 @@ export default function(state = INITIAL_STATE, action) {
                 habits: state["habits"],
                 entries: state["entries"]
             };
-        case "CREATE_CATEGORY":
-            state["categories"][action.payload._id] = action.payload;            
-
+        }
+        case "CREATE_CATEGORY": {
+            let newCategories = Object.assign({}, state["categories"]);
+            newCategories[action.payload._id] = action.payload;            
             return {
                 ...state,
-                categoryOrder: state.habitOrder.concat([action.payload._id]),
-                categories: state["categories"],
+                categoryOrder: state.categoryOrder.concat([action.payload._id]),
+                categories: newCategories,
             };
-        case "CREATE_EVENT":
+        }
+        case "CREATE_EVENT": {
             return {
                 ...state,
                 events: state.events.concat([action.payload]),
             };
+        }
         case "UPDATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
             return {
@@ -132,14 +139,15 @@ export default function(state = INITIAL_STATE, action) {
                 events: state.events.filter((event) => (event._id !== action.payload))
             };
         }
-        case "DELETE_HABIT":
+        case "DELETE_HABIT": {
             delete state["habits"][action.payload];
             return {
                 ...state,
                 habitOrder: state["habitOrder"].filter((entry) => entry !== action.payload),
                 habits: state["habits"]
             };
-        case "DELETE_CATEGORY":
+        }
+        case "DELETE_CATEGORY": {
             delete state["categories"][action.payload];
 
             for (let i = 0; i < state["habitOrder"].length; i++) {
@@ -153,6 +161,7 @@ export default function(state = INITIAL_STATE, action) {
                 categoryOrder: state["categoryOrder"].filter((category) => category !== action.payload),
                 habits: state["habits"]
             };
+        }
         case "UPDATE_ENTRY": {
             habit = action.payload.habit || "daily-retro";
             let new_habit_entries = Object.assign({}, state["entries"][habit]);

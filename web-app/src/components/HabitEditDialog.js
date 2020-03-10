@@ -327,6 +327,7 @@ function mapStateToProps(state) {
     if (state.selectedHabitForEdit) {
         habit = state.habits[state.selectedHabitForEdit];
     }
+
     return {
         categoryOrder: state.categoryOrder,
         categories: state.categories,

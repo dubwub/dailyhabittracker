@@ -8,7 +8,7 @@ import CategoryEditDialog from './CategoryEditDialog';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button } from "@blueprintjs/core";
+import { Button, Icon } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 
 class Overview extends React.Component<Props>{    
@@ -70,7 +70,23 @@ class Overview extends React.Component<Props>{
                             <Header />
                         </div>
                         <div className={"layout-body " + footerStatus}>
-                            {this.props.habitOrder.map((habit) => <Habit key={habit} habit={habit} />)}
+                            <table>
+                                    {
+                                        this.props.enrichedCategories.map((category: any, index: number) => {
+                                            let categoryHeaderIcon = category.icon ? category.icon : "help";
+                                            return (
+                                                <tbody key={index}>
+                                                    <tr><th rowSpan={category.habits.length + 1} scope={"rowgroup"}>
+                                                        <Icon
+                                                            style={{"width": 20, "height": 100*(category.habits.length), "backgroundColor": category.color}}
+                                                            icon={categoryHeaderIcon} />
+                                                    </th></tr>
+                                                    {category.habits.map((habit: any, index: number) => <tr key={index}><td><Habit habit={habit._id} /></td></tr>)}
+                                                </tbody>
+                                            )
+                                        })
+                                    }
+                            </table>
                             <Button icon="add"
                                     onClick={() => this.props.selectHabitForEdit(undefined, true)} > Create new habit </Button>
                         </div>
@@ -85,7 +101,32 @@ class Overview extends React.Component<Props>{
 }
 
 function mapStateToProps(state: any) {
-    return state; 
+    // TODO: optimize this?
+    let enrichedCategories = state.categoryOrder.map((category: any) => {
+        let output = {
+            ...state.categories[category],
+            habits: [],
+        }
+        for (let i = 0; i < state.habitOrder.length; i++) {
+            if (state.habits[state.habitOrder[i]]["category"] === category) {
+                output.habits.push(state.habits[state.habitOrder[i]]);
+            }
+        }
+        return output;
+    })
+    let uncategorizedHabits = [];
+    for (let i = 0; i < state.habitOrder.length; i++) {
+        if (!state.habits[state.habitOrder[i]]["category"]) {
+            uncategorizedHabits.push(state.habits[state.habitOrder[i]]);
+        }
+    }
+    enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits }]);
+    enrichedCategories = enrichedCategories.filter((category: any) => (category.habits.length > 0));
+    console.log(enrichedCategories);
+    return {
+        ...state,
+        enrichedCategories: enrichedCategories
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Overview);
