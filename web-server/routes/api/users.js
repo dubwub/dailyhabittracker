@@ -143,6 +143,32 @@ router.delete('/:uid/category/:cid', (req, res) => {
 
 ////////// HABIT ROUTES //////////
 
+// get habit overview
+// router.get('/:uid/habit/:hid', async (req, res) => {
+//     Entry.find({
+//         user: req.params.uid,
+//         habit: req.params.hid,
+//     }, function(err, entries) {
+//         if (err) {
+//             res.status(400).json({ error: 'Error loading entries' });
+//         } else {
+//             output['entries'] = entries;
+
+//             // TODO: can I do this without nesting? probably with async, right?
+//             Event.find({
+//                 user: req.params.id
+//             }, function(err, events) {
+//                 if (err) {
+//                     res.status(400).json({ error: 'Error loading events' });
+//                 } else {
+//                     output['events'] = events;
+//                     res.send(output);
+//                 }
+//             })
+//         }
+//     });
+// });
+
 // @route PUT /api/users/:id/habit
 // @description add a habit to user
 // @access Public (to make user)

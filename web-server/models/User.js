@@ -38,6 +38,13 @@ const UserSchema = new mongoose.Schema({
                 minValue: Number,
                 maxValue: Number
             }
+        ],
+        tags: [
+            {
+                icon: String,
+                color: String,
+                title: String
+            }
         ]
     }]
 });

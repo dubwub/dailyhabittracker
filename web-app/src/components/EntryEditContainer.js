@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, NumericInput, TextArea } from '@blueprintjs/core';
+import { getThresholdFromValue } from '../utils/habits.utils';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
@@ -60,6 +61,17 @@ class EntryEditContainer extends Component {
             displayText += " (daily-retro)";
         }
 
+        let quickAddButtons = [];
+        let thresholds = this.props.habits[this.props.selectedHabit].thresholds;
+        for (let i = 1; i <= 5; i++) {
+            quickAddButtons.push((
+                <Button key={i}
+                        onClick={() => this.onValueChange(i, undefined)}
+                        style={{"backgroundColor": getThresholdFromValue(thresholds, i).color}}
+                        icon={getThresholdFromValue(thresholds, i).icon}>{i}</Button>
+            ))
+        }
+
         return (
             <div className="ctr retro">
                 <div className="retro-top">
@@ -79,6 +91,8 @@ class EntryEditContainer extends Component {
                             value={this.state.editedValue}
                             onValueChange={(value) => this.onValueChange(value, undefined)}
                         />
+                        <b>Quick value change dial: </b>
+                        { quickAddButtons }
                     </div>
                 </div>
                 <div className="retro-bottom">

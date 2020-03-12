@@ -75,6 +75,15 @@ class DailyRetro extends Component {
 }
 
 class Events extends Component {
+    onClick(e, eventId) {
+        // TODO: this is jank as all hell, there may be a better way to do this
+        console.log("Responding to click event with nodeName: " + e.target.nodeName);
+
+        if (["path", "svg"].indexOf(e.target.nodeName) === -1) {
+            this.props.selectEventForEdit(eventId, true);
+        } 
+    }
+
     renderEvent(index, event) {
         // for display purposes, don't display parts of events out of range
         let truncStartDate = moment.max(event.startDate, this.props.startDate);
@@ -86,23 +95,22 @@ class Events extends Component {
         
         return (
             // TODO: deleting an event brings up the dialog
-            <div key={index} style={{"width": "100%", "height": "30px"}}>
-                <div style={{"display": "inline-block", "width": timeBeforeToday*100, "height": 20}}>
-                </div>
+            <div key={index} style={{"width": "100%", "height": "100px", "whiteSpace": "nowrap", "overflowX": "auto"}}>
+                <div style={{"display": "inline-block", "width": timeBeforeToday*100, "height": 20}} />
                 <Tag 
                     interactive={true}
                     large={true}
                     style={{
                         "width": (durationOfEvent+1)*100,
                         "backgroundColor": event.color,
+                        "display": "inline-block",
                     }}
                     onRemove={() => this.props.deleteEvent(event._id)}
-                    onClick={() => this.props.selectEventForEdit(event._id, true)}
+                    onClick={(e) => this.onClick(e, event._id)}
                 >
                     {event.title}
                 </Tag>
-                <div style={{"display": "inline-block", "width": timeAfterEnding*100, "height": 20}}>
-                </div>
+                <div style={{"display": "inline-block", "width": timeAfterEnding*100, "height": 20}} />
             </div>
         );
     }

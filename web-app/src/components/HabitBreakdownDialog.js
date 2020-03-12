@@ -35,7 +35,6 @@ class HabitBreakdownDialog extends Component {
     }
 
     recentEntries() {
-        // console.log(this.props.entries);
         let recentEntries = [];
         let maxReturnSize = 5; 
         if (this.props.entries) {
