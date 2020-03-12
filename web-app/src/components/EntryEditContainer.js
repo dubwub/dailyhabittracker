@@ -51,25 +51,25 @@ class EntryEditContainer extends Component {
 
     render() {
         let displayText = "";
+        let quickAddButtons = [];
         if (this.props.selectedDate) {
             displayText = "Selected day: " + this.props.selectedDate.format("MM/DD");
         }
         if (this.props.selectedHabit !== "daily-retro") {
             const habit = this.props.habits[this.props.selectedHabit];
             displayText += ", habit-title: " + habit.title + ", habit-description: " + habit.description;
+
+            let thresholds = this.props.habits[this.props.selectedHabit].thresholds;
+            for (let i = 1; i <= 5; i++) {
+                quickAddButtons.push((
+                    <Button key={i}
+                            onClick={() => this.onValueChange(i, undefined)}
+                            style={{"backgroundColor": getThresholdFromValue(thresholds, i).color}}
+                            icon={getThresholdFromValue(thresholds, i).icon}>{i}</Button>
+                ))
+            }
         } else {
             displayText += " (daily-retro)";
-        }
-
-        let quickAddButtons = [];
-        let thresholds = this.props.habits[this.props.selectedHabit].thresholds;
-        for (let i = 1; i <= 5; i++) {
-            quickAddButtons.push((
-                <Button key={i}
-                        onClick={() => this.onValueChange(i, undefined)}
-                        style={{"backgroundColor": getThresholdFromValue(thresholds, i).color}}
-                        icon={getThresholdFromValue(thresholds, i).icon}>{i}</Button>
-            ))
         }
 
         return (

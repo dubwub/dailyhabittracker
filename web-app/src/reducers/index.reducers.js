@@ -1,16 +1,4 @@
-const moment = require('moment');
-
-export function returnLastXDays(numDays) {
-    let days = []; 
-
-    for (let i = 0; i < numDays; i++) {
-        let newDate = moment().subtract(i, 'days');
-        days.push(newDate);
-    }
-
-    return days;
-}
-
+import { returnLastXDays } from "../utils/habits.utils";
 
 let INITIAL_STATE = {
     days: returnLastXDays(30), // ordered list of all days (in moment fmt) that we should be loading on the page

@@ -9,6 +9,7 @@ import EventEditDialog from './EventEditDialog';
 import CategoryEditDialog from './CategoryEditDialog';
 
 import { connect } from 'react-redux';
+import { returnLastXDays } from '../utils/habits.utils';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button, Icon } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
@@ -34,7 +35,7 @@ function _generateSortedCategoryOrder(categoryOrder: any, categories: any) {
 class Overview extends React.Component<Props>{    
     constructor(props: Props) {
         super(props);
-        this.props.loadUser(this.props.days);
+        this.props.loadUser(returnLastXDays(90));
     }
 
     /* deleteHabit(habit, pageindex) {

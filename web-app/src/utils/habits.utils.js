@@ -1,3 +1,16 @@
+const moment = require('moment');
+
+export function returnLastXDays(numDays) {
+    let days = []; 
+
+    for (let i = 0; i < numDays; i++) {
+        let newDate = moment().subtract(i, 'days');
+        days.push(newDate);
+    }
+
+    return days;
+}
+
 export function syncScroll(e) {
     const ctr_contents = document.getElementsByClassName("ctr-contents")
 

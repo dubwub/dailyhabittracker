@@ -152,19 +152,7 @@ router.delete('/:uid/category/:cid', (req, res) => {
 //         if (err) {
 //             res.status(400).json({ error: 'Error loading entries' });
 //         } else {
-//             output['entries'] = entries;
-
-//             // TODO: can I do this without nesting? probably with async, right?
-//             Event.find({
-//                 user: req.params.id
-//             }, function(err, events) {
-//                 if (err) {
-//                     res.status(400).json({ error: 'Error loading events' });
-//                 } else {
-//                     output['events'] = events;
-//                     res.send(output);
-//                 }
-//             })
+//             res.send(entries);
 //         }
 //     });
 // });
