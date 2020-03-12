@@ -1,9 +1,9 @@
 const moment = require('moment');
 
-function returnLast30Days() {
+export function returnLastXDays(numDays) {
     let days = []; 
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < numDays; i++) {
         let newDate = moment().subtract(i, 'days');
         days.push(newDate);
     }
@@ -13,7 +13,7 @@ function returnLast30Days() {
 
 
 let INITIAL_STATE = {
-    days: returnLast30Days(), // ordered list of all days (in moment fmt) that we should be loading on the page
+    days: returnLastXDays(30), // ordered list of all days (in moment fmt) that we should be loading on the page
     habitOrder: [],
     habits: {},
     categoryOrder: [],
@@ -33,6 +33,10 @@ let INITIAL_STATE = {
 
     // CategoryEditDialog
     showCategoryEditDialog: false,
+
+    // HabitBreakdownDialog
+    showHabitBreakdownDialog: false,
+    selectedHabitForBreakdown: undefined,
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -46,12 +50,19 @@ export default function(state = INITIAL_STATE, action) {
                 habitOfSelectedEntry: action.payload.habitOfSelectedEntry
             };
         }
-        case "SELECT_NEW_HABIT": {
+        case "SELECT_HABIT_FOR_EDIT": {
             return {
                 ...state,
                 selectedHabitForEdit: action.payload.habit,
                 showHabitEditDialog: action.payload.showHabitEditDialog,
             };
+        }
+        case "SELECT_HABIT_FOR_BREAKDOWN": {
+            return {
+                ...state,
+                selectedHabitForBreakdown: action.payload.habit,
+                showHabitBreakdownDialog: action.payload.showHabitBreakdownDialog,
+            }
         }
         case "SELECT_NEW_EVENT": {
             return {

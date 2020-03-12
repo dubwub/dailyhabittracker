@@ -4,6 +4,7 @@ import HabitHeader from './HabitHeader';
 import HabitBody from './HabitBody';
 import EntryEditContainer from './EntryEditContainer';
 import HabitEditDialog from './HabitEditDialog';
+import HabitBreakdownDialog from './HabitBreakdownDialog';
 import EventEditDialog from './EventEditDialog';
 import CategoryEditDialog from './CategoryEditDialog';
 
@@ -82,6 +83,7 @@ class Overview extends React.Component<Props>{
             return (
                 <div>
                     <HabitEditDialog />
+                    <HabitBreakdownDialog />
                     <EventEditDialog />
                     <CategoryEditDialog />
                     <div>

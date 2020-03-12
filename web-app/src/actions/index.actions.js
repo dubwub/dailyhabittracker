@@ -153,10 +153,20 @@ export function toggleShowCategoryEditDialog(showCategoryEditDialog) {
 
 export function selectHabitForEdit(habit, showDialog) {
     return (dispatch) => dispatch({
-        type: "SELECT_NEW_HABIT",
+        type: "SELECT_HABIT_FOR_EDIT",
         payload: {
             habit: habit,
             showHabitEditDialog: showDialog
+        }
+    })
+}
+
+export function selectHabitForBreakdown(habit, showDialog) {
+    return (dispatch) => dispatch({
+        type: "SELECT_HABIT_FOR_BREAKDOWN",
+        payload: {
+            habit: habit,
+            showHabitBreakdownDialog: showDialog
         }
     })
 }

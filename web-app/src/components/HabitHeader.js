@@ -24,6 +24,10 @@ class HabitHeader extends Component {
                     onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
                     icon={"edit"} />
                 <Button
+                    style={{position: "absolute", top: 40, right: 0}}
+                    onClick={() => this.props.selectHabitForBreakdown(this.props.habit, true)}
+                    icon={"timeline-events"} />
+                <Button
                     style={{position: "absolute", bottom: 0, right: 0}}
                     onClick={() => this.props.deleteHabit(this.props.habit)}
                     icon={"delete"} />

@@ -3,7 +3,13 @@
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 @import "~@blueprintjs/core/lib/scss/variables";
-@import "../node_modules/react-day-picker/lib/style";
+@import "~@blueprintjs/datetime/lib/css/blueprint-datetime.css";
+
+// testing for calendar
+.react-calendar-heatmap .color-scale-1 { fill: #d6e685; }
+.react-calendar-heatmap .color-scale-2 { fill: #8cc665; }
+.react-calendar-heatmap .color-scale-3 { fill: #44a340; }
+.react-calendar-heatmap .color-scale-4 { fill: #1e6823; }
 
 body {
   margin: 0;
