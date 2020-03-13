@@ -59,6 +59,7 @@ class HabitBreakdownDialog extends Component {
             let icon = "";
             let entryValue = undefined;
             let entryNote = undefined;
+            let entryTags = [];
             if (this.props.entries && this.props.entries[this.props.days[i].format("MM/DD/YYYY")] &&
                 this.props.entries[this.props.days[i].format("MM/DD/YYYY")].value) {
                 let entry = this.props.entries[this.props.days[i].format("MM/DD/YYYY")];
@@ -67,6 +68,7 @@ class HabitBreakdownDialog extends Component {
                 icon = relevantThreshold.icon;
                 entryValue = entry.value;
                 entryNote = entry.note;
+                entryTags = entry.tags;
             }
 
             let monthPadding = 0;
@@ -87,6 +89,18 @@ class HabitBreakdownDialog extends Component {
                 ))
             }
 
+            let tagIcons = [];
+            for (let i = 0; i < entryTags.length; i++) {
+                tagIcons.push((
+                    <Icon key={ this.props.days[i].format("MM/DD/YYYY") + "_tag_" + i } icon={this.props.tags[entryTags[i]].icon}
+                            style={{
+                                    backgroundColor: this.props.tags[entryTags[i]].color,
+                                    position: "absolute",
+                                    bottom: 5, left: i * 20,
+                                    }} />
+                ))
+            }
+
             entryButtons.push((
                 <Button key={this.props.days[i].format("MM/DD/YYYY")}
                         style={{
@@ -103,6 +117,7 @@ class HabitBreakdownDialog extends Component {
                     {
                         entryNote ? <Icon icon={"annotation"} /> : <span />
                     }
+                    { tagIcons }
                 </Button>
             ))
         }
@@ -153,12 +168,18 @@ function mapStateToProps(state) {
     let habit = undefined;
     let entries = undefined;
     let category = undefined;
+    let tags = {};
     if (!_.isNil(state.selectedHabitForBreakdown)) {
         habit = state.habits[state.selectedHabitForBreakdown];
         entries = state.entries[state.selectedHabitForBreakdown];
 
         if (!_.isNil(habit.category)) {
             category = state.categories[habit.category];
+        }
+
+        const rawTags = habit["tags"];
+        for (let i = 0; i < rawTags.length; i++) {
+            tags[rawTags[i]._id] = rawTags[i];
         }
     }
 
@@ -169,6 +190,7 @@ function mapStateToProps(state) {
         showDialog: state.showHabitBreakdownDialog,
         habit: habit,
         entries: entries,
+        tags: tags,
     };
 }
 

@@ -33,9 +33,9 @@ class HabitBody extends Component {
                         if (!_.isNil(this.props.entries[day_fmt]["tags"])) {
                             const tags = this.props.entries[day_fmt]["tags"];
                             for (let i = 0; i < tags.length; i++) {
-                                console.log(this.props.tags);
                                 tagIcons.push((
-                                    <Icon icon={this.props.tags[tags[i]].icon}
+                                    <Icon key={i}
+                                          icon={this.props.tags[tags[i]].icon}
                                           style={{
                                                     backgroundColor: this.props.tags[tags[i]].color,
                                                     position: "absolute",
