@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import { Button, Colors, Dialog, Card, Icon } from '@blueprintjs/core';
-// import CalendarHeatmap from 'react-calendar-heatmap';
-// import 'react-calendar-heatmap/dist/styles.css';
-import * as moment from "moment";
-
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { getThresholdFromValue, returnLastXDays } from '../utils/habits.utils.js';
+import _ from 'lodash';
+
 
 class HabitBreakdownDialog extends Component {
 
     dialogTitle() {
-        if (this.props.habit) {
+        if (!_.isNil(this.props.habit)) {
             return "Breaking down habit: " + this.props.habit.title;
         } else {
             return "User breakdown";
@@ -20,7 +18,7 @@ class HabitBreakdownDialog extends Component {
 
     entriesAsList() {
         let output = [];
-        if (this.props.entries) {
+        if (!_.isNil(this.props.entries)) {
             for (let i = 0; i < this.props.days.length; i++) {
                 const day_fmt = this.props.days[i].format("MM/DD/YYYY");
                 if (this.props.entries[day_fmt] && (this.props.entries[day_fmt].value || this.props.entries[day_fmt].note)) {
@@ -36,11 +34,10 @@ class HabitBreakdownDialog extends Component {
     }
 
     renderEntryCalendar() {
-        const entryList = this.entriesAsList();
         const firstDate = this.props.days[this.props.days.length - 1]; // top left is firstDate
 
         let thresholds = [];
-        if (this.props.habit) {
+        if (!_.isNil(this.props.habit)) {
             thresholds = this.props.habit.thresholds;
         }
 
@@ -51,7 +48,7 @@ class HabitBreakdownDialog extends Component {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
         for (let i = 0; i < daysOfWeek.length; i++) {
             labels.push((
-                <div style={{position: "absolute", left: 0, top: 40 * i + 50}}>
+                <div key={daysOfWeek[i] + "_label"} style={{position: "absolute", left: 0, top: 40 * i + 50}}>
                     { daysOfWeek[i] }
                 </div>
             ))
@@ -80,18 +77,19 @@ class HabitBreakdownDialog extends Component {
             }
             
             let top = ((this.props.days[i].weekday() + 1) % 7) * 40 + 50;
-            let left = Math.floor((this.props.days[i].diff(firstDate, 'days')) / 7) * 40 + monthPadding + 50;
+            let left = Math.floor((this.props.days[i].diff(firstDate, 'days') + 1) / 7) * 40 + monthPadding + 50;
 
             if (i === (this.props.days.length - 1) || this.props.days[i].date() === 1) {
                 labels.push((
-                    <div style={{position: "absolute", left: left, top: 0}}>
+                    <div key={months[this.props.days[i].month()] + "_label"} style={{position: "absolute", left: left, top: 0}}>
                         { months[this.props.days[i].month()] }
                     </div>
                 ))
             }
 
             entryButtons.push((
-                <Button style={{
+                <Button key={this.props.days[i].format("MM/DD/YYYY")}
+                        style={{
                             width: 10,
                             height: 10,
                             backgroundColor: backgroundColor,
@@ -130,6 +128,8 @@ class HabitBreakdownDialog extends Component {
                     "width": 800
                 }}
                 title={this.dialogTitle()}>
+                    <h1>{this.props.habit ? this.props.habit.title : ""}</h1>
+                    <h2>{this.props.habit ? this.props.habit.description : ""}</h2>
                     <h1>Recent Entry Heatmap</h1>
                     <div style={{width: "100%", height: "400px", padding: "20px"}}>
                         { this.renderEntryCalendar() }
@@ -138,7 +138,8 @@ class HabitBreakdownDialog extends Component {
                     {
                         this.entriesAsList().filter(entry => entry.note).map((entry, index) => (
                             <Card key={index}>
-                                <h2>{entry.value}</h2>
+                                <h4>{entry.date.format("MM/DD/YYYY")}</h4>
+                                <h4>{entry.value}</h4>
                                 <h4>{entry.note}</h4>
                             </Card>
                         ))
@@ -151,14 +152,18 @@ class HabitBreakdownDialog extends Component {
 function mapStateToProps(state) {
     let habit = undefined;
     let entries = undefined;
-    if (state.selectedHabitForBreakdown) {
+    let category = undefined;
+    if (!_.isNil(state.selectedHabitForBreakdown)) {
         habit = state.habits[state.selectedHabitForBreakdown];
         entries = state.entries[state.selectedHabitForBreakdown];
+
+        if (!_.isNil(habit.category)) {
+            category = state.categories[habit.category];
+        }
     }
 
     return {
-        // categoryOrder: state.categoryOrder,
-        // categories: state.categories,
+        category: category,
         days: returnLastXDays(90),
         selectedHabitForBreakdown: state.selectedHabitForBreakdown,
         showDialog: state.showHabitBreakdownDialog,

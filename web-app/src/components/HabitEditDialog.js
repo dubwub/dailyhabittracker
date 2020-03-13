@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Dialog, FormGroup, ControlGroup, TextArea, InputGroup, Icon, NumericInput, HTMLSelect } from '@blueprintjs/core';
-
+import { Button, Colors, Dialog, FormGroup, ControlGroup, TextArea, InputGroup, Icon, NumericInput, HTMLSelect } from '@blueprintjs/core';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 
@@ -42,6 +42,19 @@ const DEFAULT_THRESHOLDS = [
     }
 ];
 
+const DEFAULT_TAGS = [
+    {
+        icon: "crown",
+        color: Colors.VIOLET2,
+        title: "Sample Tag 1",
+    },
+    {
+        icon: "tree",
+        color: Colors.TURQUOISE2,
+        title: "Sample Tag 2",
+    }
+]
+
 class HabitEditDialog extends Component {
     constructor(props) {
         super(props);
@@ -53,7 +66,8 @@ class HabitEditDialog extends Component {
             editedCategory: undefined,
             editedOrder: -1,
             editedColor: "Habit color",
-            editedThresholds: DEFAULT_THRESHOLDS
+            editedThresholds: DEFAULT_THRESHOLDS,
+            editedTags: DEFAULT_TAGS,
         }
     }
 
@@ -68,7 +82,8 @@ class HabitEditDialog extends Component {
                     editedCategory: nextProps.habit.category,
                     editedOrder: nextProps.habit.order,
                     editedColor: nextProps.habit.color,
-                    editedThresholds: nextProps.habit.thresholds
+                    editedThresholds: nextProps.habit.thresholds,
+                    editedTags: nextProps.habit.tags,
                 };
             } else { // create new habit
                 return {
@@ -79,7 +94,8 @@ class HabitEditDialog extends Component {
                     editedCategory: undefined,
                     editedOrder: -1,
                     editedColor: "Habit color",
-                    editedThresholds: DEFAULT_THRESHOLDS
+                    editedThresholds: DEFAULT_THRESHOLDS,
+                    editedTags: DEFAULT_TAGS,
                 }
             }
         } else {
@@ -95,7 +111,8 @@ class HabitEditDialog extends Component {
             editedCategory: this.props.habit.category,
             editedOrder: this.props.habit.order,
             editedColor: this.props.habit.color,
-            editedThresholds: this.props.habit.thresholds
+            editedThresholds: this.props.habit.thresholds,
+            editedTags: this.props.habit.tags,
         })
     }
 
@@ -126,6 +143,27 @@ class HabitEditDialog extends Component {
         this.setState({
             ...this.state,
             editedThresholds: newThresholds
+        })
+    }
+
+    addTag() {
+        // TODO: would be cute to make this random
+        this.setState({
+            ...this.state,
+            editedTags: this.state.editedTags.concat([{
+                icon: "shopping-cart",
+                color: Colors.LIME3,
+                title: "Sample New Tag"
+            }])
+        })
+    }
+
+    deleteTag(index) {
+        let newTags = this.state.editedTags;
+        newTags.splice(index, 1);
+        this.setState({
+            ...this.state,
+            editedTags: newTags,
         })
     }
 
@@ -170,8 +208,14 @@ class HabitEditDialog extends Component {
         this.setState(newState);
     }
 
+    modifyTagField(index, field, value) {
+        let newState = Object.assign({}, this.state);
+        newState.editedTags[index][field] = value;
+        this.setState(newState);
+    }
+
     submitHabitEntryForm() {
-        if (this.props.selectedHabitForEdit) { // editing existing habit
+        if (!_.isNil(this.props.selectedHabitForEdit)) { // editing existing habit
             this.props.updateHabit(
                 this.props.selectedHabitForEdit,
                 this.state.editedTitle,
@@ -180,6 +224,7 @@ class HabitEditDialog extends Component {
                 this.state.editedOrder,
                 this.state.editedColor,
                 this.state.editedThresholds,
+                this.state.editedTags,
             );
             this.props.selectHabitForEdit(undefined, false);
         } else { // add new habit
@@ -190,13 +235,14 @@ class HabitEditDialog extends Component {
                 this.state.editedOrder,
                 this.state.editedColor,
                 this.state.editedThresholds,
+                this.state.editedTags,
             )
             this.props.selectHabitForEdit(undefined, false);
         }
     }
 
     dialogTitle() {
-        if (this.state.selectedHabit) {
+        if (!_.isNil(this.state.selectedHabit)) {
             return "Editing habit: " + this.state.editedTitle;
         } else {
             return "Create New Habit";
@@ -326,6 +372,34 @@ class HabitEditDialog extends Component {
                             })
                         }
                         <Button icon="add" onClick={() => this.addThreshold()}>Add a new threshold</Button>
+                    </FormGroup>
+                    <FormGroup
+                        label="Modify Tags (Advanced)">
+                        {
+                            this.state.editedTags.map((tag, index) => {
+                                return (
+                                    <ControlGroup key={index}>
+                                        <Button icon="delete" onClick={() => this.deleteTag(index)}/>
+                                        <div style={{"backgroundColor": tag.color, "width": 50, "height": 50}}>
+                                            <Icon icon={tag.icon} style={{"width": 50, "height": 50}}/>
+                                        </div>
+                                        <InputGroup type="text" className="bp3-input"
+                                            value={tag.title}
+                                            onChange={(e) => this.modifyTagField(index, "title", e.target.value)}
+                                         />
+                                        <InputGroup type="text" className="bp3-input"
+                                            value={tag.icon}
+                                            onChange={(e) => this.modifyTagField(index, "icon", e.target.value)}
+                                        />
+                                        <InputGroup type="text" className="bp3-input"
+                                            value={tag.color}
+                                            onChange={(e) => this.modifyTagField(index, "color", e.target.value)}
+                                        />
+                                    </ControlGroup>
+                                )
+                            })
+                        }
+                        <Button icon="add" onClick={() => this.addTag()}>Add a new threshold</Button>
                     </FormGroup>
                     <div className="bp3-dialog-footer">
                         <Button

@@ -3,6 +3,7 @@ import { syncScroll, getThresholdFromValue } from '../utils/habits.utils';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button, Icon } from "@blueprintjs/core";
+import _ from 'lodash';
 
 class HabitBody extends Component {
     toggleEditMode() {
@@ -27,6 +28,22 @@ class HabitBody extends Component {
                             ) : (
                                 <span />    
                             )
+                        
+                        let tagIcons = [];
+                        if (!_.isNil(this.props.entries[day_fmt]["tags"])) {
+                            const tags = this.props.entries[day_fmt]["tags"];
+                            for (let i = 0; i < tags.length; i++) {
+                                console.log(this.props.tags);
+                                tagIcons.push((
+                                    <Icon icon={this.props.tags[tags[i]].icon}
+                                          style={{
+                                                    backgroundColor: this.props.tags[tags[i]].color,
+                                                    position: "absolute",
+                                                    bottom: 5, left: i * 20,
+                                                 }} />
+                                ))
+                            }
+                        }
 
                         return (
                             <div className={"ctr-entry habit"} key={day_fmt}>
@@ -36,6 +53,7 @@ class HabitBody extends Component {
                                     style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}
                                     onClick={() => this.props.selectEntry(day, this.props.habit)}>
                                     { helperIcons }
+                                    { tagIcons }
                                 </Button>
                             </div>
                         )
@@ -48,11 +66,18 @@ class HabitBody extends Component {
 };
 
 function mapStateToProps(state, ownProps) {
+    let tags = {};
+    const rawTags = state["habits"][ownProps.habit]["tags"];
+    for (let i = 0; i < rawTags.length; i++) {
+        tags[rawTags[i]._id] = rawTags[i];
+    }
+
     return {
         days: state["days"],
         category: state["habits"][ownProps.habit]["category"] ? state["categories"][state["habits"][ownProps.habit]["category"]] : undefined,
         thresholds: state["habits"][ownProps.habit]["thresholds"],
-        entries: state["entries"][ownProps.habit]
+        tags: tags,
+        entries: state["entries"][ownProps.habit],
     };
 }
 

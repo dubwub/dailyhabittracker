@@ -1,5 +1,5 @@
 // TODO: split into separate files
-
+import _ from 'lodash';
 import axios from 'axios';
 const moment = require('moment');
 
@@ -27,7 +27,8 @@ export function loadUser(days) {
             const day_fmt = day.format('MM/DD/YYYY');
             entries["daily-retro"][day_fmt] = {
                 value: undefined,
-                note: undefined
+                note: undefined,
+                tags: [],
             };
         });
 
@@ -42,7 +43,8 @@ export function loadUser(days) {
                 const day_fmt = day.format('MM/DD/YYYY');
                 entries[habit._id][day_fmt] = {
                     value: undefined,
-                    note: undefined
+                    note: undefined,
+                    tags: [],
                 };
             });
         });
@@ -68,7 +70,8 @@ export function loadUser(days) {
 
             entries[habit_id][entry["date"]] = {
                 value: entry["value"],
-                note: entry["note"]
+                note: entry["note"],
+                tags: entry["tags"],
             };
         });
 
@@ -116,10 +119,10 @@ export function createCategory(title, icon, order, color) {
 
 export function updateCategory(category, title, icon, order, color) {
     let data = {};
-    if (title) { data["title"] = title; }
-    if (icon) { data["icon"] = icon; }
-    if (order) { data["order"] = order; }
-    if (color) { data["color"] = color; }
+    if (!_.isNil(title)) { data["title"] = title; }
+    if (!_.isNil(icon)) { data["icon"] = icon; }
+    if (!_.isNil(order)) { data["order"] = order; }
+    if (!_.isNil(color)) { data["color"] = color; }
 
     return async function(dispatch) {
         let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/category/' + category, data);
@@ -171,7 +174,7 @@ export function selectHabitForBreakdown(habit, showDialog) {
     })
 }
 
-export function createHabit(title, description, category, order, color, thresholds) {
+export function createHabit(title, description, category, order, color, thresholds, tags) {
     const data = {
         title: title,
         description: description,
@@ -180,7 +183,8 @@ export function createHabit(title, description, category, order, color, threshol
         order: order,
         entry_type: "integer",
         entries: [],
-        thresholds: thresholds
+        thresholds: thresholds,
+        tags: tags,
     }
 
     return async function(dispatch) {
@@ -192,7 +196,7 @@ export function createHabit(title, description, category, order, color, threshol
     }
 }
 
-export function updateHabit(habit, title, description, category, order, color, thresholds) {
+export function updateHabit(habit, title, description, category, order, color, thresholds, tags) {
     const data = {
         title: title,
         description: description,
@@ -200,7 +204,8 @@ export function updateHabit(habit, title, description, category, order, color, t
         order: order,
         color: color,
         entry_type: "integer",
-        thresholds: thresholds
+        thresholds: thresholds,
+        tags: tags,
     };
 
     return async function(dispatch) {
@@ -286,13 +291,14 @@ export function deleteEvent(event) {
 
 /////////// ENTRY ACTIONS ///////////
 
-export function updateEntry(habit, day, value, note) {
+export function updateEntry(habit, day, value, note, tags) {
     return async function(dispatch) {
         let data = {
             date: day.format('MM/DD/YYYY')
         };
-        if (value) { data["value"] = value; }
-        if (note) { data["note"] = note; }
+        if (!_.isNil(value)) { data["value"] = value; }
+        if (!_.isNil(note)) { data["note"] = note; }
+        if (!_.isNil(tags)) { data["tags"] = tags; }
 
         const URL = (habit && habit !== "daily-retro") ? 
             'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
