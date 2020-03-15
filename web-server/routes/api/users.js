@@ -144,18 +144,6 @@ router.delete('/:uid/category/:cid', (req, res) => {
 ////////// HABIT ROUTES //////////
 
 // get habit overview
-// router.get('/:uid/habit/:hid', async (req, res) => {
-//     Entry.find({
-//         user: req.params.uid,
-//         habit: req.params.hid,
-//     }, function(err, entries) {
-//         if (err) {
-//             res.status(400).json({ error: 'Error loading entries' });
-//         } else {
-//             res.send(entries);
-//         }
-//     });
-// });
 
 // @route PUT /api/users/:id/habit
 // @description add a habit to user
@@ -174,7 +162,7 @@ router.put('/:id/habit', async (req, res) => {
 // @description modify user habit with clean fields
 router.post('/:uid/habit/:hid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
-    const validFields = ["title", "description", "category", "order", "thresholds", "entryType", "color"];
+    const validFields = ["title", "description", "category", "order", "thresholds", "entryType", "color", "tags"];
     validFields.forEach((field) => {
         if (req.body[field]) {
             cleanedRequest[field] = req.body[field];
@@ -292,6 +280,7 @@ router.post('/:uid/habit/:hid/entries', (req, res) => {
     let set_params = {};
     if (typeof req.body.value !== "undefined") set_params["value"] = req.body.value;
     if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
+    if (typeof req.body.tags !== "undefined") { set_params["tags"] = req.body.tags; }
     
     Entry.findOneAndUpdate({
         "user": req.params.uid,
@@ -308,8 +297,8 @@ router.post('/:uid/habit/:hid/entries', (req, res) => {
 // post daily retro
 router.post('/:uid/entries', (req, res) => {
     let set_params = {};
-    if (typeof req.body.value !== "undefined") set_params["value"] = req.body.value;
-    if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
+    if (typeof req.body.value !== "undefined") { set_params["value"] = req.body.value; }
+    if (typeof req.body.note !== "undefined") { set_params["note"] = req.body.note; }
     
     Entry.findOneAndUpdate({
         "user": req.params.uid,

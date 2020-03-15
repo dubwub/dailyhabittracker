@@ -79,7 +79,11 @@ class HabitBreakdownDialog extends Component {
             }
             
             let top = ((this.props.days[i].weekday() + 1) % 7) * 40 + 50;
-            let left = Math.floor((this.props.days[i].diff(firstDate, 'days') + 1) / 7) * 40 + monthPadding + 50;
+
+            let left = monthPadding + 50; // TODO: add comments
+            const distanceTillEOW = 6 - firstDate.weekday();
+            const dayDiff = this.props.days[i].diff(firstDate, 'days');
+            left += 40 * Math.floor((dayDiff - distanceTillEOW) / 7 + 1);
 
             if (i === (this.props.days.length - 1) || this.props.days[i].date() === 1) {
                 labels.push((
@@ -113,6 +117,7 @@ class HabitBreakdownDialog extends Component {
                         }}
                         minimal={true}>
                     { this.props.days[i].format("DD") }
+                    { dayDiff }
                     <Icon icon={ icon } />
                     {
                         entryNote ? <Icon icon={"annotation"} /> : <span />

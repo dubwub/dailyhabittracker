@@ -1,10 +1,12 @@
 const moment = require('moment');
 
 export function returnLastXDays(numDays) {
+    const today = moment().startOf('day');
     let days = []; 
 
     for (let i = 0; i < numDays; i++) {
-        let newDate = moment().subtract(i, 'days');
+        let newDate = moment(today);
+        newDate.subtract(i, 'days');
         days.push(newDate);
     }
 

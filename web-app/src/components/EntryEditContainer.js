@@ -140,7 +140,7 @@ class EntryEditContainer extends Component {
 function mapStateToProps(state) {
     let tags = [];
     let thresholds = [];
-    if (!_.isNil(state.habitOfSelectedEntry)) {
+    if (!_.isNil(state.habitOfSelectedEntry) && state.habitOfSelectedEntry !== "daily-retro") {
         thresholds = state.habits[state.habitOfSelectedEntry].thresholds || [];
         tags = state.habits[state.habitOfSelectedEntry].tags || [];
     }

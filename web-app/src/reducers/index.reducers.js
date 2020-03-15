@@ -1,4 +1,5 @@
 import { returnLastXDays } from "../utils/habits.utils";
+import _ from 'lodash';
 
 let INITIAL_STATE = {
     days: returnLastXDays(30), // ordered list of all days (in moment fmt) that we should be loading on the page
@@ -8,9 +9,12 @@ let INITIAL_STATE = {
     categories: {},
     entries: {},
     events: [],
-    selectedEntry: {}, // date and habit (daily-retro or uid)
     user: undefined,
-
+    
+    // date/habit for entryeditcontainer
+    dateOfSelectedEntry: undefined,
+    habitOfSelectedEntry: undefined,
+    
     // HabitEditDialog
     showHabitEditDialog: false,
     selectedHabitForEdit: undefined,
@@ -140,10 +144,19 @@ export default function(state = INITIAL_STATE, action) {
         }
         case "DELETE_HABIT": {
             delete state["habits"][action.payload];
+
+            let newHabitOfSelectedEntry = state.habitOfSelectedEntry;
+            let newDateOfSelectedEntry = state.dateOfSelectedEntry;
+            if (state.habitOfSelectedEntry === action.payload) {
+                newHabitOfSelectedEntry = undefined;
+                newDateOfSelectedEntry = undefined;
+            }
             return {
                 ...state,
                 habitOrder: state["habitOrder"].filter((entry) => entry !== action.payload),
-                habits: state["habits"]
+                habits: state["habits"],
+                habitOfSelectedEntry: newHabitOfSelectedEntry,
+                dateOfSelectedEntry: newDateOfSelectedEntry,
             };
         }
         case "DELETE_CATEGORY": {

@@ -35,7 +35,7 @@ function _generateSortedCategoryOrder(categoryOrder: any, categories: any) {
 class Overview extends React.Component<Props>{    
     constructor(props: Props) {
         super(props);
-        this.props.loadUser(returnLastXDays(90));
+        this.props.loadUser(returnLastXDays(30));
     }
 
     /* deleteHabit(habit, pageindex) {
