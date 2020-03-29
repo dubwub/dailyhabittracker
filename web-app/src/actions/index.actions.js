@@ -4,7 +4,8 @@ import axios from 'axios';
 const moment = require('moment');
 
 // TODO: when signup/login is implemented, remove this hardcoded id
-const user_id = "5e655ef5b15885349dec3c6e";
+const user_id = "5e804a079f8c170c7f812eeb";
+const hardcoded_server_url = 'http://134.122.31.100:8082'
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
@@ -13,7 +14,7 @@ function _momentDateFromMongo(day) {
 
 export function loadUser(days) {
     return async function(dispatch) {
-        const res = await axios.get('http://localhost:8082/api/users/' + user_id);
+        const res = await axios.get(hardcoded_server_url + '/api/users/' + user_id);
         console.log('Loaded user: ' + user_id);
         
         let habitOrder = [];
@@ -109,7 +110,7 @@ export function createCategory(title, icon, order, color) {
     }
 
     return async function(dispatch) {
-        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/category', data);
+        let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/category', data);
         dispatch({
             type: "CREATE_CATEGORY",
             payload: res.data
@@ -125,7 +126,7 @@ export function updateCategory(category, title, icon, order, color) {
     if (!_.isNil(color)) { data["color"] = color; }
 
     return async function(dispatch) {
-        let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/category/' + category, data);
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/category/' + category, data);
         dispatch({
             type: "UPDATE_CATEGORY",
             payload: res.data
@@ -135,7 +136,7 @@ export function updateCategory(category, title, icon, order, color) {
 
 export function deleteCategory(category) {
     return async function(dispatch) {
-        let res = await axios.delete('http://localhost:8082/api/users/' + user_id + '/category/' + category);
+        let res = await axios.delete(hardcoded_server_url + '/api/users/' + user_id + '/category/' + category);
         if (res.status === 200) {
             dispatch({
                 type: "DELETE_CATEGORY",
@@ -188,7 +189,7 @@ export function createHabit(title, description, category, order, color, threshol
     }
 
     return async function(dispatch) {
-        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/habit', data);
+        let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/habit', data);
         dispatch({
             type: "CREATE_HABIT",
             payload: res.data
@@ -209,7 +210,7 @@ export function updateHabit(habit, title, description, category, order, color, t
     };
 
     return async function(dispatch) {
-        let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/habit/' + habit, data);
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit, data);
         dispatch({
             type: "UPDATE_HABIT",
             payload: res.data
@@ -219,7 +220,7 @@ export function updateHabit(habit, title, description, category, order, color, t
 
 export function deleteHabit(habit) {
     return async function(dispatch) {
-        let res = await axios.delete('http://localhost:8082/api/users/' + user_id + '/habit/' + habit);
+        let res = await axios.delete(hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit);
         if (res.status === 200) {
             dispatch({
                 type: "DELETE_HABIT",
@@ -240,7 +241,7 @@ export function createEvent(title, color, startDate, endDate) {
     };
 
     return async function(dispatch) {
-        let res = await axios.put('http://localhost:8082/api/users/' + user_id + '/events', data);
+        let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/events', data);
         console.log(res.data.startDate);
         const payload = {
             ...res.data,
@@ -264,7 +265,7 @@ export function updateEvent(event, title, color, startDate, endDate) {
     };
 
     return async function(dispatch) {
-        let res = await axios.post('http://localhost:8082/api/users/' + user_id + '/events/' + event, data);
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/events/' + event, data);
         const payload = {
             ...res.data,
             startDate: _momentDateFromMongo(res.data.startDate),
@@ -279,7 +280,7 @@ export function updateEvent(event, title, color, startDate, endDate) {
 
 export function deleteEvent(event) {
     return async function(dispatch) {
-        let res = await axios.delete('http://localhost:8082/api/users/' + user_id + '/events/' + event);
+        let res = await axios.delete(hardcoded_server_url + '/api/users/' + user_id + '/events/' + event);
         if (res.status === 200) {
             dispatch({
                 type: "DELETE_EVENT",
@@ -301,8 +302,8 @@ export function updateEntry(habit, day, value, note, tags) {
         if (!_.isNil(tags)) { data["tags"] = tags; }
 
         const URL = (habit && habit !== "daily-retro") ? 
-            'http://localhost:8082/api/users/' + user_id + '/habit/' + habit + '/entries' :
-            'http://localhost:8082/api/users/' + user_id + '/entries';
+            hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries' :
+            hardcoded_server_url + '/api/users/' + user_id + '/entries';
 
         let res = await axios.post(URL, data);
         res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
