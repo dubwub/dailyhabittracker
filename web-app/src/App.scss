@@ -95,7 +95,8 @@ code {
     left: 0;
     width: 100%;
     border: 2px solid red;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     // TODO: make this work for other browsers
     // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
     &.footer-visible {
