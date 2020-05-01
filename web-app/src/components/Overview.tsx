@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Header from './Header';
+import SheetHeader from './SheetHeader';
 import HabitHeader from './HabitHeader';
 import HabitBody from './HabitBody';
 import EntryEditContainer from './EntryEditContainer';
@@ -13,6 +13,9 @@ import { returnLastXDays } from '../utils/habits.utils';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button, Icon } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
+import { callbackify } from 'util';
+
+const projectHeight: number = 40;
 
 // below are helper functions used for display
 
@@ -89,40 +92,45 @@ class Overview extends React.Component<Props>{
                     <CategoryEditDialog />
                     <div>
                         <div className="layout-header">
-                            <Header />
                         </div>
-                        <div className={"layout-body " + footerStatus}>
-                            <table>
+                        <div className="layout-body">
+                            <SheetHeader />
+                            <div style={{width: "100%", height: "70%", position: "relative"}}>
                                 {
                                     this.props.enrichedCategories.map((category: any, index: number) => {
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
                                         return (
-                                            <tbody key={index}>
-                                                <tr><th rowSpan={category.habits.length + 1} scope={"rowgroup"}>
-                                                    <Icon
-                                                        style={{width: 20, height: 100*(category.habits.length), "backgroundColor": category.color}}
-                                                        icon={categoryHeaderIcon} />
-                                                </th></tr>
-
-                                                {category.habits.map((habit: any, index: number) => 
-                                                    <tr key={index}>
-                                                        <td style={{minWidth: 230, maxHeight: 100}}>
-                                                            <HabitHeader habit={habit._id} />
-                                                        </td>
-                                                        {/* needs to be able to handle resizing windows */}
-                                                        <td style={{maxWidth: window.innerWidth - 250}}>
-                                                            <HabitBody habit={habit._id} />
-                                                        </td>
-                                                    </tr>)}
-                                            </tbody>
+                                            <Icon
+                                                style={{width: 200,
+                                                        height: projectHeight*(category.habits.length),
+                                                        backgroundColor: category.color,
+                                                        position: "absolute",
+                                                        left: 0,
+                                                        top: category.indicesToJump * projectHeight,
+                                                        }}
+                                                icon={categoryHeaderIcon} />
                                         )
                                     })
                                 }
-                            </table>
+                                {
+                                    this.props.habitOrder.map((habitIndex: any, index: number) => 
+                                                        {
+                                                            const habit: any = this.props.habits[habitIndex];
+                                                            return (<div style={{width: "100%", height: projectHeight, position: "absolute", left: 200, top: index * projectHeight}}>
+                                                                <div style={{width: "200", margin: 0}}>
+                                                                    <HabitHeader habit={habit._id} />
+                                                                </div>
+                                                                {/* needs to be able to handle resizing windows */}
+                                                                <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 200}}>
+                                                                    <HabitBody habit={habit._id} />
+                                                                </div>
+                                                            </div>);
+                                                        })
+                                }
+                            </div>
                             <Button icon="add"
                                     onClick={() => this.props.selectHabitForEdit(undefined, true)} > Create new habit </Button>
                         </div>
-                        {footerDiv}
                     </div>
                 </div>
             );
@@ -136,16 +144,19 @@ function mapStateToProps(state: any) {
     const habitOrder: any = _generateSortedHabitOrder(state.habitOrder, state.habits);
     const categoryOrder: any = _generateSortedCategoryOrder(state.categoryOrder, state.categories);
     // TODO: optimize this?
+    let indicesToJump = 0;
     let enrichedCategories = categoryOrder.map((category: any) => {
         let output = {
             ...state.categories[category],
             habits: [],
+            indicesToJump: indicesToJump,
         }
         for (let i = 0; i < habitOrder.length; i++) {
             if (state.habits[habitOrder[i]]["category"] === category) {
                 output.habits.push(state.habits[habitOrder[i]]);
             }
         }
+        indicesToJump += output['habits'].length;
         return output;
     })
     let uncategorizedHabits = [];
@@ -154,11 +165,13 @@ function mapStateToProps(state: any) {
             uncategorizedHabits.push(state.habits[habitOrder[i]]);
         }
     }
-    enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits }]);
+    enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits, indicesToJump: indicesToJump }]);
     enrichedCategories = enrichedCategories.filter((category: any) => (category.habits.length > 0));
     return {
         ...state,
-        enrichedCategories: enrichedCategories
+        enrichedCategories: enrichedCategories,
+        habitOrder: state.habitOrder,
+        habits: state.habits,
     };
 }
 

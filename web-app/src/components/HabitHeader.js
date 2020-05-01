@@ -12,14 +12,11 @@ class HabitHeader extends Component {
         const color = this.props.color || "";
 
         return (
-            <div className={"habit"} style={{position: "relative", maxWidth: 230}}>
+            <div className={"habit"} style={{position: "relative", maxWidth: 100, paddingRight: 0}}>
                 <div className="habit-title" style={{"color": color}}>
-                    <h5>{ this.props.title }</h5>
+                    <h5 style={{margin: 0}}>{ this.props.title }</h5>
                 </div>
-                <div className="habit-description" style={{"color": color}}>
-                    <h6>{ this.props.description || "" }</h6>
-                </div>
-                <Button 
+                {/* <Button 
                     style={{position: "absolute", top: 0, right: 0}}
                     onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
                     icon={"edit"} />
@@ -30,7 +27,7 @@ class HabitHeader extends Component {
                 <Button
                     style={{position: "absolute", bottom: 0, right: 0}}
                     onClick={() => this.props.deleteHabit(this.props.habit)}
-                    icon={"delete"} />
+                    icon={"delete"} /> */}
             </div>
         )
     }

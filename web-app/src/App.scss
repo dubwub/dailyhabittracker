@@ -11,6 +11,10 @@
 .react-calendar-heatmap .color-scale-3 { fill: #44a340; }
 .react-calendar-heatmap .color-scale-4 { fill: #1e6823; }
 
+html, body {
+    overscroll-behavior-x: none; // disable chrome two finger swipe
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -25,29 +29,35 @@ code {
     monospace;
 }
 
-.ctr {
+.row {
     margin: 10px;
 }
 
-.ctr-header {
+.row-header {
     // width: 20%;
-    width: 250px;
+    width: 400px;
     float: left;
 }
 
-.ctr-contents {
-    height: 100px;
+.row-contents {
+    height: 30px;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
+    
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none; /* IE10 remove scrollbar */
     scrollbar-width: none; /* Firefox remove scrollbar */
 }
 
-.ctr-entry {
-    height: 15px; // TODO: this gets overwritten in the habit-level but not at the top level? need to restructure
-    width: 100px;
+.row-contents::-webkit-scrollbar {
+    display: none;
+}
+
+.cell {
+    height: 30px; // TODO: this gets overwritten in the habit-level but not at the top level? need to restructure
+    width: 50px;
     display: inline-block;
     float: left;
     flex: 0 0 auto;
@@ -58,27 +68,27 @@ code {
 }
 
 .habit {
-    height: 100px;
+    height: 30px;
 }
 
 .habit-edit-mode {
     height: 300px;
 }
 
-.header {
-    height: 150px;
+.sheet-header {
+    height: 75px;
 }
 
-.header-date-labels {
+.sheet-date-labels {
     height: 50px;
 }
 
-.header-event {
-    height: 80px;
+.sheet-events {
+    height: 50px;
 }
 
 .layout-header {
-    height: 150px;
+    height: 100px;
     position: absolute;
     top: 0;
     left: 0;
@@ -91,37 +101,17 @@ code {
 
 .layout-body {
     position: absolute;
-    top: 150px;
+    top: 100px;
     left: 0;
     width: 100%;
+    padding-left: 10%;
+    padding-right: 10%;
     border: 2px solid red;
     overflow-y: auto;
     overflow-x: hidden;
     // TODO: make this work for other browsers
     // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
-    &.footer-visible {
-        height: calc(100% - 400px); 
-    }
-    &.footer-invisible {
-        height: calc(100% - 150px);
-    }
-}
-
-.layout-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    border: 2px solid green;
-    z-index: 10;
-    background-color: white;
-    overflow: hidden;
-    &.footer-visible {
-        height: 250px;
-    }
-    &.footer-invisible {
-        height: 0px;
-    }
+    height: calc(100% - 100px);
 }
 
 .retro {

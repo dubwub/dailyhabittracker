@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { syncScroll, getThresholdFromValue } from '../utils/habits.utils';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button, Icon } from "@blueprintjs/core";
+import { Button, Icon, Popover } from "@blueprintjs/core";
 import _ from 'lodash';
 
 class HabitBody extends Component {
@@ -14,7 +14,7 @@ class HabitBody extends Component {
         const color = this.props.color || "";
 
         return (
-            <div className={"ctr-contents habit"} onScroll={syncScroll}>
+            <div className={"row-contents habit"} onScroll={syncScroll}>
                 { 
                     this.props.days.map((day) => {
                         const day_fmt = day.format("MM/DD/YYYY");
@@ -46,15 +46,25 @@ class HabitBody extends Component {
                         }
 
                         return (
-                            <div className={"ctr-entry habit"} key={day_fmt}>
-                                <Button    
-                                    className={"bp3-minimal bp3-outlined habit-entry"}
-                                    icon={getThresholdFromValue(this.props.thresholds, value).icon}
-                                    style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}
-                                    onClick={() => this.props.selectEntry(day, this.props.habit)}>
-                                    { helperIcons }
-                                    { tagIcons }
-                                </Button>
+                            <div className={"cell"} key={day_fmt}>
+                                <Popover content={(
+                                    <div>
+                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 1, undefined, undefined)}>1</Button><br />
+                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 2, undefined, undefined)}>2</Button><br />
+                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 3, undefined, undefined)}>3</Button><br />
+                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 4, undefined, undefined)}>4</Button><br />
+                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 5, undefined, undefined)}>5</Button><br />
+                                    </div>
+                                )} hoverOpenDelay={0} minimal={true} transitionDuration={0}>
+                                    <Button    
+                                        className={"bp3-minimal bp3-outlined cell"}
+                                        icon={getThresholdFromValue(this.props.thresholds, value).icon}
+                                        style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}
+                                        onClick={() => this.props.selectEntry(day, this.props.habit)}>
+                                        { helperIcons }
+                                        { tagIcons }
+                                    </Button>
+                                </Popover>
                             </div>
                         )
                     })

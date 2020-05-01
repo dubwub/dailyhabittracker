@@ -36,7 +36,7 @@ const styles = [
 
 class DateLabel extends Component {
     render() {
-        let className = "ctr-entry header-date-label";
+        let className = "cell sheet-date-label";
         if (
             this.props.dateOfSelectedEntry &&
             this.props.dateOfSelectedEntry.format('MM/DD/YYYY') === this.props.day.format('MM/DD/YYYY') && this.props.habitOfSelectedEntry === "daily-retro") {
@@ -44,7 +44,8 @@ class DateLabel extends Component {
         }
         return (
             <div className={className}>
-                { this.props.day.format('ddd M/D') }    
+                { this.props.day.format('ddd') }<br />
+                { this.props.day.format('M/D') }    
             </div>
         )
     }
@@ -65,7 +66,7 @@ class DailyRetro extends Component {
 
     render() {
         return (
-            <div className="ctr-entry header-retro" style={this.getStyleFromValue()}>
+            <div className="cell header-retro" style={this.getStyleFromValue()}>
                 { this.props.entry && this.props.entry.value ? this.props.entry.value : -1 }
                 { this.props.entry && this.props.entry.note ?
                     (<Icon icon="annotation" style={{position: "absolute", right: 0}} />) : (<span />) }
@@ -126,33 +127,33 @@ class Events extends Component {
     }
 }
 
-class Header extends Component {
+class SheetHeader extends Component {
     render() {
         return (
-            <div className="ctr header">
-                <div className="ctr-header header">
+            <div className="sheet-header">
+                <div className="row-header sheet-header">
                     <Button icon="add" onClick={() => this.props.selectEventForEdit(undefined, true)}>Add New Event</Button>
                     <br/> <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Categories</Button>
                 </div>
-                <div className="ctr-contents header-date-labels" onScroll={syncScroll}>
+                <div className="row-contents sheet-date-labels" onScroll={syncScroll}>
                     {
                         this.props.days.map((day, index) => (
                                 <div onClick={() => this.props.selectEntry(day, "daily-retro")} key={index}>
                                     <DateLabel dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} day={day} />
-                                    <DailyRetro dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} entry={this.props.entries[day.format("MM/DD/YYYY")]} />
+                                    {/* <DailyRetro dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} entry={this.props.entries[day.format("MM/DD/YYYY")]} /> */}
                                 </div>    
                             )
                         )
                     }
                 </div>
-                <div className="ctr-contents header-event" onScroll={syncScroll}>
+                {/* <div className="row-contents sheet-events" onScroll={syncScroll}>
                     <Events events={this.props.events}
                             endDate={this.props.days[0]}
                             startDate={this.props.days[this.props.days.length - 1]}
                             selectEventForEdit={this.props.selectEventForEdit} 
                             deleteEvent={this.props.deleteEvent}
                             />
-                </div>
+                </div> */}
             </div>
         )
     }
@@ -168,4 +169,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(SheetHeader);
