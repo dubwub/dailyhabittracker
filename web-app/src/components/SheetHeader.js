@@ -132,8 +132,8 @@ class SheetHeader extends Component {
         return (
             <div className="sheet-header">
                 <div className="row-header sheet-header">
-                    <Button icon="add" onClick={() => this.props.selectEventForEdit(undefined, true)}>Add New Event</Button>
-                    <br/> <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Categories</Button>
+                    {/* <Button icon="add" onClick={() => this.props.selectEventForEdit(undefined, true)}>Add New Event</Button> */}
+                    <br/> <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Dreams</Button>
                 </div>
                 <div className="row-contents sheet-date-labels" onScroll={syncScroll}>
                     {

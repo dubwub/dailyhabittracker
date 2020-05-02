@@ -12,15 +12,15 @@ class HabitHeader extends Component {
         const color = this.props.color || "";
 
         return (
-            <div className={"habit"} style={{position: "relative", maxWidth: 100, paddingRight: 0}}>
+            <div className={"habit"} style={{position: "relative", maxWidth: 300, paddingRight: 0}}>
                 <div className="habit-title" style={{"color": color}}>
                     <h5 style={{margin: 0}}>{ this.props.title }</h5>
                 </div>
-                {/* <Button 
+                <Button 
                     style={{position: "absolute", top: 0, right: 0}}
                     onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
                     icon={"edit"} />
-                <Button
+                {/* <Button
                     style={{position: "absolute", top: 40, right: 0}}
                     onClick={() => this.props.selectHabitForBreakdown(this.props.habit, true)}
                     icon={"timeline-events"} />

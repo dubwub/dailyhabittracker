@@ -4,7 +4,7 @@ import * as moment from "moment";
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 
-class CategoryEditDialog extends Component {
+class DreamEditDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -151,4 +151,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CategoryEditDialog);
+export default connect(mapStateToProps, mapDispatchToProps)(DreamEditDialog);

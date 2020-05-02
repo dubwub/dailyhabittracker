@@ -2,12 +2,31 @@ import React, { Component } from 'react';
 import { syncScroll, getThresholdFromValue } from '../utils/habits.utils';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button, Icon, Popover } from "@blueprintjs/core";
+import { Button, Icon, Popover, TextArea } from "@blueprintjs/core";
 import _ from 'lodash';
 
 class HabitBody extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            entries: this.props.entries,
+            debounce: _.debounce((habit, day, value) => this.props.updateEntry(habit, day, undefined, value, undefined), 1000)
+        }
+    }
+
     toggleEditMode() {
         this.props.selectHabitForEdit(this.props.habit, true);
+    }
+
+    handleTextAreaChange(habit, day, value) {
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["note"] = value;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.state.debounce(habit, day, value);
     }
 
     render() {
@@ -23,7 +42,7 @@ class HabitBody extends Component {
                         let helperIcons = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
                             (
                                 <Icon icon="annotation" 
-                                      style={{position: "absolute", bottom: 10, right: 10}}
+                                      style={{position: "absolute", bottom: 0, right: 0}}
                                 />
                             ) : (
                                 <span />    
@@ -49,13 +68,18 @@ class HabitBody extends Component {
                             <div className={"cell"} key={day_fmt}>
                                 <Popover content={(
                                     <div>
-                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 1, undefined, undefined)}>1</Button><br />
-                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 2, undefined, undefined)}>2</Button><br />
-                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 3, undefined, undefined)}>3</Button><br />
-                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 4, undefined, undefined)}>4</Button><br />
-                                        <Button style={{width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 5, undefined, undefined)}>5</Button><br />
+                                        How do I feel about my progress today?<br/>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 1, undefined, undefined)}>1</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 2, undefined, undefined)}>2</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 3, undefined, undefined)}>3</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 4).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 4, undefined, undefined)}>4</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 5).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 5, undefined, undefined)}>5</Button><br />
+                                        <TextArea style={{"width":200, "height":100}} autoFocus={true}
+                                            value={this.state.entries[day_fmt]["note"]}
+                                            onChange={(e) => this.handleTextAreaChange(this.props.habit, day, e.target.value)}
+                                            />
                                     </div>
-                                )} hoverOpenDelay={0} minimal={true} transitionDuration={0}>
+                                )} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
                                     <Button    
                                         className={"bp3-minimal bp3-outlined cell"}
                                         icon={getThresholdFromValue(this.props.thresholds, value).icon}

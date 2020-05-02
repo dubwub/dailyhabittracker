@@ -2,11 +2,10 @@ import * as React from 'react';
 import SheetHeader from './SheetHeader';
 import HabitHeader from './HabitHeader';
 import HabitBody from './HabitBody';
-import EntryEditContainer from './EntryEditContainer';
 import HabitEditDialog from './HabitEditDialog';
 import HabitBreakdownDialog from './HabitBreakdownDialog';
 import EventEditDialog from './EventEditDialog';
-import CategoryEditDialog from './CategoryEditDialog';
+import DreamEditDialog from './DreamEditDialog';
 
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';
@@ -72,24 +71,12 @@ class Overview extends React.Component<Props>{
 
     render() {
         if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
-            const hasSelectedEntry = (this.props.habitOfSelectedEntry || this.props.dayOfSelectedEntry);
-            const footerStatus = hasSelectedEntry ? "footer-visible" : "footer-invisible";
-            const footerDiv = hasSelectedEntry ? (
-                <div className={"layout-footer " + footerStatus}>
-                    <EntryEditContainer />
-                </div>
-            ) : (
-                <div>
-                </div>
-            )
-        
-
             return (
                 <div>
                     <HabitEditDialog />
                     <HabitBreakdownDialog />
                     <EventEditDialog />
-                    <CategoryEditDialog />
+                    <DreamEditDialog />
                     <div>
                         <div className="layout-header">
                         </div>
@@ -100,15 +87,17 @@ class Overview extends React.Component<Props>{
                                     this.props.enrichedCategories.map((category: any, index: number) => {
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
                                         return (
-                                            <Icon
-                                                style={{width: 200,
-                                                        height: projectHeight*(category.habits.length),
-                                                        backgroundColor: category.color,
-                                                        position: "absolute",
-                                                        left: 0,
-                                                        top: category.indicesToJump * projectHeight,
-                                                        }}
-                                                icon={categoryHeaderIcon} />
+                                            <div style={{width: 100,
+                                                    height: projectHeight*(category.habits.length),
+                                                    backgroundColor: category.color,
+                                                    position: "absolute",
+                                                    left: 0,
+                                                    top: category.indicesToJump * projectHeight,
+                                                    }}>
+                                                <Icon
+                                                    icon={categoryHeaderIcon} />
+                                                {category.title}
+                                            </div>
                                         )
                                     })
                                 }
@@ -116,20 +105,18 @@ class Overview extends React.Component<Props>{
                                     this.props.habitOrder.map((habitIndex: any, index: number) => 
                                                         {
                                                             const habit: any = this.props.habits[habitIndex];
-                                                            return (<div style={{width: "100%", height: projectHeight, position: "absolute", left: 200, top: index * projectHeight}}>
-                                                                <div style={{width: "200", margin: 0}}>
+                                                            return (<div style={{width: "100%", height: projectHeight, position: "absolute", left: 100, top: index * projectHeight}}>
+                                                                <div style={{width: "300", margin: 0}}>
                                                                     <HabitHeader habit={habit._id} />
                                                                 </div>
                                                                 {/* needs to be able to handle resizing windows */}
-                                                                <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 200}}>
+                                                                <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 300}}>
                                                                     <HabitBody habit={habit._id} />
                                                                 </div>
                                                             </div>);
                                                         })
                                 }
                             </div>
-                            <Button icon="add"
-                                    onClick={() => this.props.selectHabitForEdit(undefined, true)} > Create new habit </Button>
                         </div>
                     </div>
                 </div>
