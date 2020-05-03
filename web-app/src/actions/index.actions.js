@@ -175,7 +175,7 @@ export function selectHabitForBreakdown(habit, showDialog) {
     })
 }
 
-export function createHabit(title, description, category, order, color, thresholds, tags) {
+export function createHabit(title, description, category, order, color, thresholds, tags, startDate, endDate) {
     const data = {
         title: title,
         description: description,
@@ -186,6 +186,8 @@ export function createHabit(title, description, category, order, color, threshol
         entries: [],
         thresholds: thresholds,
         tags: tags,
+        startDate: startDate,
+        endDate: endDate,
     }
 
     return async function(dispatch) {
@@ -197,7 +199,7 @@ export function createHabit(title, description, category, order, color, threshol
     }
 }
 
-export function updateHabit(habit, title, description, category, order, color, thresholds, tags) {
+export function updateHabit(habit, title, description, category, order, color, thresholds, tags, startDate, endDate) {
     const data = {
         title: title,
         description: description,
@@ -207,6 +209,8 @@ export function updateHabit(habit, title, description, category, order, color, t
         entry_type: "integer",
         thresholds: thresholds,
         tags: tags,
+        startDate: startDate,
+        endDate: endDate,
     };
 
     return async function(dispatch) {

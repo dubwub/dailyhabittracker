@@ -162,7 +162,7 @@ router.put('/:id/habit', async (req, res) => {
 // @description modify user habit with clean fields
 router.post('/:uid/habit/:hid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
-    const validFields = ["title", "description", "category", "order", "thresholds", "entryType", "color", "tags"];
+    const validFields = ["title", "description", "category", "order", "thresholds", "entryType", "color", "tags", "startDate", "endDate"];
     validFields.forEach((field) => {
         if (req.body[field]) {
             cleanedRequest[field] = req.body[field];

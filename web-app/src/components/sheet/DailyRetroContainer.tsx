@@ -1,9 +1,9 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as mapDispatchToProps from '../actions/index.actions.js'; 
+import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 import { Button, Colors, Icon, Popover, TextArea } from "@blueprintjs/core";
-import { syncScroll, getThresholdFromValue, generateQuickAddButtons } from '../utils/habits.utils';
+import { syncScroll, getThresholdFromValue, generateQuickAddButtons } from '../../utils/habits.utils';
 import _ from 'lodash';
 import * as moment from "moment";
 

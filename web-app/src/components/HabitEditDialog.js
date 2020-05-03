@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Colors, Dialog, FormGroup, ControlGroup, TextArea, InputGroup, Icon, NumericInput, HTMLSelect } from '@blueprintjs/core';
+import { DateRangeInput } from '@blueprintjs/datetime';
 import _ from 'lodash';
+import * as moment from "moment";
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 
@@ -68,6 +70,8 @@ class HabitEditDialog extends Component {
             editedColor: "Habit color",
             editedThresholds: DEFAULT_THRESHOLDS,
             editedTags: DEFAULT_TAGS,
+            editedStartDate: moment().toDate(),
+            editedEndDate: undefined,
         }
     }
 
@@ -84,6 +88,8 @@ class HabitEditDialog extends Component {
                     editedColor: nextProps.habit.color,
                     editedThresholds: nextProps.habit.thresholds,
                     editedTags: nextProps.habit.tags,
+                    editedStartDate: nextProps.habit.startDate,
+                    editedEndDate: nextProps.habit.endDate,
                 };
             } else { // create new habit
                 return {
@@ -96,6 +102,8 @@ class HabitEditDialog extends Component {
                     editedColor: "Habit color",
                     editedThresholds: DEFAULT_THRESHOLDS,
                     editedTags: DEFAULT_TAGS,
+                    editedStartDate: moment().toDate(),
+                    editedEndDate: undefined,
                 }
             }
         } else {
@@ -113,6 +121,8 @@ class HabitEditDialog extends Component {
             editedColor: this.props.habit.color,
             editedThresholds: this.props.habit.thresholds,
             editedTags: this.props.habit.tags,
+            editedStartDate: this.props.habit.startDate,
+            editedEndDate: this.props.habit.endDate,
         })
     }
 
@@ -225,6 +235,8 @@ class HabitEditDialog extends Component {
                 this.state.editedColor,
                 this.state.editedThresholds,
                 this.state.editedTags,
+                this.state.editedStartDate,
+                this.state.editedEndDate,
             );
             this.props.selectHabitForEdit(undefined, false);
         } else { // add new habit
@@ -236,6 +248,8 @@ class HabitEditDialog extends Component {
                 this.state.editedColor,
                 this.state.editedThresholds,
                 this.state.editedTags,
+                this.state.editedStartDate,
+                this.state.editedEndDate,
             )
             this.props.selectHabitForEdit(undefined, false);
         }
@@ -247,6 +261,14 @@ class HabitEditDialog extends Component {
         } else {
             return "Create New Habit";
         }
+    }
+
+    modifyDates(dateArray) {
+        this.setState({
+            ...this.state,
+            editedStartDate: dateArray[0],
+            editedEndDate: dateArray[1],
+        })
     }
 
     render() {
@@ -284,13 +306,25 @@ class HabitEditDialog extends Component {
                             onChange={(e) => this.modifyDescription(e.target.value)}
                             />
                     </FormGroup>
-                    <FormGroup label="Edit category">
+                    <FormGroup label="When does this project start & end?">
+                        <DateRangeInput
+                            formatDate={date => moment(date).format('MM/DD/YYYY')}
+                            onChange={(dates) => this.modifyDates(dates)}
+                            parseDate={str => moment(str, 'MM/DD/YYYY').toDate()}
+                            value={[this.state.editedStartDate, this.state.editedEndDate]}
+                            shortcuts={false}
+                            enableTimePicker={false}
+                            allowSingleDayRange={true}
+                            timePrecision={undefined}
+                        />
+                    </FormGroup>
+                    <FormGroup label="What dream does this fulfill?">
                         <HTMLSelect value={this.state.editedCategory}
                                     onChange={(e) => this.modifyCategory(e.target.value)}
                                     options={
                                         [{
                                             key: -1,
-                                            label: "No category",
+                                            label: "No dream",
                                             value: undefined,
                                         }].concat(this.props.categoryOrder.map((cid, index) => {
                                             return {

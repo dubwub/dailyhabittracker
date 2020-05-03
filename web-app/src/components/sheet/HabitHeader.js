@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as mapDispatchToProps from '../actions/index.actions.js'; 
+import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 import { Button } from "@blueprintjs/core";
 
 class HabitHeader extends Component {

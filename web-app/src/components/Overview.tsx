@@ -1,12 +1,12 @@
 import * as React from 'react';
-import SheetHeader from './SheetHeader';
-import HabitHeader from './HabitHeader';
-import HabitBody from './HabitBody';
+import SheetHeader from './sheet/SheetHeader';
+import HabitHeader from './sheet/HabitHeader';
+import HabitBody from './sheet/HabitBody';
 import HabitEditDialog from './HabitEditDialog';
 import HabitBreakdownDialog from './HabitBreakdownDialog';
 import EventEditDialog from './EventEditDialog';
 import DreamEditDialog from './DreamEditDialog';
-import DailyRetroContainer from './DailyRetroContainer';
+import DailyRetroContainer from './sheet/DailyRetroContainer';
 
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';

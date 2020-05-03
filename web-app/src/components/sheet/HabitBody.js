@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { syncScroll, getThresholdFromValue } from '../utils/habits.utils';
+import { syncScroll, getThresholdFromValue } from '../../utils/habits.utils';
 import { connect } from 'react-redux';
-import * as mapDispatchToProps from '../actions/index.actions.js'; 
+import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 import { Button, Icon, Popover, TextArea } from "@blueprintjs/core";
 import _ from 'lodash';
 

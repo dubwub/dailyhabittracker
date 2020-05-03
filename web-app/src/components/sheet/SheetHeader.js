@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { syncScroll } from '../utils/habits.utils';
+import { syncScroll } from '../../utils/habits.utils';
 import { connect } from 'react-redux';
 import { Button, Colors, Icon, Tag } from '@blueprintjs/core';
 
-import * as mapDispatchToProps from '../actions/index.actions.js';
+import * as mapDispatchToProps from '../../actions/index.actions.js';
 import * as moment from "moment";
 
 const styles = [
