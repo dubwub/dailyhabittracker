@@ -88,8 +88,8 @@ class HabitEditDialog extends Component {
                     editedColor: nextProps.habit.color,
                     editedThresholds: nextProps.habit.thresholds,
                     editedTags: nextProps.habit.tags,
-                    editedStartDate: nextProps.habit.startDate,
-                    editedEndDate: nextProps.habit.endDate,
+                    editedStartDate: nextProps.habit.startDate ? nextProps.habit.startDate.toDate() : undefined,
+                    editedEndDate: nextProps.habit.endDate ? nextProps.habit.endDate.toDate() : undefined,
                 };
             } else { // create new habit
                 return {
@@ -121,8 +121,8 @@ class HabitEditDialog extends Component {
             editedColor: this.props.habit.color,
             editedThresholds: this.props.habit.thresholds,
             editedTags: this.props.habit.tags,
-            editedStartDate: this.props.habit.startDate,
-            editedEndDate: this.props.habit.endDate,
+            editedStartDate: this.props.habit.startDate ? this.props.habit.startDate.toDate() : undefined,
+            editedEndDate: this.props.habit.endDate ? this.props.habit.endDate.toDate() : undefined,
         })
     }
 

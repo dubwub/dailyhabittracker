@@ -37,6 +37,14 @@ export function loadUser(days) {
         const raw_habits = res.data.habits;
         raw_habits.forEach((habit) => {
             habitOrder.push(habit._id);
+            if (habit.startDate) {
+                habit.startDate = _momentDateFromMongo(habit.startDate);
+                console.log(habit.startDate)
+            }
+            if (habit.endDate) {
+                habit.endDate = _momentDateFromMongo(habit.endDate);
+                console.log(habit.endDate)
+            }
             habits[habit._id] = habit;
             entries[habit._id] = {};
 
@@ -192,9 +200,16 @@ export function createHabit(title, description, category, order, color, threshol
 
     return async function(dispatch) {
         let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/habit', data);
+
+        const payload = {
+            ...res.data,
+            startDate: _momentDateFromMongo(res.data.startDate),
+            endDate: _momentDateFromMongo(res.data.endDate),
+        }
+
         dispatch({
             type: "CREATE_HABIT",
-            payload: res.data
+            payload: payload,
         });
     }
 }
@@ -215,9 +230,16 @@ export function updateHabit(habit, title, description, category, order, color, t
 
     return async function(dispatch) {
         let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit, data);
+
+        const payload = {
+            ...res.data,
+            startDate: _momentDateFromMongo(res.data.startDate),
+            endDate: _momentDateFromMongo(res.data.endDate),
+        }
+
         dispatch({
             type: "UPDATE_HABIT",
-            payload: res.data
+            payload: payload
         });
     }
 }
@@ -246,7 +268,6 @@ export function createEvent(title, color, startDate, endDate) {
 
     return async function(dispatch) {
         let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/events', data);
-        console.log(res.data.startDate);
         const payload = {
             ...res.data,
             startDate: _momentDateFromMongo(res.data.startDate),
