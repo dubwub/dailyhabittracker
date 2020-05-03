@@ -50,7 +50,7 @@ class DreamEditDialog extends Component {
                 canEscapeKeyClose={true}
                 isCloseButtonShown={true}
                 onClose={() => this.props.toggleShowCategoryEditDialog(false)}
-                title={"Update category fields"}>
+                title={"Update your Dreams"}>
                 <div className="bp3-dialog-body">
                     <h3>Edit Existing Categories</h3>
 
@@ -60,26 +60,26 @@ class DreamEditDialog extends Component {
                             return (
                                 <div key={index}>
                                     <FormGroup
-                                        label="Edit Category Title">
-                                        <InputGroup type="text" className="bp3-input" placeholder="Title" 
+                                        label="What is your dream?">
+                                        <InputGroup type="text" className="bp3-input" placeholder="I want to feel ..." 
                                             value={category.title}
                                             onChange={(e) => this.modifyEditedCategoryField(cid, "title", e.target.value)}
                                             />
                                     </FormGroup>
                                     <FormGroup
-                                        label="Edit Category Icon">
+                                        label="What's a picture that represents what your dream means to you?">
                                         <InputGroup type="text" className="bp3-input" placeholder="Icon" 
                                             value={category.icon}
                                             onChange={(e) => this.modifyEditedCategoryField(cid, "icon", e.target.value)}
                                             />
                                     </FormGroup>
                                     <FormGroup
-                                        label="Edit Category Order">
+                                        label="How important is this dream to you?">
                                         <NumericInput value={category.order}
                                             onValueChange={(value) => this.modifyEditedCategoryField(cid, "order", value)}/>
                                     </FormGroup>
                                     <FormGroup
-                                        label="Edit Event Color">
+                                        label="What color do you want this dream to be?">
                                         <InputGroup id="edit-color" type="text" className="bp3-input" placeholder="Color" 
                                             value={category.color}
                                             onChange={(e) => this.modifyEditedCategoryField(cid, "color", e.target.value)}
@@ -100,26 +100,26 @@ class DreamEditDialog extends Component {
 
                     <h3>Add New Category</h3>
                     <FormGroup
-                        label="Edit Category Title">
-                        <InputGroup type="text" className="bp3-input" placeholder="Title" 
+                        label="What is your dream?">
+                        <InputGroup type="text" className="bp3-input" placeholder="I want to feel ..." 
                             value={this.state.newCategoryTitle}
                             onChange={(e) => this.modifyNewCategoryField("newCategoryTitle", e.target.value)}
                             />
                     </FormGroup>
                     <FormGroup
-                        label="Edit Category Icon">
+                        label="What's a picture that represents what your dream means to you?">
                         <InputGroup type="text" className="bp3-input" placeholder="Icon" 
                             value={this.state.newCategoryIcon}
                             onChange={(e) => this.modifyNewCategoryField("newCategoryIcon", e.target.value)}
                             />
                     </FormGroup>
                     <FormGroup
-                        label="Edit Category Order">
+                        label="How important is this dream to you?">
                         <NumericInput value={this.state.newCategoryOrder}
                             onValueChange={(value) => this.modifyNewCategoryField("newCategoryOrder", value)}/>
                     </FormGroup>
                     <FormGroup
-                        label="Edit Event Color">
+                        label="What color do you want this dream to be?">
                         <InputGroup id="edit-color" type="text" className="bp3-input" placeholder="Color" 
                             value={this.state.newCategoryColor}
                             onChange={(e) => this.modifyNewCategoryField("newCategoryColor", e.target.value)}

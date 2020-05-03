@@ -42,14 +42,14 @@ class HabitBody extends Component {
                         let helperIcons = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
                             (
                                 <Icon icon="annotation" 
-                                      style={{position: "absolute", bottom: 0, right: 0}}
+                                      style={{position: "absolute", width: 10, height: 10, bottom: 0, right: 10, color: "black"}}
                                 />
                             ) : (
                                 <span />    
                             )
                         
                         let tagIcons = [];
-                        if (!_.isNil(this.props.entries[day_fmt]["tags"])) {
+                        {/* if (!_.isNil(this.props.entries[day_fmt]["tags"])) {
                             const tags = this.props.entries[day_fmt]["tags"];
                             for (let i = 0; i < tags.length; i++) {
                                 tagIcons.push((
@@ -62,7 +62,7 @@ class HabitBody extends Component {
                                                  }} />
                                 ))
                             }
-                        }
+                        } */}
 
                         return (
                             <div className={"cell"} key={day_fmt}>
@@ -82,9 +82,13 @@ class HabitBody extends Component {
                                 )} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
                                     <Button    
                                         className={"bp3-minimal bp3-outlined cell"}
-                                        icon={getThresholdFromValue(this.props.thresholds, value).icon}
-                                        style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}
-                                        onClick={() => this.props.selectEntry(day, this.props.habit)}>
+                                        style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}>
+                                        <Icon icon={getThresholdFromValue(this.props.thresholds, value).icon}
+                                              style={{
+                                                  color: "black",
+                                                  display: "inline-block",
+                                                  flex: "0 0 auto"
+                                              }} />
                                         { helperIcons }
                                         { tagIcons }
                                     </Button>

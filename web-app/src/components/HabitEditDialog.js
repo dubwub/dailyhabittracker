@@ -7,35 +7,35 @@ import * as mapDispatchToProps from '../actions/index.actions.js';
 const DEFAULT_THRESHOLDS = [
     {
         icon: "heart-broken",
-        color: "#9E2B0E",
+        color: "#ea9999",
         condition: "le",
         minValue: undefined,
         maxValue: 1
     },
     {
         icon: "cross",
-        color: "#D13913",
+        color: "#f5b880",
         condition: "eq",
         minValue: 2,
         maxValue: 2
     },
     {
         icon: "",
-        color: "#5C7080",
+        color: "#ffd666",
         condition: "eq",
         minValue: 3,
         maxValue: 3
     },
     {
         icon: "tick",
-        color: "#0A6640",
+        color: "#abc978",
         condition: "eq",
         minValue: 4,
         maxValue: 4
     },
     {
         icon: "clean",
-        color: "#D99E0B",
+        color: "#57bb8a",
         condition: "ge",
         minValue: 5,
         maxValue: undefined

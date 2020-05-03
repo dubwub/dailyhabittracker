@@ -38,38 +38,13 @@ class DateLabel extends Component {
     render() {
         let className = "cell sheet-date-label";
         if (
-            this.props.dateOfSelectedEntry &&
-            this.props.dateOfSelectedEntry.format('MM/DD/YYYY') === this.props.day.format('MM/DD/YYYY') && this.props.habitOfSelectedEntry === "daily-retro") {
+            moment().format("MM/DD/YYYY") === this.props.day.format('MM/DD/YYYY')) {
             className += " retro-top-selected";
         }
         return (
             <div className={className}>
                 { this.props.day.format('ddd') }<br />
                 { this.props.day.format('M/D') }    
-            </div>
-        )
-    }
-}
-
-class DailyRetro extends Component {
-
-    getStyleFromValue() {
-        let minValue = 0;
-        for (let i = 0; i < styles.length; i++) {
-            minValue += 2; // TODO: magic number
-            if (this.props.entry && this.props.entry.value && this.props.entry.value <= minValue) {
-                return styles[i];
-            }
-        }
-        return styles[0];
-    }
-
-    render() {
-        return (
-            <div className="cell header-retro" style={this.getStyleFromValue()}>
-                { this.props.entry && this.props.entry.value ? this.props.entry.value : -1 }
-                { this.props.entry && this.props.entry.note ?
-                    (<Icon icon="annotation" style={{position: "absolute", right: 0}} />) : (<span />) }
             </div>
         )
     }

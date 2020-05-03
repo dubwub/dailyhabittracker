@@ -6,6 +6,7 @@ import HabitEditDialog from './HabitEditDialog';
 import HabitBreakdownDialog from './HabitBreakdownDialog';
 import EventEditDialog from './EventEditDialog';
 import DreamEditDialog from './DreamEditDialog';
+import DailyRetroContainer from './DailyRetroContainer';
 
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';
@@ -82,7 +83,7 @@ class Overview extends React.Component<Props>{
                         </div>
                         <div className="layout-body">
                             <SheetHeader />
-                            <div style={{width: "100%", height: "70%", position: "relative"}}>
+                            <div style={{width: "100%", height: "75%", position: "relative"}}>
                                 {
                                     this.props.enrichedCategories.map((category: any, index: number) => {
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
@@ -117,6 +118,7 @@ class Overview extends React.Component<Props>{
                                                         })
                                 }
                             </div>
+                            <DailyRetroContainer />
                         </div>
                     </div>
                 </div>

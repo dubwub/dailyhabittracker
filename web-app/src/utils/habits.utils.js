@@ -1,3 +1,5 @@
+import React from 'react';
+import { Button } from "@blueprintjs/core";
 const moment = require('moment');
 
 export function returnLastXDays(numDays) {
@@ -88,4 +90,18 @@ export function getThresholdFromValue(thresholds, value) {
         color: "",
         icon: ""
     }
+}
+
+export function generateQuickAddButtons(thresholds, fromVal, toVal, onClick) {
+    let output = [];
+
+    for (let i = fromVal; i <= toVal; i++) {
+        output.push(
+            (
+                <Button style={{"backgroundColor": getThresholdFromValue(thresholds, i).color, width: 40, height: 30}} onClick={() => onClick(i)}>{i}</Button>
+            )
+        )
+    }
+    
+    return output;
 }

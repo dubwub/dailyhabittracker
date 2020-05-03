@@ -88,7 +88,7 @@ code {
 }
 
 .layout-header {
-    height: 100px;
+    height: 70px;
     position: absolute;
     top: 0;
     left: 0;
@@ -101,7 +101,7 @@ code {
 
 .layout-body {
     position: absolute;
-    top: 100px;
+    top: 70px;
     left: 0;
     width: 100%;
     padding-left: 10%;
@@ -111,7 +111,7 @@ code {
     overflow-x: hidden;
     // TODO: make this work for other browsers
     // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
-    height: calc(100% - 100px);
+    height: calc(100% - 70px);
 }
 
 .retro {
