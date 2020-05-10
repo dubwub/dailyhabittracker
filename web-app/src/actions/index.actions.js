@@ -5,7 +5,8 @@ const moment = require('moment');
 
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e804a079f8c170c7f812eeb";
-const hardcoded_server_url = 'http://134.122.31.100:8082'
+// const hardcoded_server_url = 'http://134.122.31.100:8082'
+const hardcoded_server_url = 'http://localhost:8082'
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
@@ -80,15 +81,16 @@ export function loadUser(days) {
             entries[habit_id][entry["date"]] = {
                 value: entry["value"],
                 note: entry["note"],
+                transactions: entry["transactions"],
                 tags: entry["tags"],
             };
         });
 
         // preprocess incoming events
-        const events = res.data.events.map((event) => {
-            event["startDate"] = _momentDateFromMongo(event["startDate"]);
-            event["endDate"] = _momentDateFromMongo(event["endDate"]);
-            return event;
+        const retros = res.data.retros.map((retro) => {
+            retro["startDate"] = _momentDateFromMongo(retro["startDate"]);
+            retro["endDate"] = _momentDateFromMongo(retro["endDate"]);
+            return retro;
         });
 
         dispatch({
@@ -101,7 +103,7 @@ export function loadUser(days) {
                 habitOrder: habitOrder,
                 habits: habits,
                 entries: entries,
-                events: events,
+                retros: retros,
             }
         });
     }
@@ -315,15 +317,77 @@ export function deleteEvent(event) {
     }
 }
 
+/////////// RETRO ACTIONS ///////////
+
+export function createRetro(title, startDate, endDate, value, note) {
+    const data = {
+        title: title,
+        startDate: startDate,
+        endDate: endDate,
+        value: value,
+        note: note
+    };
+
+    return async function(dispatch) {
+        let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/retros', data);
+        const payload = {
+            ...res.data,
+            startDate: _momentDateFromMongo(res.data.startDate),
+            endDate: _momentDateFromMongo(res.data.endDate),
+        }
+
+        dispatch({
+            type: "CREATE_RETRO",
+            payload: payload
+        });
+    }
+}
+
+export function updateRetro(retro, title, startDate, endDate, value, note) {
+    const data = {
+        title: title,
+        startDate: startDate,
+        endDate: endDate,
+        value: value,
+        note: note
+    };
+
+    return async function(dispatch) {
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/retros/' + retro, data);
+        const payload = {
+            ...res.data,
+            startDate: _momentDateFromMongo(res.data.startDate),
+            endDate: _momentDateFromMongo(res.data.endDate),
+        }
+        dispatch({
+            type: "UPDATE_RETRO",
+            payload: payload
+        });
+    }
+}
+
+export function deleteRetro(retro) {
+    return async function(dispatch) {
+        let res = await axios.delete(hardcoded_server_url + '/api/users/' + user_id + '/retros/' + retro);
+        if (res.status === 200) {
+            dispatch({
+                type: "DELETE_RETRO",
+                payload: retro,
+            })
+        }
+    }
+}
+
 /////////// ENTRY ACTIONS ///////////
 
-export function updateEntry(habit, day, value, note, tags) {
+export function updateEntry(habit, day, value, note, transactions, tags) {
     return async function(dispatch) {
         let data = {
             date: day.format('MM/DD/YYYY')
         };
         if (!_.isNil(value)) { data["value"] = value; }
         if (!_.isNil(note)) { data["note"] = note; }
+        if (!_.isNil(transactions)) { data["transactions"] = transactions; }
         if (!_.isNil(tags)) { data["tags"] = tags; }
 
         const URL = (habit && habit !== "daily-retro") ? 
@@ -355,6 +419,16 @@ export function selectEventForEdit(event, showDialog) {
         payload: {
             event: event,
             showEventEditDialog: showDialog
+        }
+    })
+}
+
+export function selectRetroForEdit(retro, showDialog) {
+    return (dispatch) => dispatch({
+        type: "SELECT_NEW_RETRO",
+        payload: {
+            retro: retro,
+            showRetroEditDialog: showDialog
         }
     })
 }

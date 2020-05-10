@@ -2,11 +2,13 @@ import * as React from 'react';
 import SheetHeader from './sheet/SheetHeader';
 import HabitHeader from './sheet/HabitHeader';
 import HabitBody from './sheet/HabitBody';
-import HabitEditDialog from './HabitEditDialog';
-import HabitBreakdownDialog from './HabitBreakdownDialog';
-import EventEditDialog from './EventEditDialog';
-import DreamEditDialog from './DreamEditDialog';
+import HabitEditDialog from './dialog/HabitEditDialog';
+import HabitBreakdownDialog from './dialog/HabitBreakdownDialog';
+// import EventEditDialog from './dialog/EventEditDialog';
+import RetroEditDialog from './dialog/RetroEditDialog';
+import DreamEditDialog from './dialog/DreamEditDialog';
 import DailyRetroContainer from './sheet/DailyRetroContainer';
+import LongRetroContainer from './sheet/LongRetroContainer';
 
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';
@@ -76,7 +78,7 @@ class Overview extends React.Component<Props>{
                 <div>
                     <HabitEditDialog />
                     <HabitBreakdownDialog />
-                    <EventEditDialog />
+                    <RetroEditDialog />
                     <DreamEditDialog />
                     <div>
                         <div className="layout-header">
@@ -103,9 +105,9 @@ class Overview extends React.Component<Props>{
                                     })
                                 }
                                 {
-                                    this.props.habitOrder.map((habitIndex: any, index: number) => 
+                                    this.props.habitOrder.map((habit: any, index: number) => 
                                                         {
-                                                            const habit: any = this.props.habits[habitIndex];
+                                                            // const habit: any = this.props.habits[habitIndex];
                                                             return (<div style={{width: "100%", height: projectHeight, position: "absolute", left: 100, top: index * projectHeight}}>
                                                                 <div style={{width: "300", margin: 0}}>
                                                                     <HabitHeader habit={habit._id} />
@@ -119,6 +121,7 @@ class Overview extends React.Component<Props>{
                                 }
                             </div>
                             <DailyRetroContainer />
+                            <LongRetroContainer />
                         </div>
                     </div>
                 </div>
@@ -156,10 +159,20 @@ function mapStateToProps(state: any) {
     }
     enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits, indicesToJump: indicesToJump }]);
     enrichedCategories = enrichedCategories.filter((category: any) => (category.habits.length > 0));
+
+    let flatHabits: any[] = [];
+    for (let i = 0; i < enrichedCategories.length; i++) {
+        for (let j = 0; j < enrichedCategories[i]["habits"].length; j++) {
+            flatHabits.push(enrichedCategories[i]["habits"][j]);
+        }
+    }
+    console.log(flatHabits);
+
     return {
         ...state,
         enrichedCategories: enrichedCategories,
-        habitOrder: state.habitOrder,
+        // habitOrder: state.habitOrder,
+        habitOrder: flatHabits,
         habits: state.habits,
     };
 }

@@ -8,7 +8,7 @@ let INITIAL_STATE = {
     categoryOrder: [],
     categories: {},
     entries: {},
-    events: [],
+    retros: [],
     user: undefined,
     
     // date/habit for entryeditcontainer
@@ -22,6 +22,10 @@ let INITIAL_STATE = {
     // EventEditDialog
     showEventEditDialog: false,
     selectedEventForEdit: undefined,
+
+    // RetroEditDialog
+    showRetroEditDialog: false,
+    selectedRetroForEdit: undefined,
 
     // CategoryEditDialog
     showCategoryEditDialog: false,
@@ -63,6 +67,13 @@ export default function(state = INITIAL_STATE, action) {
                 showEventEditDialog: action.payload.showEventEditDialog,
             }
         }
+        case "SELECT_NEW_RETRO": {
+            return {
+                ...state,
+                selectedRetroForEdit: action.payload.retro,
+                showRetroEditDialog: action.payload.showRetroEditDialog,
+            }
+        }
         case "LOAD_USER": {
             return {
                 ...state,
@@ -72,7 +83,7 @@ export default function(state = INITIAL_STATE, action) {
                 categories: action.payload.categories,
                 entries: action.payload.entries,
                 user: action.payload.user,
-                events: action.payload.events,
+                retros: action.payload.retros,
             };
         }
         case "CREATE_HABIT": {
@@ -110,6 +121,12 @@ export default function(state = INITIAL_STATE, action) {
                 events: state.events.concat([action.payload]),
             };
         }
+        case "CREATE_RETRO": {
+            return {
+                ...state,
+                retros: state.retros.concat([action.payload]),
+            };
+        }
         case "UPDATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
             return {
@@ -136,10 +153,28 @@ export default function(state = INITIAL_STATE, action) {
                 events: events,
             };
         }
+        case "UPDATE_RETRO": {
+            let retros = [...state.retros];
+            for (let i = 0; i < state.retros.length; i++) {
+                if (action.payload._id === state.retros[i]._id) {
+                    retros[i] = action.payload;
+                }
+            }
+            return {
+                ...state,
+                retros: retros,
+            };
+        }
         case "DELETE_EVENT": {
             return {
                 ...state,
                 events: state.events.filter((event) => (event._id !== action.payload))
+            };
+        }
+        case "DELETE_RETRO": {
+            return {
+                ...state,
+                retros: state.retros.filter((retro) => (retro._id !== action.payload))
             };
         }
         case "DELETE_HABIT": {

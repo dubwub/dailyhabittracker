@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Colors, Dialog, Card, Icon } from '@blueprintjs/core';
 import { connect } from 'react-redux';
-import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { getThresholdFromValue, returnLastXDays } from '../utils/habits.utils.js';
+import * as mapDispatchToProps from '../../actions/index.actions.js'; 
+import { getThresholdFromValue, returnLastXDays } from '../../utils/habits.utils.js';
 import _ from 'lodash';
 
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Dialog, FormGroup, InputGroup, NumericInput } from '@blueprintjs/core';
 import * as moment from "moment";
 import { connect } from 'react-redux';
-import * as mapDispatchToProps from '../actions/index.actions.js'; 
+import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 
 class DreamEditDialog extends Component {
     constructor(props) {

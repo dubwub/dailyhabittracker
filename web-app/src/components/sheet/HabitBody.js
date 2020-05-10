@@ -11,7 +11,7 @@ class HabitBody extends Component {
         super(props);
         this.state = {
             entries: this.props.entries,
-            debounce: _.debounce((habit, day, value) => this.props.updateEntry(habit, day, undefined, value, undefined), 1000)
+            debounce: _.debounce((habit, day, note) => this.props.updateEntry(habit, day, undefined, note, undefined, undefined), 1000)
         }
     }
 
@@ -19,19 +19,57 @@ class HabitBody extends Component {
         this.props.selectHabitForEdit(this.props.habit, true);
     }
 
-    handleTextAreaChange(habit, day, value) {
+    handleValueChange(day, value) {
         let entries = this.state.entries;
-        entries[day.format("MM/DD/YYYY")]["note"] = value;
+        entries[day.format("MM/DD/YYYY")]["value"] = value;
         this.setState({
             ...this.state,
             entries: entries,
         })
-        this.state.debounce(habit, day, value);
+        this.props.updateEntry(this.props.habit, day, value, undefined, undefined, undefined);
+    }
+
+    handleTextAreaChange(habit, day, note) {
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["note"] = note;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.state.debounce(habit, day, note);
+    }
+
+    createTransaction(habit, day, value, note, transactions) {
+        if (_.isNil(transactions)) {
+            transactions = [];
+        }
+        transactions = transactions.concat([{
+            time: Date.now(),
+            value: value,
+            note: note,
+        }]);
+
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["transactions"] = transactions;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.props.updateEntry(habit, day, undefined, undefined, transactions, undefined)
+    }
+
+    deleteTransaction(habit, day, transactions, index) {
+        transactions.splice(index, 1);
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["transactions"] = transactions;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.props.updateEntry(habit, day, undefined, undefined, transactions, undefined)
     }
 
     render() {
-        const color = this.props.color || "";
-
         return (
             <div className={"row-contents habit"} onScroll={syncScroll}>
                 { 
@@ -64,20 +102,36 @@ class HabitBody extends Component {
                             }
                         } */}
 
+                        let transactionTags = [];
+                        if (!_.isNil(this.state.entries[day_fmt]["transactions"])) {
+                            const transactions = this.state.entries[day_fmt]["transactions"];
+                            for (let i = 0; i < transactions.length; i++) {
+                                transactionTags.push((
+                                    <div key={i}>
+                                        <Button icon={"cross"}
+                                                onClick={() => this.deleteTransaction(this.props.habit, day, this.state.entries[day_fmt]["transactions"], i)} />
+                                        Time: {transactions[i].time}, Value: {transactions[i].value}, Note: {transactions[i].note}
+                                    </div>
+                                ))
+                            }
+                        }
+
                         return (
                             <div className={"cell"} key={day_fmt}>
                                 <Popover content={(
                                     <div>
                                         How do I feel about my progress today?<br/>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 1, undefined, undefined)}>1</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 2, undefined, undefined)}>2</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 3, undefined, undefined)}>3</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 4).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 4, undefined, undefined)}>4</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 5).color, width: 40, height: 30}} onClick={() => this.props.updateEntry(this.props.habit, day, 5, undefined, undefined)}>5</Button><br />
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 1)}>1</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 2)}>2</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 3)}>3</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 4).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 4)}>4</Button>
+                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 5).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 5)}>5</Button><br />
                                         <TextArea style={{"width":200, "height":100}} autoFocus={true}
                                             value={this.state.entries[day_fmt]["note"]}
                                             onChange={(e) => this.handleTextAreaChange(this.props.habit, day, e.target.value)}
                                             />
+                                        <Button onClick={() => this.createTransaction(this.props.habit, day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Save transaction</Button>
+                                        { transactionTags }
                                     </div>
                                 )} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
                                     <Button    

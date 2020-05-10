@@ -62,6 +62,58 @@ export interface State {
     debounce: any
 }
 
+// class Events extends Component {
+//     onClick(e, eventId) {
+//         // TODO: this is jank as all hell, there may be a better way to do this
+//         console.log("Responding to click event with nodeName: " + e.target.nodeName);
+
+//         if (["path", "svg"].indexOf(e.target.nodeName) === -1) {
+//             this.props.selectEventForEdit(eventId, true);
+//         } 
+//     }
+
+//     renderEvent(index, event) {
+//         // for display purposes, don't display parts of events out of range
+//         let truncStartDate = moment.max(event.startDate, this.props.startDate);
+//         let truncEndDate = moment.min(event.endDate, this.props.endDate);
+
+//         let timeBeforeToday = this.props.endDate.diff(truncEndDate, "days");
+//         let durationOfEvent = truncEndDate.diff(truncStartDate, "days");
+//         let timeAfterEnding = truncStartDate.diff(this.props.startDate, "days");
+        
+//         return (
+//             // TODO: deleting an event brings up the dialog
+//             <div key={index} style={{"width": "100%", "height": "100px", "whiteSpace": "nowrap", "overflowX": "auto"}}>
+//                 <div style={{"display": "inline-block", "width": timeBeforeToday*100, "height": 20}} />
+//                 <Tag 
+//                     interactive={true}
+//                     large={true}
+//                     style={{
+//                         "width": (durationOfEvent+1)*100,
+//                         "backgroundColor": event.color,
+//                         "display": "inline-block",
+//                     }}
+//                     onRemove={() => this.props.deleteEvent(event._id)}
+//                     onClick={(e) => this.onClick(e, event._id)}
+//                 >
+//                     {event.title}
+//                 </Tag>
+//                 <div style={{"display": "inline-block", "width": timeAfterEnding*100, "height": 20}} />
+//             </div>
+//         );
+//     }
+
+//     render() {
+//         return (
+//             <div className="header-event" style={{"width": 3000}}>
+//                 {
+//                     this.props.events.map((event, index) => this.renderEvent(index, event))
+//                 }
+//             </div>            
+//         )
+//     }
+// }
+
 class DailyRetroContainer extends React.Component<Props, State> {
 
     constructor(props: Props) {

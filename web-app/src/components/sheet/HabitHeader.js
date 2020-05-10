@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 import { Button, Tag } from "@blueprintjs/core";
+import * as moment from "moment";
 
 class HabitHeader extends Component {
     toggleEditMode() {
@@ -12,7 +13,7 @@ class HabitHeader extends Component {
         const color = this.props.color || "";
         const dateDisplay = this.props.endDate ? (
             <Tag icon={"time"} minimal={true}>
-                End is { this.props.endDate.fromNow(true) } from now
+                End: { this.props.endDate.from(moment().startOf('day')) }
             </Tag>
         ) : (<div />)
 

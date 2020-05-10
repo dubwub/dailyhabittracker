@@ -2,6 +2,7 @@
 const User = require('../../models/User');
 const Entry = require('../../models/Entry');
 const Event = require('../../models/Event');
+const Retrospective = require('../../models/Retrospective');
 
 const express = require('express');
 const router = express.Router();
@@ -27,13 +28,23 @@ router.get('/:id', (req, res) => {
                     output['entries'] = entries;
 
                     // TODO: can I do this without nesting? probably with async, right?
-                    Event.find({
+                    // Event.find({
+                    //     user: req.params.id
+                    // }, function(err, events) {
+                    //     if (err) {
+                    //         res.status(400).json({ error: 'Error loading events' });
+                    //     } else {
+                    //         output['events'] = events;
+                    //         res.send(output);
+                    //     }
+                    // })
+                    Retrospective.find({
                         user: req.params.id
-                    }, function(err, events) {
+                    }, function(err, retros) {
                         if (err) {
-                            res.status(400).json({ error: 'Error loading events' });
+                            res.status(400).json({ error: 'Error loading retros' });
                         } else {
-                            output['events'] = events;
+                            output['retros'] = retros;
                             res.send(output);
                         }
                     })
@@ -273,6 +284,60 @@ router.delete('/:uid/events/:eid', (req, res) => {
 		.catch(err => res.status(400).json({ error: err }));
 });
 
+////////// RETRO ROUTES //////////
+
+// @route PUT /api/users/:id/retros
+// @description add a retro to user
+// @access Public (to make user)
+router.put('/:id/retros', async (req, res) => {
+    const params = {
+        ...req.body,
+        user: req.params.id,
+    };
+    let newRetro = new Retrospective(params);
+    newRetro.save(function(err, retro) {
+        if (err) { res.status(400).json({error: err}) }
+        else { res.send(retro); }
+    });
+});
+
+// @route POST /api/users/:uid/events/:eid
+// @description modify event with clean fields
+router.post('/:uid/retros/:rid', (req, res) => {
+    req.body["user"] = req.params.id;
+    let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
+    const validFields = ["title", "startDate", "endDate", "value", "note", "goal"];
+    validFields.forEach((field) => {
+        if (req.body[field]) {
+            cleanedRequest[field] = req.body[field];
+        }
+    });
+    cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
+    Retrospective.findOneAndUpdate({
+            _id: req.params.rid,
+            user: req.params.uid,
+        },
+        {
+            $set: cleanedRequest
+        },
+        {
+            new: true
+        },
+        function(err, event) {
+            if (err) { res.status(500).json({error: err}); }
+            res.send(event);  
+        }
+    )
+});
+
+// @route DELETE /api/users/:uid/retros/:rid
+// @description delete retro <rid>
+// @access PUBLIC (to make into only user)
+router.delete('/:uid/retros/:rid', (req, res) => {
+	Retrospective.findByIdAndDelete(req.params.rid).then( _ => res.json({ msg: 'Event removed successfully' }))
+		.catch(err => res.status(400).json({ error: err }));
+});
+
 ////////// ENTRY ROUTES //////////
 
 // post habit entry
@@ -280,6 +345,7 @@ router.post('/:uid/habit/:hid/entries', (req, res) => {
     let set_params = {};
     if (typeof req.body.value !== "undefined") set_params["value"] = req.body.value;
     if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
+    if (typeof req.body.transactions !== "undefined") set_params["transactions"] = req.body.transactions;
     if (typeof req.body.tags !== "undefined") { set_params["tags"] = req.body.tags; }
     
     Entry.findOneAndUpdate({
@@ -299,6 +365,7 @@ router.post('/:uid/entries', (req, res) => {
     let set_params = {};
     if (typeof req.body.value !== "undefined") { set_params["value"] = req.body.value; }
     if (typeof req.body.note !== "undefined") { set_params["note"] = req.body.note; }
+    if (typeof req.body.transactions !== "undefined") { set_params["transactions"] = req.body.transactions; }
     
     Entry.findOneAndUpdate({
         "user": req.params.uid,

@@ -4,7 +4,7 @@ import { DateRangeInput } from '@blueprintjs/datetime';
 import _ from 'lodash';
 import * as moment from "moment";
 import { connect } from 'react-redux';
-import * as mapDispatchToProps from '../actions/index.actions.js'; 
+import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 
 const DEFAULT_THRESHOLDS = [
     {

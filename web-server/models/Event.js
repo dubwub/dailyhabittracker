@@ -1,4 +1,4 @@
-// models/Entry.js
+// models/Event.js
 
 const mongoose = require('mongoose');
 
