@@ -5,8 +5,8 @@ const moment = require('moment');
 
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e804a079f8c170c7f812eeb";
-// const hardcoded_server_url = 'http://134.122.31.100:8082'
-const hardcoded_server_url = 'http://localhost:8082'
+const hardcoded_server_url = 'http://134.122.31.100:8082'
+// const hardcoded_server_url = 'http://localhost:8082'
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
