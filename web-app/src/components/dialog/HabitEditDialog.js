@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Colors, Dialog, FormGroup, ControlGroup, TextArea, InputGroup, Icon, NumericInput, HTMLSelect } from '@blueprintjs/core';
+import { Button, Colors, Dialog, FormGroup, ControlGroup, TextArea, InputGroup, Icon, NumericInput, HTMLSelect, Switch } from '@blueprintjs/core';
 import { DateRangeInput } from '@blueprintjs/datetime';
 import _ from 'lodash';
 import * as moment from "moment";
@@ -72,6 +72,7 @@ class HabitEditDialog extends Component {
             editedTags: DEFAULT_TAGS,
             editedStartDate: moment().toDate(),
             editedEndDate: undefined,
+            editedArchived: false,
         }
     }
 
@@ -90,6 +91,7 @@ class HabitEditDialog extends Component {
                     editedTags: nextProps.habit.tags,
                     editedStartDate: nextProps.habit.startDate ? nextProps.habit.startDate.toDate() : undefined,
                     editedEndDate: nextProps.habit.endDate ? nextProps.habit.endDate.toDate() : undefined,
+                    editedArchived: nextProps.habit.archived || false,
                 };
             } else { // create new habit
                 return {
@@ -104,6 +106,7 @@ class HabitEditDialog extends Component {
                     editedTags: DEFAULT_TAGS,
                     editedStartDate: moment().toDate(),
                     editedEndDate: undefined,
+                    editedArchived: false,
                 }
             }
         } else {
@@ -123,6 +126,7 @@ class HabitEditDialog extends Component {
             editedTags: this.props.habit.tags,
             editedStartDate: this.props.habit.startDate ? this.props.habit.startDate.toDate() : undefined,
             editedEndDate: this.props.habit.endDate ? this.props.habit.endDate.toDate() : undefined,
+            editedArchived: this.props.habit.archived || false,
         })
     }
 
@@ -224,6 +228,13 @@ class HabitEditDialog extends Component {
         this.setState(newState);
     }
 
+    toggleArchived() {
+        this.setState({
+            ...this.state,
+            editedArchived: !this.state.editedArchived,
+        })
+    }
+
     submitHabitEntryForm() {
         if (!_.isNil(this.props.selectedHabitForEdit)) { // editing existing habit
             this.props.updateHabit(
@@ -237,6 +248,7 @@ class HabitEditDialog extends Component {
                 this.state.editedTags,
                 this.state.editedStartDate,
                 this.state.editedEndDate,
+                this.state.editedArchived,
             );
             this.props.selectHabitForEdit(undefined, false);
         } else { // add new habit
@@ -249,7 +261,7 @@ class HabitEditDialog extends Component {
                 this.state.editedThresholds,
                 this.state.editedTags,
                 this.state.editedStartDate,
-                this.state.editedEndDate,
+                this.state.editedEndDate
             )
             this.props.selectHabitForEdit(undefined, false);
         }
@@ -434,6 +446,12 @@ class HabitEditDialog extends Component {
                             })
                         }
                         <Button icon="add" onClick={() => this.addTag()}>Add a new threshold</Button>
+                    </FormGroup>
+                    <FormGroup
+                        label="Archive this habit?">
+                        <Switch checked={this.state.editedArchived} label={"Archived"}
+                                  onChange={(e) => this.toggleArchived()}
+                        />
                     </FormGroup>
                     <div className="bp3-dialog-footer">
                         <Button

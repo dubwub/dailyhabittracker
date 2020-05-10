@@ -10,6 +10,9 @@ const hardcoded_server_url = 'http://localhost:8082'
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
+    if (typeof day === "undefined") {
+        return undefined;
+    }
     return moment(day.substring(0, 10), "YYYY-MM-DD");
 }
 
@@ -198,6 +201,7 @@ export function createHabit(title, description, category, order, color, threshol
         tags: tags,
         startDate: startDate,
         endDate: endDate,
+        archived: false, // you would never create an archived habit
     }
 
     return async function(dispatch) {
@@ -216,7 +220,7 @@ export function createHabit(title, description, category, order, color, threshol
     }
 }
 
-export function updateHabit(habit, title, description, category, order, color, thresholds, tags, startDate, endDate) {
+export function updateHabit(habit, title, description, category, order, color, thresholds, tags, startDate, endDate, archived) {
     const data = {
         title: title,
         description: description,
@@ -228,6 +232,7 @@ export function updateHabit(habit, title, description, category, order, color, t
         tags: tags,
         startDate: startDate,
         endDate: endDate,
+        archived: archived,
     };
 
     return async function(dispatch) {
@@ -256,6 +261,13 @@ export function deleteHabit(habit) {
             })
         }
     }
+}
+
+export function toggleHideArchived(hideArchived) {
+    return (dispatch) => dispatch({
+        type: "TOGGLE_HIDE_ARCHIVED",
+        payload: hideArchived,
+    })
 }
 
 /////////// EVENT ACTIONS ///////////

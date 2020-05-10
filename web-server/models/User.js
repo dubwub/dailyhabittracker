@@ -28,6 +28,7 @@ const UserSchema = new mongoose.Schema({
         category: {type: mongoose.Schema.Types.ObjectId},
         startDate: Date,
         endDate: Date,
+        archived: Boolean,
 		order: Number,
 		entry_type: String,
         description: String,

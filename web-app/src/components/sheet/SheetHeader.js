@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { syncScroll } from '../../utils/habits.utils';
 import { connect } from 'react-redux';
-import { Button, Colors, Icon, Tag } from '@blueprintjs/core';
+import { Button, Colors, Icon, Switch, Tag } from '@blueprintjs/core';
 
 import * as mapDispatchToProps from '../../actions/index.actions.js';
 import * as moment from "moment";
@@ -55,15 +55,15 @@ class SheetHeader extends Component {
         return (
             <div className="sheet-header">
                 <div className="row-header sheet-header">
-                    {/* <Button icon="add" onClick={() => this.props.selectEventForEdit(undefined, true)}>Add New Event</Button> */}
-                    <br/> <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Dreams</Button>
+                    <Button icon="add" onClick={() => this.props.selectHabitForEdit(undefined, true)}>Add New Habit</Button>
+                    <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Dreams</Button>
+                    <Switch label="Hide Archived Projects" checked={this.props.hideArchived} onClick={() => { console.log(this.props.hideArchived); this.props.toggleHideArchived(!this.props.hideArchived)}} />
                 </div>
                 <div className="row-contents sheet-date-labels" onScroll={syncScroll}>
                     {
                         this.props.days.map((day, index) => (
                                 <div onClick={() => this.props.selectEntry(day, "daily-retro")} key={index}>
                                     <DateLabel dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} day={day} />
-                                    {/* <DailyRetro dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} entry={this.props.entries[day.format("MM/DD/YYYY")]} /> */}
                                 </div>    
                             )
                         )
@@ -88,7 +88,8 @@ function mapStateToProps(state) {
         entries: state.entries["daily-retro"],
         events: state.events,
         dateOfSelectedEntry: state.dateOfSelectedEntry,
-        habitOfSelectedEntry: state.habitOfSelectedEntry
+        habitOfSelectedEntry: state.habitOfSelectedEntry,
+        hideArchived: state.hideArchived,
     };
 }
 

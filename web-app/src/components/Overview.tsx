@@ -85,7 +85,7 @@ class Overview extends React.Component<Props>{
                         </div>
                         <div className="layout-body">
                             <SheetHeader />
-                            <div style={{width: "100%", height: "75%", position: "relative"}}>
+                            <div style={{width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
                                 {
                                     this.props.enrichedCategories.map((category: any, index: number) => {
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
@@ -145,7 +145,9 @@ function mapStateToProps(state: any) {
         }
         for (let i = 0; i < habitOrder.length; i++) {
             if (state.habits[habitOrder[i]]["category"] === category) {
-                output.habits.push(state.habits[habitOrder[i]]);
+                if (!(state.hideArchived && state.habits[habitOrder[i]]["archived"])) {
+                    output.habits.push(state.habits[habitOrder[i]]);
+                }
             }
         }
         indicesToJump += output['habits'].length;
@@ -154,7 +156,9 @@ function mapStateToProps(state: any) {
     let uncategorizedHabits = [];
     for (let i = 0; i < habitOrder.length; i++) {
         if (!state.habits[habitOrder[i]]["category"]) {
-            uncategorizedHabits.push(state.habits[habitOrder[i]]);
+            if (!(state.hideArchived && state.habits[habitOrder[i]]["archived"])) {
+                uncategorizedHabits.push(state.habits[habitOrder[i]]);
+            }
         }
     }
     enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits, indicesToJump: indicesToJump }]);
@@ -166,7 +170,6 @@ function mapStateToProps(state: any) {
             flatHabits.push(enrichedCategories[i]["habits"][j]);
         }
     }
-    console.log(flatHabits);
 
     return {
         ...state,

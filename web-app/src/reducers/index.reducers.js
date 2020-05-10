@@ -10,7 +10,8 @@ let INITIAL_STATE = {
     entries: {},
     retros: [],
     user: undefined,
-    
+    hideArchived: true,
+
     // date/habit for entryeditcontainer
     dateOfSelectedEntry: undefined,
     habitOfSelectedEntry: undefined,
@@ -223,6 +224,12 @@ export default function(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 showCategoryEditDialog: action.payload,
+            }
+        }
+        case "TOGGLE_HIDE_ARCHIVED": {
+            return {
+                ...state,
+                hideArchived: action.payload,
             }
         }
         default:
