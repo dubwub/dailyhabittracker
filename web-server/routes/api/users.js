@@ -87,7 +87,6 @@ router.post('/:uid/category/:cid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
-    cleanedRequest["_id"] = req.params.cid; // just making sure we don't overwrite old _id
 
     User.findOneAndUpdate({
             _id: req.params.uid,
@@ -179,8 +178,6 @@ router.post('/:uid/habit/:hid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
-    cleanedRequest["_id"] = req.params.hid; // just making sure we don't overwrite old _id
-
     User.findOneAndUpdate({
         _id: req.params.uid,
         habits: { 
@@ -258,7 +255,6 @@ router.post('/:uid/events/:eid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
-    cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
     Event.findOneAndUpdate({
             _id: req.params.eid,
             user: req.params.uid,
@@ -312,7 +308,6 @@ router.post('/:uid/retros/:rid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
-    cleanedRequest["_id"] = req.params.eid; // just making sure we don't overwrite old _id
     Retrospective.findOneAndUpdate({
             _id: req.params.rid,
             user: req.params.uid,

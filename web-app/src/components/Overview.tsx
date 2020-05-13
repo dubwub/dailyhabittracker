@@ -85,7 +85,8 @@ class Overview extends React.Component<Props>{
                         </div>
                         <div className="layout-body">
                             <SheetHeader />
-                            <div style={{width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
+                            <LongRetroContainer />
+                            <div style={{border: "2px solid gray", width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
                                 {
                                     this.props.enrichedCategories.map((category: any, index: number) => {
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
@@ -121,7 +122,6 @@ class Overview extends React.Component<Props>{
                                 }
                             </div>
                             <DailyRetroContainer />
-                            <LongRetroContainer />
                         </div>
                     </div>
                 </div>
@@ -170,6 +170,8 @@ function mapStateToProps(state: any) {
             flatHabits.push(enrichedCategories[i]["habits"][j]);
         }
     }
+
+    console.log(enrichedCategories);
 
     return {
         ...state,

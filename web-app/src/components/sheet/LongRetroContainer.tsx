@@ -92,7 +92,6 @@ class Retros extends React.Component<RetrosProps, State> {
                 <div style={{"display": "inline-block", "width": timeBeforeToday*50, "height": 30}} />
                 <Tag 
                     interactive={true}
-                    large={true}
                     style={{
                         "width": (durationOfRetro+1)*50,
                         "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).color,
@@ -127,14 +126,14 @@ class LongRetroContainer extends React.Component<LongFormProps, State> {
             <div style={{position: "relative"}}>
             <div className={"row-header habit"} style={{position: "relative", maxWidth: 500, paddingRight: 0}}>
                 <div className="habit-title">
-                    <h5 style={{margin: 0}}>Long-form Retrospectives</h5>
+                    <h5 style={{margin: 0}}>Sagas</h5>
                 </div>
                 <Button 
                     style={{position: "absolute", top: 0, right: 0}}
                     onClick={() => this.props.selectRetroForEdit(undefined, true)}
                     icon={"new-drawing"} />
             </div>
-            <div className={"row-contents habit"} onScroll={syncScroll}>
+            <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll} style={{overflowY: "auto"}}>
                 <Retros startDate={this.props.startDate}
                         endDate={this.props.endDate}
                         retros={this.props.retros}

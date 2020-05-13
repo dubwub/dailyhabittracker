@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 import { Button, Icon, Popover, TextArea } from "@blueprintjs/core";
 import _ from 'lodash';
+import * as moment from "moment";
 
 class HabitBody extends Component {
 
@@ -71,84 +72,91 @@ class HabitBody extends Component {
 
     render() {
         return (
-            <div className={"row-contents habit"} onScroll={syncScroll}>
+            <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll}>
                 { 
                     this.props.days.map((day) => {
-                        const day_fmt = day.format("MM/DD/YYYY");
-                        let value = this.props.entries[day_fmt]["value"];
+                        if (day >= this.props.startDate) {
+                            const day_fmt = day.format("MM/DD/YYYY");
+                            let value = this.props.entries[day_fmt]["value"];
 
-                        let helperIcons = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
-                            (
-                                <Icon icon="annotation" 
-                                      style={{position: "absolute", width: 10, height: 10, bottom: 0, right: 10, color: "black"}}
-                                />
-                            ) : (
-                                <span />    
+                            let helperIcons = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
+                                (
+                                    <Icon icon="annotation" 
+                                        style={{position: "absolute", width: 10, height: 10, bottom: 0, right: 10, color: "black"}}
+                                    />
+                                ) : (
+                                    <span />    
+                                )
+                            
+                            let tagIcons = [];
+                            {/* if (!_.isNil(this.props.entries[day_fmt]["tags"])) {
+                                const tags = this.props.entries[day_fmt]["tags"];
+                                for (let i = 0; i < tags.length; i++) {
+                                    tagIcons.push((
+                                        <Icon key={i}
+                                            icon={this.props.tags[tags[i]].icon}
+                                            style={{
+                                                        backgroundColor: this.props.tags[tags[i]].color,
+                                                        position: "absolute",
+                                                        bottom: 5, left: i * 20,
+                                                    }} />
+                                    ))
+                                }
+                            } */}
+
+                            let transactionTags = [];
+                            if (!_.isNil(this.state.entries[day_fmt]["transactions"])) {
+                                const transactions = this.state.entries[day_fmt]["transactions"];
+                                for (let i = 0; i < transactions.length; i++) {
+                                    transactionTags.push((
+                                        <div key={i} style={{width: 200}}>
+                                            <Button icon={"cross"}
+                                                    onClick={() => this.deleteTransaction(this.props.habit, day, this.state.entries[day_fmt]["transactions"], i)} />
+                                            Time: {moment(transactions[i].time).calendar()}, Value: {transactions[i].value}, Note: {transactions[i].note}
+                                        </div>
+                                    ))
+                                }
+                            }
+
+                            return (
+                                <div className={"cell"} key={day_fmt}>
+                                    <Popover content={(
+                                        <div style={{width: 250, height: 250, overflowY: "auto", overflowX: "hidden"}}>
+                                            How do I feel about my progress today?<br/>
+                                            <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 1)}>1</Button>
+                                            <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 2)}>2</Button>
+                                            <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 3)}>3</Button>
+                                            <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 4).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 4)}>4</Button>
+                                            <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 5).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 5)}>5</Button><br />
+                                            <TextArea style={{"width":200, "height":100}} autoFocus={true}
+                                                value={this.state.entries[day_fmt]["note"]}
+                                                onChange={(e) => this.handleTextAreaChange(this.props.habit, day, e.target.value)}
+                                                />
+                                            <Button icon="camera" onClick={() => this.createTransaction(this.props.habit, day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Capture snapshot</Button>
+                                            { transactionTags }
+                                        </div>
+                                    )} modifiers={{preventOverflow: {enabled: true, boundariesElement: "window"}}} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
+                                        <Button    
+                                            className={"bp3-minimal bp3-outlined cell"}
+                                            style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}>
+                                            <Icon icon={getThresholdFromValue(this.props.thresholds, value).icon}
+                                                style={{
+                                                    color: "black",
+                                                    display: "inline-block",
+                                                    flex: "0 0 auto"
+                                                }} />
+                                            { helperIcons }
+                                            { tagIcons }
+                                        </Button>
+                                    </Popover>
+                                </div>
                             )
-                        
-                        let tagIcons = [];
-                        {/* if (!_.isNil(this.props.entries[day_fmt]["tags"])) {
-                            const tags = this.props.entries[day_fmt]["tags"];
-                            for (let i = 0; i < tags.length; i++) {
-                                tagIcons.push((
-                                    <Icon key={i}
-                                          icon={this.props.tags[tags[i]].icon}
-                                          style={{
-                                                    backgroundColor: this.props.tags[tags[i]].color,
-                                                    position: "absolute",
-                                                    bottom: 5, left: i * 20,
-                                                 }} />
-                                ))
-                            }
-                        } */}
-
-                        let transactionTags = [];
-                        if (!_.isNil(this.state.entries[day_fmt]["transactions"])) {
-                            const transactions = this.state.entries[day_fmt]["transactions"];
-                            for (let i = 0; i < transactions.length; i++) {
-                                transactionTags.push((
-                                    <div key={i}>
-                                        <Button icon={"cross"}
-                                                onClick={() => this.deleteTransaction(this.props.habit, day, this.state.entries[day_fmt]["transactions"], i)} />
-                                        Time: {transactions[i].time}, Value: {transactions[i].value}, Note: {transactions[i].note}
-                                    </div>
-                                ))
-                            }
+                        } else {
+                            return (
+                                <div className={"cell"} key={day.format("MM/DD/YYYY")} />
+                            )
                         }
-
-                        return (
-                            <div className={"cell"} key={day_fmt}>
-                                <Popover content={(
-                                    <div>
-                                        How do I feel about my progress today?<br/>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 1)}>1</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 2)}>2</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 3)}>3</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 4).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 4)}>4</Button>
-                                        <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 5).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 5)}>5</Button><br />
-                                        <TextArea style={{"width":200, "height":100}} autoFocus={true}
-                                            value={this.state.entries[day_fmt]["note"]}
-                                            onChange={(e) => this.handleTextAreaChange(this.props.habit, day, e.target.value)}
-                                            />
-                                        <Button onClick={() => this.createTransaction(this.props.habit, day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Save transaction</Button>
-                                        { transactionTags }
-                                    </div>
-                                )} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
-                                    <Button    
-                                        className={"bp3-minimal bp3-outlined cell"}
-                                        style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}>
-                                        <Icon icon={getThresholdFromValue(this.props.thresholds, value).icon}
-                                              style={{
-                                                  color: "black",
-                                                  display: "inline-block",
-                                                  flex: "0 0 auto"
-                                              }} />
-                                        { helperIcons }
-                                        { tagIcons }
-                                    </Button>
-                                </Popover>
-                            </div>
-                        )
+                        
                     })
                 }
             </div>
@@ -168,6 +176,7 @@ function mapStateToProps(state, ownProps) {
         days: state["days"],
         category: state["habits"][ownProps.habit]["category"] ? state["categories"][state["habits"][ownProps.habit]["category"]] : undefined,
         thresholds: state["habits"][ownProps.habit]["thresholds"],
+        startDate: state["habits"][ownProps.habit]["startDate"],
         tags: tags,
         entries: state["entries"][ownProps.habit],
     };

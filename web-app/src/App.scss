@@ -46,12 +46,14 @@ code {
     overflow-x: auto;
     overflow-y: hidden;
     
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: none; /* IE10 remove scrollbar */
-    scrollbar-width: none; /* Firefox remove scrollbar */
+    // &.hide-scrollbar {
+    //     -webkit-overflow-scrolling: touch;
+    //     -ms-overflow-style: none; /* IE10 remove scrollbar */
+    //     scrollbar-width: none; /* Firefox remove scrollbar */
+    // }
 }
 
-.row-contents::-webkit-scrollbar {
+.hide-scrollbar::-webkit-scrollbar {
     display: none;
 }
 

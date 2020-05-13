@@ -458,6 +458,13 @@ class HabitEditDialog extends Component {
                             icon="floppy-disk"
                             intent="primary"
                             onClick={() => this.submitHabitEntryForm()}>Save</Button>
+                        <Button
+                            icon="delete"
+                            intent="warning"
+                            onClick={() => {
+                                this.props.selectHabitForEdit(undefined, false);
+                                this.props.deleteHabit(this.props.habit._id)
+                            }}>Delete</Button>
                     </div>
                 </div>
             </Dialog>

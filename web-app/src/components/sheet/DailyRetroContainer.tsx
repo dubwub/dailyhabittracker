@@ -62,58 +62,6 @@ export interface State {
     debounce: any
 }
 
-// class Events extends Component {
-//     onClick(e, eventId) {
-//         // TODO: this is jank as all hell, there may be a better way to do this
-//         console.log("Responding to click event with nodeName: " + e.target.nodeName);
-
-//         if (["path", "svg"].indexOf(e.target.nodeName) === -1) {
-//             this.props.selectEventForEdit(eventId, true);
-//         } 
-//     }
-
-//     renderEvent(index, event) {
-//         // for display purposes, don't display parts of events out of range
-//         let truncStartDate = moment.max(event.startDate, this.props.startDate);
-//         let truncEndDate = moment.min(event.endDate, this.props.endDate);
-
-//         let timeBeforeToday = this.props.endDate.diff(truncEndDate, "days");
-//         let durationOfEvent = truncEndDate.diff(truncStartDate, "days");
-//         let timeAfterEnding = truncStartDate.diff(this.props.startDate, "days");
-        
-//         return (
-//             // TODO: deleting an event brings up the dialog
-//             <div key={index} style={{"width": "100%", "height": "100px", "whiteSpace": "nowrap", "overflowX": "auto"}}>
-//                 <div style={{"display": "inline-block", "width": timeBeforeToday*100, "height": 20}} />
-//                 <Tag 
-//                     interactive={true}
-//                     large={true}
-//                     style={{
-//                         "width": (durationOfEvent+1)*100,
-//                         "backgroundColor": event.color,
-//                         "display": "inline-block",
-//                     }}
-//                     onRemove={() => this.props.deleteEvent(event._id)}
-//                     onClick={(e) => this.onClick(e, event._id)}
-//                 >
-//                     {event.title}
-//                 </Tag>
-//                 <div style={{"display": "inline-block", "width": timeAfterEnding*100, "height": 20}} />
-//             </div>
-//         );
-//     }
-
-//     render() {
-//         return (
-//             <div className="header-event" style={{"width": 3000}}>
-//                 {
-//                     this.props.events.map((event, index) => this.renderEvent(index, event))
-//                 }
-//             </div>            
-//         )
-//     }
-// }
-
 class DailyRetroContainer extends React.Component<Props, State> {
 
     constructor(props: Props) {
@@ -124,25 +72,54 @@ class DailyRetroContainer extends React.Component<Props, State> {
         }
     }
 
-    getStyleFromValue() {
-        // let minValue = 0;
-        // for (let i = 0; i < styles.length; i++) {
-        //     minValue += 2; // TODO: magic number
-        //     if (this.props.entry && this.props.entry.value && this.props.entry.value <= minValue) {
-        //         return styles[i];
-        //     }
-        // }
-        // return styles[0];
-    }
-
-    handleTextAreaChange(day: moment.Moment, value: number) {
+    handleTextAreaChange(day: moment.Moment, note: string) {
         let entries = this.state.entries;
-        entries[day.format("MM/DD/YYYY")]["note"] = value;
+        entries[day.format("MM/DD/YYYY")]["note"] = note;
         this.setState({
             ...this.state,
             entries: entries,
         })
-        this.state.debounce(day, value);
+        this.state.debounce(day, note);
+    }
+
+    handleValueChange(day: moment.Moment, value: number) {
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["value"] = value;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.props.updateEntry("daily-retro", day, value, undefined, undefined);
+    }
+
+    createTransaction(day: moment.Moment, value: number, note: string, transactions: any) {
+        if (_.isNil(transactions)) {
+            transactions = [];
+        }
+        transactions = transactions.concat([{
+            time: Date.now(),
+            value: value,
+            note: note,
+        }]);
+
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["transactions"] = transactions;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.props.updateEntry("daily-retro", day, undefined, undefined, transactions, undefined)
+    }
+
+    deleteTransaction(day: moment.Moment, transactions: any, index: number) {
+        transactions.splice(index, 1);
+        let entries = this.state.entries;
+        entries[day.format("MM/DD/YYYY")]["transactions"] = transactions;
+        this.setState({
+            ...this.state,
+            entries: entries,
+        })
+        this.props.updateEntry("daily-retro", day, undefined, undefined, transactions, undefined)
     }
 
     render() {
@@ -153,7 +130,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
                         <h5 style={{margin: 0}}>Daily Retrospectives</h5>
                     </div>
                 </div>
-                <div className={"row-contents habit"} onScroll={syncScroll}>
+                <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll}>
                     { 
                         this.props.days.map((day: moment.Moment) => {
                             const day_fmt: string = day.format("MM/DD/YYYY");
@@ -184,8 +161,18 @@ class DailyRetroContainer extends React.Component<Props, State> {
                                 }
                             } */}
 
-                            const onClick = (i: number) => {
-                                this.props.updateEntry("daily-retro", day, i, undefined, undefined)
+                            let transactionTags = [];
+                            if (!_.isNil(this.state.entries[day_fmt]["transactions"])) {
+                                const transactions = this.state.entries[day_fmt]["transactions"];
+                                for (let i = 0; i < transactions.length; i++) {
+                                    transactionTags.push((
+                                        <div key={i} style={{width: 200}}>
+                                            <Button icon={"cross"}
+                                                    onClick={() => this.deleteTransaction(day, this.state.entries[day_fmt]["transactions"], i)} />
+                                            Time: {moment.default(transactions[i].time).calendar()}, Value: {transactions[i].value}, Note: {transactions[i].note}
+                                        </div>
+                                    ))
+                                }
                             }
 
                             return (
@@ -193,13 +180,15 @@ class DailyRetroContainer extends React.Component<Props, State> {
                                     <Popover content={(
                                         <div>
                                             How do I feel about my progress today?<br/>
-                                            { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 10, onClick) } <br />
+                                            { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 10, (i: number) => this.handleValueChange(day, i)) } <br />
                                             <TextArea style={{"width":200, "height":100}} autoFocus={true}
                                                 value={this.state.entries[day_fmt]["note"]}
                                                 onChange={(e: any) => this.handleTextAreaChange(day, e.target.value)}
                                                 />
+                                            <Button icon="camera" onClick={() => this.createTransaction(day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Capture snapshot</Button>
+                                            { transactionTags }
                                         </div>
-                                    )} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
+                                    )} hoverOpenDelay={0} modifiers={{preventOverflow: {boundariesElement: "window"}}} minimal={true} transitionDuration={0} position={"left"}>
                                         <Button    
                                             className={"bp3-minimal bp3-outlined cell"}
                                             style={{"backgroundColor": getThresholdFromValue(DEFAULT_THRESHOLDS, value).color, position: "relative"}}>
