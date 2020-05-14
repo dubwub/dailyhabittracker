@@ -43,11 +43,9 @@ export function loadUser(days) {
             habitOrder.push(habit._id);
             if (habit.startDate) {
                 habit.startDate = _momentDateFromMongo(habit.startDate);
-                console.log(habit.startDate)
             }
             if (habit.endDate) {
                 habit.endDate = _momentDateFromMongo(habit.endDate);
-                console.log(habit.endDate)
             }
             habits[habit._id] = habit;
             entries[habit._id] = {};
@@ -81,12 +79,14 @@ export function loadUser(days) {
             // if habit_id is null, it's a daily retro
             const habit_id = entry["habit"] ? entry["habit"] : "daily-retro";
 
-            entries[habit_id][entry["date"]] = {
-                value: entry["value"],
-                note: entry["note"],
-                transactions: entry["transactions"],
-                tags: entry["tags"],
-            };
+            if (!_.isNil(entries[habit_id])) {
+                entries[habit_id][entry["date"]] = { // we should delete entries tied to deleted habits
+                    value: entry["value"],
+                    note: entry["note"],
+                    transactions: entry["transactions"],
+                    tags: entry["tags"],
+                };
+            }
         });
 
         // preprocess incoming events

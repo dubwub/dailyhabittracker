@@ -171,8 +171,6 @@ function mapStateToProps(state: any) {
         }
     }
 
-    console.log(enrichedCategories);
-
     return {
         ...state,
         enrichedCategories: enrichedCategories,
