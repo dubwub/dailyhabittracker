@@ -1,12 +1,12 @@
 // TODO: split into separate files
 import _ from 'lodash';
 import axios from 'axios';
+import hardcoded_server_url from '../config/constants.js'; 
+
 const moment = require('moment');
 
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e804a079f8c170c7f812eeb";
-// const hardcoded_server_url = 'http://134.122.31.100:8082'
-const hardcoded_server_url = 'http://localhost:8082'
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {
@@ -209,8 +209,8 @@ export function createHabit(title, description, category, order, color, threshol
 
         const payload = {
             ...res.data,
-            startDate: _momentDateFromMongo(res.data.startDate),
-            endDate: _momentDateFromMongo(res.data.endDate),
+            startDate: _.isNil(res.data.startDate) ? undefined: _momentDateFromMongo(res.data.startDate),
+            endDate: _.isNil(res.data.endDate) ? undefined : _momentDateFromMongo(res.data.endDate),
         }
 
         dispatch({
