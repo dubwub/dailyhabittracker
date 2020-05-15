@@ -1,7 +1,7 @@
 // TODO: split into separate files
 import _ from 'lodash';
 import axios from 'axios';
-import hardcoded_server_url from '../config/constants.js'; 
+import hardcoded_server_url from '../config/constants'; 
 
 const moment = require('moment');
 
