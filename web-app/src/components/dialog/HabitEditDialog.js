@@ -269,9 +269,9 @@ class HabitEditDialog extends Component {
 
     dialogTitle() {
         if (!_.isNil(this.state.selectedHabit)) {
-            return "Editing habit: " + this.state.editedTitle;
+            return "Editing goal: " + this.state.editedTitle;
         } else {
-            return "Create New Habit";
+            return "Create New Goal";
         }
     }
 
@@ -301,14 +301,14 @@ class HabitEditDialog extends Component {
                             disabled={ this.state.selectedHabit ? false : true }>
                             Undo changes</Button>
                     <FormGroup
-                        label="Edit Habit Title">
+                        label="What goal do you want to accomplish?">
                         <InputGroup
                             id="edit-title" type="text" className="bp3-input" placeholder="Title"
                             value={this.state.editedTitle}
                             onChange={(e) => this.modifyTitle(e.target.value)} />
                     </FormGroup>
                     <FormGroup
-                        label="Edit Habit Description">
+                        label="Give it an optional longer description.">
                         <TextArea
                             id="edit-desc"
                             growVertically={false}
@@ -318,7 +318,7 @@ class HabitEditDialog extends Component {
                             onChange={(e) => this.modifyDescription(e.target.value)}
                             />
                     </FormGroup>
-                    <FormGroup label="When does this project start & end?">
+                    <FormGroup label="When does this goal start & end?">
                         <DateRangeInput
                             formatDate={date => moment(date).format('MM/DD/YYYY')}
                             onChange={(dates) => this.modifyDates(dates)}
@@ -353,7 +353,7 @@ class HabitEditDialog extends Component {
                                       onValueChange={(value) => this.modifyOrder(value)}/>
                     </FormGroup>
                     <FormGroup
-                        label="Edit Habit Color">
+                        label="Edit Goal Color">
                         <InputGroup id="edit-color" type="text" className="bp3-input" placeholder="Color" 
                             value={this.state.editedColor}
                             onChange={(e) => this.modifyColor(e.target.value)}
@@ -448,7 +448,7 @@ class HabitEditDialog extends Component {
                         <Button icon="add" onClick={() => this.addTag()}>Add a new threshold</Button>
                     </FormGroup>
                     <FormGroup
-                        label="Archive this habit?">
+                        label="Archive this goal?">
                         <Switch checked={this.state.editedArchived} label={"Archived"}
                                   onChange={(e) => this.toggleArchived()}
                         />

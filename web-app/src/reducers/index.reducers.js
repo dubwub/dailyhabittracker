@@ -89,12 +89,13 @@ export default function(state = INITIAL_STATE, action) {
         }
         case "CREATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
-            state["entries"][action.payload._id] = {};
+            let newEntries = Object.assign({}, state["entries"]);
+            newEntries[action.payload._id] = {};
 
             // pre-load all days for new habit
             state["days"].forEach((day) => {
                 const day_fmt = day.format('MM/DD/YYYY');
-                state["entries"][action.payload._id][day_fmt] = {
+                newEntries[action.payload._id][day_fmt] = {
                     value: undefined,
                     note: undefined
                 };
@@ -104,7 +105,7 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 habitOrder: state.habitOrder.concat([action.payload._id]),
                 habits: state["habits"],
-                entries: state["entries"]
+                entries: newEntries 
             };
         }
         case "CREATE_CATEGORY": {
@@ -211,10 +212,13 @@ export default function(state = INITIAL_STATE, action) {
             };
         }
         case "UPDATE_ENTRY": {
-            habit = action.payload.habit || "daily-retro";
-            let new_habit_entries = Object.assign({}, state["entries"][habit]);
+            let new_habit_entries = Object.assign({}, state["entries"][action.payload.habit]);
             new_habit_entries[action.payload.date] = action.payload;
-            state["entries"][habit] = new_habit_entries;
+            state["entries"][action.payload.habit][action.payload.date] = {
+                value: action.payload.value,
+                note: action.payload.note,
+                tags: action.payload.tags,
+            };
             return {
                 ...state,
                 entries: state["entries"]

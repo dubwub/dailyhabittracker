@@ -87,7 +87,7 @@ router.post('/:uid/category/:cid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
-
+    cleanedRequest._id = req.params.cid;
     User.findOneAndUpdate({
             _id: req.params.uid,
             categories  : { 
@@ -178,6 +178,7 @@ router.post('/:uid/habit/:hid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
+    cleanedRequest._id = req.params.hid;
     User.findOneAndUpdate({
         _id: req.params.uid,
         habits: { 
@@ -255,6 +256,7 @@ router.post('/:uid/events/:eid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
+    cleanedRequest._id = req.params.eid;
     Event.findOneAndUpdate({
             _id: req.params.eid,
             user: req.params.uid,
@@ -308,6 +310,7 @@ router.post('/:uid/retros/:rid', (req, res) => {
             cleanedRequest[field] = req.body[field];
         }
     });
+    cleanedRequest._id = req.params.rid;
     Retrospective.findOneAndUpdate({
             _id: req.params.rid,
             user: req.params.uid,

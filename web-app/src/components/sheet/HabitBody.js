@@ -75,11 +75,11 @@ class HabitBody extends Component {
             <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll}>
                 { 
                     this.props.days.map((day) => {
-                        if (day >= this.props.startDate) {
+                        if (_.isNil(this.props.startDate) || day >= this.props.startDate) {
                             const day_fmt = day.format("MM/DD/YYYY");
-                            let value = this.props.entries[day_fmt]["value"];
+                            let value = this.state.entries[day_fmt]["value"];
 
-                            let helperIcons = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
+                            let helperIcons = (!_.isNil(this.state.entries[day_fmt]["note"]) && this.state.entries[day_fmt]["note"].length > 0) ?
                                 (
                                     <Icon icon="annotation" 
                                         style={{position: "absolute", width: 10, height: 10, bottom: 0, right: 10, color: "black"}}

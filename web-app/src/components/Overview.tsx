@@ -23,7 +23,7 @@ const projectHeight: number = 40;
 
 function _generateSortedHabitOrder(habitOrder: any, habits: any) {
     habitOrder.sort((h1: any, h2: any) => {
-        if (habits[h1]["order"] !== habits[h2]["order"]) { return habits[h1]["order"] < habits[h2]["order"]; }
+        if (habits[h1]["order"] !== habits[h2]["order"]) { return habits[h1]["order"] - habits[h2]["order"]; }
         else { return habits[h1]["title"].localeCompare(habits[h2]["title"]); }
     });
     return habitOrder;
@@ -91,7 +91,7 @@ class Overview extends React.Component<Props>{
                                     this.props.enrichedCategories.map((category: any, index: number) => {
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
                                         return (
-                                            <div style={{width: 100,
+                                            <div key={category._id} style={{width: 100,
                                                     height: projectHeight*(category.habits.length),
                                                     backgroundColor: category.color,
                                                     position: "absolute",
@@ -109,7 +109,7 @@ class Overview extends React.Component<Props>{
                                     this.props.habitOrder.map((habit: any, index: number) => 
                                                         {
                                                             // const habit: any = this.props.habits[habitIndex];
-                                                            return (<div style={{width: "100%", height: projectHeight, position: "absolute", left: 100, top: index * projectHeight}}>
+                                                            return (<div key={habit._id} style={{width: "100%", height: projectHeight, position: "absolute", left: 100, top: index * projectHeight}}>
                                                                 <div style={{width: "300", margin: 0}}>
                                                                     <HabitHeader habit={habit._id} />
                                                                 </div>
@@ -171,13 +171,9 @@ function mapStateToProps(state: any) {
         }
     }
 
-    console.log("test");
-    console.log(enrichedCategories);
-
     return {
         ...state,
         enrichedCategories: enrichedCategories,
-        // habitOrder: state.habitOrder,
         habitOrder: flatHabits,
         habits: state.habits,
     };

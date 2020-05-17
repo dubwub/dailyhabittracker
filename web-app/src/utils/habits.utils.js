@@ -98,7 +98,7 @@ export function generateQuickAddButtons(thresholds, fromVal, toVal, onClick) {
     for (let i = fromVal; i <= toVal; i++) {
         output.push(
             (
-                <Button style={{"backgroundColor": getThresholdFromValue(thresholds, i).color, width: 40, height: 30}} onClick={() => onClick(i)}>{i}</Button>
+                <Button key={i} style={{"backgroundColor": getThresholdFromValue(thresholds, i).color, width: 40, height: 30}} onClick={() => onClick(i)}>{i}</Button>
             )
         )
     }

@@ -9,7 +9,8 @@ import Overview from './components/Overview';
 
 // initial state with days and such is set in the reducers
 import reducers from './reducers/index.reducers';
-const store = createStore(reducers, undefined, compose(applyMiddleware(reduxThunk)));
+import { composeWithDevTools } from 'redux-devtools-extension';
+const store = createStore(reducers, composeWithDevTools(applyMiddleware(reduxThunk)));
 
 const App: React.FC = () => {
     return (
