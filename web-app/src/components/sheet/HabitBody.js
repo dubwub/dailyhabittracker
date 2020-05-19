@@ -12,7 +12,7 @@ class HabitBody extends Component {
         super(props);
         this.state = {
             entries: this.props.entries,
-            debounce: _.debounce((habit, day, note) => this.props.updateEntry(habit, day, null, note, null, null), 1000)
+            debounce: _.debounce((habit, day, note) => this.props.updateEntry(habit, day, undefined, note, undefined, undefined), 1000)
         }
     }
 
@@ -27,7 +27,7 @@ class HabitBody extends Component {
             ...this.state,
             entries: entries,
         })
-        this.props.updateEntry(this.props.habit, day, value, null, null, null);
+        this.props.updateEntry(this.props.habit, day, value, undefined, undefined, undefined);
     }
 
     handleTextAreaChange(habit, day, note) {
