@@ -187,11 +187,11 @@ class DreamEditDialog extends Component {
                                 onChange={(e) => this.modifyEditedCategoryField(cid, "icon", e.target.value)}
                                 />
                         </FormGroup>
-                        <FormGroup
+                        {/* <FormGroup
                             label="How important is this dream to you?">
                             <NumericInput value={category.order}
                                 onValueChange={(value) => this.modifyEditedCategoryField(cid, "order", value)}/>
-                        </FormGroup>
+                        </FormGroup> */}
                         <FormGroup
                             label="What color do you want this dream to be?">
                             <InputGroup id="edit-color" type="text" className="bp3-input" placeholder="Color" 
