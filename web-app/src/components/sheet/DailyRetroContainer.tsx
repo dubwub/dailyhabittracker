@@ -138,8 +138,8 @@ class DailyRetroContainer extends React.Component<Props, State> {
 
                             let helperIcons: any = this.props.entries[day_fmt]["note"] && this.props.entries[day_fmt]["note"].length > 0 ?
                                 (
-                                    <Icon icon="annotation" 
-                                        style={{position: "absolute", width: 10, height: 10, bottom: 0, right: 10, color: "black"}}
+                                    <Icon icon="edit" 
+                                        style={{position: "absolute", width: 10, height: 10, bottom: 10, right: 10, color: "black"}}
                                     />
                                 ) : (
                                     <span />    
@@ -192,12 +192,13 @@ class DailyRetroContainer extends React.Component<Props, State> {
                                         <Button    
                                             className={"bp3-minimal bp3-outlined cell"}
                                             style={{"backgroundColor": getThresholdFromValue(DEFAULT_THRESHOLDS, value).color, position: "relative"}}>
-                                            <Icon icon={getThresholdFromValue(DEFAULT_THRESHOLDS, value).icon}
+                                            {/* <Icon icon={getThresholdFromValue(DEFAULT_THRESHOLDS, value).icon}
                                                 style={{
                                                     color: "black",
                                                     display: "inline-block",
                                                     flex: "0 0 auto"
-                                                }} />
+                                                }} /> */}
+                                            <b>{value}</b>
                                             { helperIcons }
                                         </Button>
                                     </Popover>
