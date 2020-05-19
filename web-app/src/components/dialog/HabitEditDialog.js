@@ -296,10 +296,28 @@ class HabitEditDialog extends Component {
                 }}
                 title={this.dialogTitle()}>
                 <div className="bp3-dialog-body">
-                    <Button icon="reset"
+                    {/* <Button icon="reset"
                             onClick={() => this.undoChanges()}
                             disabled={ this.state.selectedHabit ? false : true }>
-                            Undo changes</Button>
+                            Undo changes</Button> */}
+                    <FormGroup label="What dream does this fulfill?">
+                        <HTMLSelect value={this.state.editedCategory}
+                                    onChange={(e) => this.modifyCategory(e.target.value)}
+                                    options={
+                                        [{
+                                            key: -1,
+                                            label: "No dream",
+                                            value: undefined,
+                                        }].concat(this.props.categoryOrder.map((cid, index) => {
+                                            return {
+                                                key: index,
+                                                label: this.props.categories[cid].title,
+                                                value: cid
+                                            };
+                                        }))
+                                    }>
+                        </HTMLSelect>
+                    </FormGroup>
                     <FormGroup
                         label="What goal do you want to accomplish?">
                         <InputGroup
@@ -308,7 +326,7 @@ class HabitEditDialog extends Component {
                             onChange={(e) => this.modifyTitle(e.target.value)} />
                     </FormGroup>
                     <FormGroup
-                        label="Give it an optional longer description.">
+                        label="What criteria will you use to evaluate whether you achieved this goal?">
                         <TextArea
                             id="edit-desc"
                             growVertically={false}
@@ -330,36 +348,18 @@ class HabitEditDialog extends Component {
                             timePrecision={undefined}
                         />
                     </FormGroup>
-                    <FormGroup label="What dream does this fulfill?">
-                        <HTMLSelect value={this.state.editedCategory}
-                                    onChange={(e) => this.modifyCategory(e.target.value)}
-                                    options={
-                                        [{
-                                            key: -1,
-                                            label: "No dream",
-                                            value: undefined,
-                                        }].concat(this.props.categoryOrder.map((cid, index) => {
-                                            return {
-                                                key: index,
-                                                label: this.props.categories[cid].title,
-                                                value: cid
-                                            };
-                                        }))
-                                    }>
-                        </HTMLSelect>
-                    </FormGroup>
-                    <FormGroup label="Edit order">
+                    {/* <FormGroup label="Edit order">
                         <NumericInput value={this.state.editedOrder}
                                       onValueChange={(value) => this.modifyOrder(value)}/>
-                    </FormGroup>
-                    <FormGroup
+                    </FormGroup> */}
+                    {/* <FormGroup
                         label="Edit Goal Color">
                         <InputGroup id="edit-color" type="text" className="bp3-input" placeholder="Color" 
                             value={this.state.editedColor}
                             onChange={(e) => this.modifyColor(e.target.value)}
                             />
-                    </FormGroup>
-                    <FormGroup
+                    </FormGroup> */}
+                    {/* <FormGroup
                         label="Modify Thresholds (Advanced)">
                         <Button icon="reset" onClick={() => this.resetThresholds()}>Reset</Button>
                         {
@@ -418,8 +418,8 @@ class HabitEditDialog extends Component {
                             })
                         }
                         <Button icon="add" onClick={() => this.addThreshold()}>Add a new threshold</Button>
-                    </FormGroup>
-                    <FormGroup
+                    </FormGroup> */}
+                    {/* <FormGroup
                         label="Modify Tags (Advanced)">
                         {
                             this.state.editedTags.map((tag, index) => {
@@ -446,7 +446,7 @@ class HabitEditDialog extends Component {
                             })
                         }
                         <Button icon="add" onClick={() => this.addTag()}>Add a new threshold</Button>
-                    </FormGroup>
+                    </FormGroup> */}
                     <FormGroup
                         label="Archive this goal?">
                         <Switch checked={this.state.editedArchived} label={"Archived"}

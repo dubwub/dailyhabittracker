@@ -31,8 +31,7 @@ function _generateSortedHabitOrder(habitOrder: any, habits: any) {
 
 function _generateSortedCategoryOrder(categoryOrder: any, categories: any) {
     categoryOrder.sort((cat1: any, cat2: any) => {
-        if (categories[cat1]["order"] !== categories[cat2]["order"]) { return categories[cat1]["order"] - categories[cat2]["order"]; }
-        else { return categories[cat1]["title"].localeCompare(categories[cat2]["title"]); }
+        return categories[cat1]["order"] - categories[cat2]["order"];
     });
     return categoryOrder;
 }

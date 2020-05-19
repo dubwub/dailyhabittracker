@@ -212,9 +212,10 @@ export default function(state = INITIAL_STATE, action) {
             };
         }
         case "UPDATE_ENTRY": {
-            let new_habit_entries = Object.assign({}, state["entries"][action.payload.habit]);
+            let habit = _.isNil(action.payload.habit) ? "daily-retro" : action.payload.habit;
+            let new_habit_entries = Object.assign({}, state["entries"][habit]);
             new_habit_entries[action.payload.date] = action.payload;
-            state["entries"][action.payload.habit][action.payload.date] = {
+            state["entries"][habit][action.payload.date] = {
                 value: action.payload.value,
                 note: action.payload.note,
                 tags: action.payload.tags,

@@ -119,7 +119,7 @@ export function createCategory(title, icon, order, color) {
         title: title,
         icon: icon,
         color: color,
-        order: 1
+        order: order,
     }
 
     return async function(dispatch) {
@@ -402,7 +402,7 @@ export function updateEntry(habit, day, value, note, transactions, tags) {
         if (!_.isNil(transactions)) { data["transactions"] = transactions; }
         if (!_.isNil(tags)) { data["tags"] = tags; }
 
-        const URL = (habit && habit !== "daily-retro") ? 
+        const URL = (!_.isNil(habit) && habit !== "daily-retro") ? 
             hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries' :
             hardcoded_server_url + '/api/users/' + user_id + '/entries';
 
