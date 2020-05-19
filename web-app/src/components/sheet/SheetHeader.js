@@ -55,9 +55,9 @@ class SheetHeader extends Component {
         return (
             <div className="sheet-header">
                 <div className="row-header sheet-header">
-                    <Button icon="add" onClick={() => this.props.selectHabitForEdit(undefined, true)}>Add New Habit</Button>
                     <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Dreams</Button>
-                    <Switch label="Hide Archived Projects" checked={this.props.hideArchived} onClick={() => { console.log(this.props.hideArchived); this.props.toggleHideArchived(!this.props.hideArchived)}} />
+                    <Button icon="add" onClick={() => this.props.selectHabitForEdit(undefined, true)}>Add New Goal</Button>
+                    <Switch label="Hide Archived Goals (temporary)" checked={this.props.hideArchived} onClick={() => { console.log(this.props.hideArchived); this.props.toggleHideArchived(!this.props.hideArchived)}} />
                 </div>
                 <div className="row-contents sheet-date-labels" onScroll={syncScroll}>
                     {

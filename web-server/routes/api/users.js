@@ -102,7 +102,7 @@ router.post('/:uid/category/:cid', (req, res) => {
             }
         },
         {
-            new: true
+            new: true,
         },
         function(err, user) {
             if (err) { res.status(500).json({error: err}); }
@@ -319,7 +319,8 @@ router.post('/:uid/retros/:rid', (req, res) => {
             $set: cleanedRequest
         },
         {
-            new: true
+            new: true,
+            overwrite: true
         },
         function(err, event) {
             if (err) { res.status(500).json({error: err}); }

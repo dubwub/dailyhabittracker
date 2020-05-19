@@ -42,23 +42,6 @@ class Overview extends React.Component<Props>{
         this.props.loadUser(returnLastXDays(30));
     }
 
-    /* deleteHabit(habit, pageindex) {
-        this.props.deleteHabit(habit);
-        
-        axios.delete('http://localhost:8082/api/users/' + this.state.user_id + '/habit/' + habitid)
-            .then(res => {
-                let new_habits = [...this.state.habits];
-                new_habits.splice(pageindex, 1);
-                if (res.status === 200) {
-                    this.setState({
-                        ...this.state,
-                        habits: new_habits
-                    });
-                }
-            })
-            .catch(err => {console.log("error when deleting habit")});
-    } */
-
     getHabitEntries(habit: string, entries: any) {
         return entries.filter((entry: any) => {
             return entry["habit"] === habit;
@@ -126,7 +109,7 @@ class Overview extends React.Component<Props>{
                 </div>
             );
         } else { // wait, cuz we're loading
-            return (<div>Loading...</div>);
+            return (<div>Loading... (if you see this for more than 5 seconds, the server is probably dead, tell Darwin)</div>);
         }
     }
 }

@@ -88,22 +88,29 @@ class Retros extends React.Component<RetrosProps, State> {
         
         return (
             // TODO: deleting a retro brings up the dialog
-            <div key={index} style={{"width": "100%", "height": "100px", "whiteSpace": "nowrap", "overflowX": "auto"}}>
-                <div style={{"display": "inline-block", "width": timeBeforeToday*50, "height": 30}} />
-                <Tag 
-                    interactive={true}
-                    style={{
-                        "width": (durationOfRetro+1)*50,
-                        "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).color,
-                        "display": "inline-block",
-                    }}
-                    onRemove={() => this.props.deleteRetro(retro._id)}
-                    onClick={(e: any) => this.onClick(e, retro._id)}
-                >
-                    <Icon icon={getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).icon}/>
-                    {retro.title}
-                </Tag>
-                <div style={{"display": "inline-block", "width": timeAfterEnding*50, "height": 30}} />
+            <div key={index} style={{"width": "100%", "height": "30px", "whiteSpace": "nowrap", "overflowX": "auto"}}>
+                <div style={{"verticalAlign": "top", "display": "inline-block", "width": timeBeforeToday*50, "height": 30}} />
+                <div style={{
+                    "width": (durationOfRetro+1)*50,
+                    "height": 30,
+                    "verticalAlign": "top", 
+                    "display": "inline-block",
+                }}>
+                    <Tag 
+                        interactive={true}
+                        style={{
+                            "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).color,
+                            height: 30,
+                        }}
+                        fill={true}
+                        onRemove={() => this.props.deleteRetro(retro._id)}
+                        onClick={(e: any) => this.onClick(e, retro._id)}
+                        rightIcon={getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).icon}
+                    >
+                        {retro.title}
+                    </Tag>
+                </div>
+                <div style={{"display": "inline-block", "verticalAlign": "top", "width": timeAfterEnding*50, "height": 30}} />
             </div>
         );
     }
@@ -147,9 +154,14 @@ class LongRetroContainer extends React.Component<LongFormProps, State> {
 }
 
 function mapStateToProps(state: any) {
+    // TODO: sort by latest retro for highest relevance, long-term figure out how to display overlapping retros
+    const sortedRetros = _.orderBy(state.retros, (retro: any) => {
+        return retro.endDate.format('YYYYMMDD')
+    }, ['desc']);
+
     return {
         days: state.days,
-        retros: state.retros,
+        retros: sortedRetros,
         startDate: state.days[state.days.length - 1], // TODO: this should never be empty... right?
         endDate: state.days[0],
     };
