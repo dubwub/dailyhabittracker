@@ -2,7 +2,7 @@ import { returnLastXDays } from "../utils/habits.utils";
 import _ from 'lodash';
 
 let INITIAL_STATE = {
-    days: returnLastXDays(30), // ordered list of all days (in moment fmt) that we should be loading on the page
+    days: returnLastXDays(7), // ordered list of all days (in moment fmt) that we should be loading on the page
     habitOrder: [],
     habits: {},
     categoryOrder: [],

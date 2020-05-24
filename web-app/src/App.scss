@@ -59,6 +59,8 @@ code {
 
 .cell {
     height: 30px; // TODO: this gets overwritten in the habit-level but not at the top level? need to restructure
+    margin-left: 10px;
+    margin-right: 10px;
     width: 50px;
     display: inline-block;
     float: left;

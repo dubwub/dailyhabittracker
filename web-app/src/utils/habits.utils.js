@@ -9,7 +9,7 @@ export function returnLastXDays(numDays) {
     for (let i = 0; i < numDays; i++) {
         let newDate = moment(today);
         newDate.subtract(i, 'days');
-        days.push(newDate);
+        days.unshift(newDate);
     }
 
     return days;

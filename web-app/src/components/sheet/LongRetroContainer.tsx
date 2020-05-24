@@ -47,7 +47,7 @@ const DEFAULT_RETRO_THRESHOLDS = [
 
 export interface LongFormProps {
     days: moment.Moment[]
-    retros: any // Retros[]
+    retroRows: any // [Retros[]]
     startDate: moment.Moment
     endDate: moment.Moment
  
@@ -64,7 +64,7 @@ export interface RetrosProps {
     endDate: moment.Moment
     selectRetroForEdit: any
     deleteRetro: any
-    retros: any
+    retroRows: any
 }
 
 class Retros extends React.Component<RetrosProps, State> {
@@ -77,49 +77,51 @@ class Retros extends React.Component<RetrosProps, State> {
         } 
     }
 
-    renderRetro(index: number, retro: any) {
-        // for display purposes, don't display parts of retros out of range
-        let truncStartDate = moment.max(retro.startDate, this.props.startDate);
-        let truncEndDate = moment.min(retro.endDate, this.props.endDate);
+    renderRetroRows(retroRows: any) {
+        // turn retro rows into whitespace and retros
+        let retroDisplay = [];
+        for (let i = 0; i < retroRows.length; i++) {
+            for (let j = 0; j < retroRows[i].length; j++) {
+                let retro = retroRows[i][j];
+                if (retro.endDate < this.props.startDate) {
+                    continue;
+                }
 
-        let timeBeforeToday = this.props.endDate.diff(truncEndDate, "days");
-        let durationOfRetro = truncEndDate.diff(truncStartDate, "days");
-        let timeAfterEnding = truncStartDate.diff(this.props.startDate, "days");
+                // for display purposes, don't display parts of retros out of range
+                let truncStartDate = moment.max(retro.startDate, this.props.startDate);
+                let truncEndDate = moment.min(retro.endDate, this.props.endDate);
+
+                let timeBeforeToday = truncStartDate.diff(this.props.startDate, "days");
+                let durationOfRetro = truncEndDate.diff(truncStartDate, "days") + 1;
+
+                retroDisplay.push((
+                    <div style={{ verticalAlign: "top", display: "inline-block", position: "absolute", left: timeBeforeToday * 70, top: 30 * i, width: durationOfRetro * 70, height: 30 }}>
+                        <Tag 
+                            interactive={true}
+                            style={{
+                                "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).color,
+                                height: 30,
+                            }}
+                            fill={true}
+                            onRemove={() => this.props.deleteRetro(retro._id)}
+                            onClick={(e: any) => this.onClick(e, retro._id)}
+                            rightIcon={getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).icon}
+                        >
+                            {retro.title}
+                        </Tag>
+                    </div>
+                ))
+            }
+        }
         
-        return (
-            // TODO: deleting a retro brings up the dialog
-            <div key={index} style={{"width": "100%", "height": "30px", "whiteSpace": "nowrap", "overflowX": "auto"}}>
-                <div style={{"verticalAlign": "top", "display": "inline-block", "width": timeBeforeToday*50, "height": 30}} />
-                <div style={{
-                    "width": (durationOfRetro+1)*50,
-                    "height": 30,
-                    "verticalAlign": "top", 
-                    "display": "inline-block",
-                }}>
-                    <Tag 
-                        interactive={true}
-                        style={{
-                            "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).color,
-                            height: 30,
-                        }}
-                        fill={true}
-                        onRemove={() => this.props.deleteRetro(retro._id)}
-                        onClick={(e: any) => this.onClick(e, retro._id)}
-                        rightIcon={getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).icon}
-                    >
-                        {retro.title}
-                    </Tag>
-                </div>
-                <div style={{"display": "inline-block", "verticalAlign": "top", "width": timeAfterEnding*50, "height": 30}} />
-            </div>
-        );
+        return retroDisplay;
     }
 
     render() {
         return (
-            <div className="header-retro" style={{"width": 3000}}>
+            <div className="header-retro" style={{width: 3000, position: "relative"}}>
                 {
-                    this.props.retros.map((retro: any, index: number) => this.renderRetro(index, retro))
+                    this.renderRetroRows(this.props.retroRows)
                 }
             </div>            
         )
@@ -140,10 +142,10 @@ class LongRetroContainer extends React.Component<LongFormProps, State> {
                     onClick={() => this.props.selectRetroForEdit(undefined, true)}
                     icon={"new-drawing"} />
             </div>
-            <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll} style={{overflowY: "auto"}}>
+            <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll} style={{overflowY: "auto", overflowX: "auto"}}>
                 <Retros startDate={this.props.startDate}
                         endDate={this.props.endDate}
-                        retros={this.props.retros}
+                        retroRows={this.props.retroRows}
                         selectRetroForEdit={this.props.selectRetroForEdit}
                         deleteRetro={this.props.deleteRetro}
                             />
@@ -154,16 +156,42 @@ class LongRetroContainer extends React.Component<LongFormProps, State> {
 }
 
 function mapStateToProps(state: any) {
-    // TODO: sort by latest retro for highest relevance, long-term figure out how to display overlapping retros
+    // greedily put the latest retro into the first row, then next-latest into the first fitting row
     const sortedRetros = _.orderBy(state.retros, (retro: any) => {
         return retro.endDate.format('YYYYMMDD')
     }, ['desc']);
+    
+    let rowDisplay: any = [[]];
+    for (let i = 0; i < sortedRetros.length; i++) {
+        let insertionRow = 0;
+        while (insertionRow < rowDisplay.length) {
+            let willFitInRow = true;
+            for (let j = 0; j < rowDisplay[insertionRow].length; j++) {
+                if (
+                    (rowDisplay[insertionRow][j].startDate <= sortedRetros[i].startDate && sortedRetros[i].startDate <= rowDisplay[insertionRow][j].endDate) ||
+                    (rowDisplay[insertionRow][j].startDate <= sortedRetros[i].endDate && sortedRetros[i].endDate <= rowDisplay[insertionRow][j].endDate)
+                ) {
+                    willFitInRow = false;
+                    break;
+                }
+            }
+            if (willFitInRow) {
+                rowDisplay[insertionRow].push(sortedRetros[i]);
+                break;
+            } else {
+                insertionRow++;
+            }
+        }
+        if (insertionRow === rowDisplay.length) {
+            rowDisplay.push([sortedRetros[i]]);
+        }
+    }
 
     return {
         days: state.days,
-        retros: sortedRetros,
-        startDate: state.days[state.days.length - 1], // TODO: this should never be empty... right?
-        endDate: state.days[0],
+        retroRows: rowDisplay,
+        startDate: state.days[0], // TODO: this should never be empty... right?
+        endDate: state.days[state.days.length - 1],
     };
 }
 

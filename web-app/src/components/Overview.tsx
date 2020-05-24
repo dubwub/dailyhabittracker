@@ -40,6 +40,9 @@ class Overview extends React.Component<Props>{
     constructor(props: Props) {
         super(props);
         this.props.loadUser(returnLastXDays(30));
+        this.state = {
+            minimizedDreams: []
+        }
     }
 
     getHabitEntries(habit: string, entries: any) {
@@ -74,6 +77,7 @@ class Overview extends React.Component<Props>{
                                         let categoryHeaderIcon = category.icon ? category.icon : "help";
                                         return (
                                             <div key={category._id} style={{width: 100,
+                                                    minHeight: 100,
                                                     height: projectHeight*(category.habits.length),
                                                     backgroundColor: category.color,
                                                     position: "absolute",

@@ -123,6 +123,7 @@ class HabitBody extends Component {
                                     <Popover content={(
                                         <div style={{width: 250, height: 250, overflowY: "auto", overflowX: "hidden"}}>
                                             How do I feel about my progress today?<br/>
+                                            My criteria for success: { this.props.description } <br />
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 1)}>1</Button>
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 2)}>2</Button>
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 3)}>3</Button>
@@ -175,6 +176,7 @@ function mapStateToProps(state, ownProps) {
 
     return {
         days: state["days"],
+        description: state["habits"][ownProps.habit]["description"],
         category: state["habits"][ownProps.habit]["category"] ? state["categories"][state["habits"][ownProps.habit]["category"]] : undefined,
         thresholds: state["habits"][ownProps.habit]["thresholds"],
         startDate: state["habits"][ownProps.habit]["startDate"],

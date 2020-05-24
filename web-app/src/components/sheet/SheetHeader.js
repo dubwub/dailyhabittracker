@@ -62,7 +62,7 @@ class SheetHeader extends Component {
                 <div className="row-contents sheet-date-labels" onScroll={syncScroll}>
                     {
                         this.props.days.map((day, index) => (
-                                <div onClick={() => this.props.selectEntry(day, "daily-retro")} key={index}>
+                                <div key={index}>
                                     <DateLabel dateOfSelectedEntry={this.props.dateOfSelectedEntry} habitOfSelectedEntry={this.props.habitOfSelectedEntry} day={day} />
                                 </div>    
                             )
