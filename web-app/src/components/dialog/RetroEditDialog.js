@@ -6,41 +6,41 @@ import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../../actions/index.actions.js'; 
 import { getThresholdFromValue, generateQuickAddButtons } from '../../utils/habits.utils';
 
-const DEFAULT_RETRO_THRESHOLDS = [
+const DEFAULT_THRESHOLDS = [
     {
         icon: "heart-broken",
         color: "#ea9999",
         condition: "le",
         minValue: undefined,
-        maxValue: 2
+        maxValue: 1
     },
     {
         icon: "cross",
         color: "#f5b880",
-        condition: "le",
-        minValue: 3,
-        maxValue: 4
+        condition: "eq",
+        minValue: 2,
+        maxValue: 2
     },
     {
         icon: "",
         color: "#ffd666",
-        condition: "le",
-        minValue: 5,
-        maxValue: 6
+        condition: "eq",
+        minValue: 3,
+        maxValue: 3
     },
     {
         icon: "tick",
         color: "#abc978",
-        condition: "le",
-        minValue: 7,
-        maxValue: 8
+        condition: "eq",
+        minValue: 4,
+        maxValue: 4
     },
     {
         icon: "clean",
         color: "#57bb8a",
         condition: "ge",
-        minValue: 9,
-        maxValue: 10
+        minValue: 5,
+        maxValue: undefined
     }
 ];
 
@@ -147,7 +147,8 @@ class RetroEditDialog extends Component {
                 this.state.editedStartDate,
                 this.state.editedEndDate,
                 this.state.editedValue,
-                this.state.editedNote
+                this.state.editedNote,
+                undefined
             )
             this.props.selectRetroForEdit(undefined, false);
         }
@@ -203,7 +204,7 @@ class RetroEditDialog extends Component {
 
                     <FormGroup
                         label="How did you feel about your progress?">
-                        { generateQuickAddButtons(DEFAULT_RETRO_THRESHOLDS, 1, 10, onClick) }
+                        { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, onClick) }
                     </FormGroup>
 
                     <TextArea style={{"width":200, "height":100}} autoFocus={true}
@@ -216,11 +217,11 @@ class RetroEditDialog extends Component {
                         <Tag 
                             large={true}
                             style={{
-                                "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, this.state.editedValue).color,
+                                "backgroundColor": getThresholdFromValue(DEFAULT_THRESHOLDS, this.state.editedValue).color,
                                 "display": "inline-block",
                             }}
                         >
-                            <Icon icon={getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, this.state.editedValue).icon}/>
+                            <Icon icon={getThresholdFromValue(DEFAULT_THRESHOLDS, this.state.editedValue).icon}/>
                             {this.state.editedTitle}
                         </Tag>
                     </FormGroup>

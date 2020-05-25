@@ -336,7 +336,7 @@ router.post('/:uid/retros/:rid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
     const validFields = ["title", "startDate", "endDate", "value", "note", "goal"];
     validFields.forEach((field) => {
-        if (req.body[field]) {
+        if (!_.isNil(req.body[field])) {
             cleanedRequest[field] = req.body[field];
         }
     });
@@ -369,43 +369,102 @@ router.delete('/:uid/retros/:rid', (req, res) => {
 
 ////////// ENTRY ROUTES //////////
 
-// post habit entry
-router.post('/:uid/habit/:hid/entries', (req, res) => {
-    let set_params = {};
-    if (typeof req.body.value !== "undefined") set_params["value"] = req.body.value;
-    if (typeof req.body.note !== "undefined") set_params["note"] = req.body.note;
-    if (typeof req.body.transactions !== "undefined") set_params["transactions"] = req.body.transactions;
-    if (typeof req.body.tags !== "undefined") { set_params["tags"] = req.body.tags; }
-    
+// post habit entry value
+router.post('/:uid/habit/:hid/entries/value', (req, res) => {
     Entry.findOneAndUpdate({
         "user": req.params.uid,
         "habit": req.params.hid,
         "date": req.body.date
     }, {
-        $set: set_params
+        $set: {
+            value: req.body.value,
+        }
     }, {
         new: true,
         upsert: true
     }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
 });
 
-// post daily retro
-router.post('/:uid/entries', (req, res) => {
-    let set_params = {};
-    if (typeof req.body.value !== "undefined") { set_params["value"] = req.body.value; }
-    if (typeof req.body.note !== "undefined") { set_params["note"] = req.body.note; }
-    if (typeof req.body.transactions !== "undefined") { set_params["transactions"] = req.body.transactions; }
-    
+// post habit entry note
+router.post('/:uid/habit/:hid/entries/note', (req, res) => {
     Entry.findOneAndUpdate({
         "user": req.params.uid,
-        "habit": null,
+        "habit": req.params.hid,
         "date": req.body.date
     }, {
-        $set: set_params
+        $set: {
+            note: req.body.note,
+        }
     }, {
         new: true,
         upsert: true
     }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
 });
+
+// post habit entry txns
+router.post('/:uid/habit/:hid/entries/transactions', (req, res) => {
+    Entry.findOneAndUpdate({
+        "user": req.params.uid,
+        "habit": req.params.hid,
+        "date": req.body.date
+    }, {
+        $set: {
+            transactions: req.body.transactions,
+        }
+    }, {
+        new: true,
+        upsert: true
+    }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
+});
+
+// post daily retro value
+router.post('/:uid/entries/value', (req, res) => {
+    Entry.findOneAndUpdate({
+        "user": req.params.uid,
+        "habit": null,
+        "date": req.body.date
+    }, {
+        $set: {
+            value: req.body.value,
+        }
+    }, {
+        new: true,
+        upsert: true
+    }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
+});
+
+// post daily retro note
+router.post('/:uid/entries/note', (req, res) => {
+    Entry.findOneAndUpdate({
+        "user": req.params.uid,
+        "habit": null,
+        "date": req.body.date
+    }, {
+        $set: {
+            note: req.body.note,
+        }
+    }, {
+        new: true,
+        upsert: true
+    }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
+});
+
+
+// post daily retro transactions
+router.post('/:uid/entries/transactions', (req, res) => {
+    Entry.findOneAndUpdate({
+        "user": req.params.uid,
+        "habit": null,
+        "date": req.body.date
+    }, {
+        $set: {
+            transactions: req.body.transactions,
+        }
+    }, {
+        new: true,
+        upsert: true
+    }).then((output) => { res.send(output); }).catch((err) => res.status(400).json({ error: err.errmsg }));
+});
+
 
 module.exports = router;

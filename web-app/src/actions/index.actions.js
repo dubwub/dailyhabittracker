@@ -112,6 +112,15 @@ export function loadUser(days) {
     }
 }
 
+/////////// META ACTIONS ///////////
+
+export function selectTab(tab) {
+    return (dispatch) => dispatch({
+        type: "SELECT_TAB",
+        payload: tab,
+    })
+}
+
 /////////// CATEGORY ACTIONS ///////////
 
 export function createCategory(title, icon, order, color) {
@@ -349,13 +358,14 @@ export function deleteEvent(event) {
 
 /////////// RETRO ACTIONS ///////////
 
-export function createRetro(title, startDate, endDate, value, note) {
+export function createRetro(title, startDate, endDate, value, note, habit) {
     const data = {
         title: title,
         startDate: startDate,
         endDate: endDate,
         value: value,
-        note: note
+        note: note,
+        habit: habit,
     };
 
     return async function(dispatch) {
@@ -410,20 +420,74 @@ export function deleteRetro(retro) {
 
 /////////// ENTRY ACTIONS ///////////
 
-export function updateEntry(habit, day, value, note, transactions, tags) {
+// export function updateEntry(habit, day, value, note, transactions, tags) {
+//     return async function(dispatch) {
+//         let data = {
+//             date: day.format('MM/DD/YYYY')
+//         };
+//         if (!_.isNil(value)) { data["value"] = value; }
+//         if (!_.isNil(note)) { data["note"] = note; }
+//         if (!_.isNil(transactions)) { data["transactions"] = transactions; }
+//         if (!_.isNil(tags)) { data["tags"] = tags; }
+
+//         const URL = (!_.isNil(habit) && habit !== "daily-retro") ? 
+//             hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries' :
+//             hardcoded_server_url + '/api/users/' + user_id + '/entries';
+
+//         let res = await axios.post(URL, data);
+//         res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
+//         dispatch({
+//             type: "UPDATE_ENTRY",
+//             payload: res.data
+//         });
+//     }
+// }
+
+export function updateEntryValue(habit, day, value) {
     return async function(dispatch) {
         let data = {
-            date: day.format('MM/DD/YYYY')
+            date: day.format('MM/DD/YYYY'),
+            value: value,
         };
-        if (!_.isNil(value)) { data["value"] = value; }
-        if (!_.isNil(note)) { data["note"] = note; }
-        if (!_.isNil(transactions)) { data["transactions"] = transactions; }
-        if (!_.isNil(tags)) { data["tags"] = tags; }
-
         const URL = (!_.isNil(habit) && habit !== "daily-retro") ? 
-            hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries' :
-            hardcoded_server_url + '/api/users/' + user_id + '/entries';
+            hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries/value' :
+            hardcoded_server_url + '/api/users/' + user_id + '/entries/value';
+        let res = await axios.post(URL, data);
+        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
+        dispatch({
+            type: "UPDATE_ENTRY",
+            payload: res.data
+        });
+    }
+}
 
+export function updateEntryNote(habit, day, note) {
+    return async function(dispatch) {
+        let data = {
+            date: day.format('MM/DD/YYYY'),
+            note: note,
+        };
+        const URL = (!_.isNil(habit) && habit !== "daily-retro") ? 
+            hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries/note' :
+            hardcoded_server_url + '/api/users/' + user_id + '/entries/note';
+        let res = await axios.post(URL, data);
+        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
+        dispatch({
+            type: "UPDATE_ENTRY",
+            payload: res.data
+        });
+    }
+}
+
+export function updateEntryTransactions(habit, day, transactions) {
+    return async function(dispatch) {
+        let data = {
+            date: day.format('MM/DD/YYYY'),
+            transactions: transactions,
+        };
+        const URL = (!_.isNil(habit) && habit !== "daily-retro") ? 
+            hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/entries/transactions' :
+            hardcoded_server_url + '/api/users/' + user_id + '/entries/transactions';
         let res = await axios.post(URL, data);
         res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
         dispatch({

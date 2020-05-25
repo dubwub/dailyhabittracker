@@ -11,6 +11,7 @@ let INITIAL_STATE = {
     retros: [],
     user: undefined,
     hideArchived: true,
+    currentTab: "execution",
 
     // date/habit for entryeditcontainer
     dateOfSelectedEntry: undefined,
@@ -41,9 +42,13 @@ let INITIAL_STATE = {
 };
 
 export default function(state = INITIAL_STATE, action) {
-    let habit; // used below for update_note/entry
-    
     switch (action.type) {
+        case "SELECT_TAB": {
+            return {
+                ...state,
+                currentTab: action.payload,
+            }
+        }
         case "SELECT_NEW_ENTRY": {
             return {
                 ...state,
@@ -236,7 +241,7 @@ export default function(state = INITIAL_STATE, action) {
             state["entries"][habit][action.payload.date] = {
                 value: action.payload.value,
                 note: action.payload.note,
-                tags: action.payload.tags,
+                transactions: action.payload.transactions,
             };
             return {
                 ...state,

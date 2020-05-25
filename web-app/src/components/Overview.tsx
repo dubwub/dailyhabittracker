@@ -14,7 +14,7 @@ import LongRetroContainer from './sheet/LongRetroContainer';
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button, Icon } from "@blueprintjs/core";
+import { Tab, Tabs } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 
@@ -59,6 +59,74 @@ class Overview extends React.Component<Props>{
     }
 
     render() {
+        let pageContents = (<div />);
+        switch (this.props.currentTab) {
+            case "execution":
+                pageContents = (
+                    <div className={"layout-body"}>
+                        <SheetHeader />
+                        <LongRetroContainer />
+                        <div style={{border: "2px solid gray", width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
+                            {
+                                this.props.enrichedCategories.map((category: any, index: number) => {
+                                    // let categoryHeaderIcon = category.icon ? category.icon : "help";
+                                    return (
+                                        <div key={category._id} style={{
+                                                width: "100%",
+                                                minHeight: 100,
+                                                height: projectHeight*(category.habits.length) + 30,
+                                                position: "absolute",
+                                                left: 0,
+                                                top: category.top,
+                                                }}>
+                                            <div style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                backgroundColor: category.color,
+                                                opacity: 0.4,
+                                                position: "absolute",
+                                                left: 0,
+                                                top: 0
+                                            }}></div>
+                                            <div style={{paddingLeft: 10}}><b>{category.title}</b></div>
+                                            { category.habits.map((habit: any, index: number) => 
+                                                    {
+                                                        // const habit: any = this.props.habits[habitIndex];
+                                                        return (<div key={habit._id} style={{width: "100%", height: projectHeight, position: "absolute", left: 0, top: 25 + index * projectHeight}}>
+                                                            <div style={{width: "300", margin: 0}}>
+                                                                <HabitHeader habit={habit._id} />
+                                                            </div>
+                                                            {/* needs to be able to handle resizing windows */}
+                                                            <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 400}}>
+                                                                <HabitBody habit={habit._id} />
+                                                            </div>
+                                                        </div>);
+                                                    })}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        <DailyRetroContainer />
+                    </div>
+                )
+                break;
+            case "reflection":
+                pageContents = (
+                    <div className={"layout-body"}>
+                        reflection tab goes here
+                    </div>
+                )
+                break;
+            default:
+                pageContents = (
+                    <div>
+                        wtf is the tab name?
+                    </div>
+                );
+                break;
+        }
+
         if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
             return (
                 <div>
@@ -69,53 +137,18 @@ class Overview extends React.Component<Props>{
                     <DreamEditDialog />
                     <div>
                         <div className="layout-header">
-                        </div>
-                        <div className="layout-body">
-                            <SheetHeader />
-                            <LongRetroContainer />
-                            <div style={{border: "2px solid gray", width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
-                                {
-                                    this.props.enrichedCategories.map((category: any, index: number) => {
-                                        // let categoryHeaderIcon = category.icon ? category.icon : "help";
-                                        return (
-                                            <div key={category._id} style={{
-                                                    width: "100%",
-                                                    minHeight: 100,
-                                                    height: projectHeight*(category.habits.length) + 30,
-                                                    position: "absolute",
-                                                    left: 0,
-                                                    top: category.indicesToJump * projectHeight + index * 30,
-                                                    }}>
-                                                <div style={{
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    backgroundColor: category.color,
-                                                    opacity: 0.4,
-                                                    position: "absolute",
-                                                    left: 0,
-                                                    top: 0
-                                                }}></div>
-                                                <div style={{paddingLeft: 10}}><b>{category.title}</b></div>
-                                                { category.habits.map((habit: any, index: number) => 
-                                                        {
-                                                            // const habit: any = this.props.habits[habitIndex];
-                                                            return (<div key={habit._id} style={{width: "100%", height: projectHeight, position: "absolute", left: 0, top: 25 + index * projectHeight}}>
-                                                                <div style={{width: "300", margin: 0}}>
-                                                                    <HabitHeader habit={habit._id} />
-                                                                </div>
-                                                                {/* needs to be able to handle resizing windows */}
-                                                                <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 400}}>
-                                                                    <HabitBody habit={habit._id} />
-                                                                </div>
-                                                            </div>);
-                                                        })}
-                                            </div>
-                                        )
-                                    })
-                                }
+                        <Tabs id="headerTabs"
+                              large={true}
+                              onChange={(e) => this.props.selectTab(e)}
+                              selectedTabId={this.props.currentTab}>
+                            <div style={{paddingLeft: 20}}>
+                                <h3>Personal Improvement Planner</h3>
                             </div>
-                            <DailyRetroContainer />
+                            <Tab id="execution" title="Execution" />
+                            <Tab id="reflection" title="Reflection" />
+                        </Tabs>
                         </div>
+                        { pageContents }
                     </div>
                 </div>
             );
@@ -129,32 +162,32 @@ function mapStateToProps(state: any) {
     const habitOrder: any = _generateSortedHabitOrder(state.habitOrder, state.habits);
     const categoryOrder: any = _generateSortedCategoryOrder(state.categoryOrder, state.categories);
     // TODO: optimize this?
-    let indicesToJump = 0;
+    let top = 0;
     let enrichedCategories = categoryOrder.map((category: any) => {
         let output = {
             ...state.categories[category],
             habits: [],
-            indicesToJump: indicesToJump,
+            top: top,
         }
         for (let i = 0; i < habitOrder.length; i++) {
             if (state.habits[habitOrder[i]]["category"] === category) {
-                if (!(state.hideArchived && state.habits[habitOrder[i]]["archived"])) {
+                if (!(state.habits[habitOrder[i]]["archived"])) {
                     output.habits.push(state.habits[habitOrder[i]]);
                 }
             }
         }
-        indicesToJump += output['habits'].length;
+        top += Math.max(output['habits'].length * projectHeight + 30, 100);
         return output;
     })
     let uncategorizedHabits = [];
     for (let i = 0; i < habitOrder.length; i++) {
         if (!state.habits[habitOrder[i]]["category"]) {
-            if (!(state.hideArchived && state.habits[habitOrder[i]]["archived"])) {
+            if (!(state.habits[habitOrder[i]]["archived"])) {
                 uncategorizedHabits.push(state.habits[habitOrder[i]]);
             }
         }
     }
-    enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits, indicesToJump: indicesToJump }]);
+    enrichedCategories = enrichedCategories.concat([{ title: "uncategorized", habits: uncategorizedHabits, top: top }]);
     enrichedCategories = enrichedCategories.filter((category: any) => (category.habits.length > 0));
 
     let flatHabits: any[] = [];
@@ -169,6 +202,7 @@ function mapStateToProps(state: any) {
         enrichedCategories: enrichedCategories,
         habitOrder: flatHabits,
         habits: state.habits,
+        currentTab: state.currentTab,
     };
 }
 

@@ -33,8 +33,12 @@ export interface Props {
     loadUser: any
     createHabit: any
     updateHabit: any
-    updateEntry: any
+    updateEntryValue: any
+    updateEntryNote: any
+    updateEntryTransactions: any
     updateNote: any
     selectHabitForEdit: any
+    selectTab: any
+    currentTab: string
 }
 

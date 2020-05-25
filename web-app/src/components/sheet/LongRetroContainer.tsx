@@ -7,41 +7,41 @@ import { syncScroll, getThresholdFromValue } from '../../utils/habits.utils';
 import _ from 'lodash';
 import * as moment from "moment";
 
-const DEFAULT_RETRO_THRESHOLDS = [
+const DEFAULT_THRESHOLDS = [
     {
         icon: "heart-broken",
         color: "#ea9999",
         condition: "le",
         minValue: undefined,
-        maxValue: 2
+        maxValue: 1
     },
     {
         icon: "cross",
         color: "#f5b880",
-        condition: "le",
-        minValue: 3,
-        maxValue: 4
+        condition: "eq",
+        minValue: 2,
+        maxValue: 2
     },
     {
         icon: "",
         color: "#ffd666",
-        condition: "le",
-        minValue: 5,
-        maxValue: 6
+        condition: "eq",
+        minValue: 3,
+        maxValue: 3
     },
     {
         icon: "tick",
         color: "#abc978",
-        condition: "le",
-        minValue: 7,
-        maxValue: 8
+        condition: "eq",
+        minValue: 4,
+        maxValue: 4
     },
     {
         icon: "clean",
         color: "#57bb8a",
         condition: "ge",
-        minValue: 9,
-        maxValue: 10
+        minValue: 5,
+        maxValue: undefined
     }
 ];
 
@@ -99,13 +99,13 @@ class Retros extends React.Component<RetrosProps, State> {
                         <Tag 
                             interactive={true}
                             style={{
-                                "backgroundColor": getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).color,
+                                "backgroundColor": getThresholdFromValue(DEFAULT_THRESHOLDS, retro.value).color,
                                 height: 30,
                             }}
                             fill={true}
                             onRemove={() => this.props.deleteRetro(retro._id)}
                             onClick={(e: any) => this.onClick(e, retro._id)}
-                            rightIcon={getThresholdFromValue(DEFAULT_RETRO_THRESHOLDS, retro.value).icon}
+                            rightIcon={getThresholdFromValue(DEFAULT_THRESHOLDS, retro.value).icon}
                         >
                             {retro.title}
                         </Tag>

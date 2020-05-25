@@ -13,35 +13,35 @@ const DEFAULT_THRESHOLDS = [
         color: "#ea9999",
         condition: "le",
         minValue: undefined,
-        maxValue: 2
+        maxValue: 1
     },
     {
         icon: "cross",
         color: "#f5b880",
-        condition: "le",
-        minValue: 3,
-        maxValue: 4
+        condition: "eq",
+        minValue: 2,
+        maxValue: 2
     },
     {
         icon: "",
         color: "#ffd666",
-        condition: "le",
-        minValue: 5,
-        maxValue: 6
+        condition: "eq",
+        minValue: 3,
+        maxValue: 3
     },
     {
         icon: "tick",
         color: "#abc978",
-        condition: "le",
-        minValue: 7,
-        maxValue: 8
+        condition: "eq",
+        minValue: 4,
+        maxValue: 4
     },
     {
         icon: "clean",
         color: "#57bb8a",
         condition: "ge",
-        minValue: 9,
-        maxValue: 10
+        minValue: 5,
+        maxValue: undefined
     }
 ];
 
@@ -53,7 +53,9 @@ export interface Props {
     loadUser: any
     createHabit: any
     updateHabit: any
-    updateEntry: any
+    updateEntryValue: any
+    updateEntryNote: any
+    updateEntryTransactions: any
     selectHabitForEdit: any
 }
 
@@ -68,7 +70,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
         super(props);
         this.state = {
             entries: this.props.entries,
-            debounce: _.debounce((day: moment.Moment, value: number) => this.props.updateEntry("daily-retro", day, undefined, value, undefined), 1000)
+            debounce: _.debounce((day: moment.Moment, value: number) => this.props.updateEntryNote("daily-retro", day, value), 1000)
         }
     }
 
@@ -89,7 +91,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
             ...this.state,
             entries: entries,
         })
-        this.props.updateEntry("daily-retro", day, value, undefined, undefined);
+        this.props.updateEntryValue("daily-retro", day, value);
     }
 
     createTransaction(day: moment.Moment, value: number, note: string, transactions: any) {
@@ -108,7 +110,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
             ...this.state,
             entries: entries,
         })
-        this.props.updateEntry("daily-retro", day, undefined, undefined, transactions, undefined)
+        this.props.updateEntryTransactions("daily-retro", day, transactions)
     }
 
     deleteTransaction(day: moment.Moment, transactions: any, index: number) {
@@ -119,7 +121,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
             ...this.state,
             entries: entries,
         })
-        this.props.updateEntry("daily-retro", day, undefined, undefined, transactions, undefined)
+        this.props.updateEntryTransactions("daily-retro", day, transactions)
     }
 
     render() {
@@ -180,7 +182,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
                                     <Popover content={(
                                         <div>
                                             How do I feel about my progress today?<br/>
-                                            { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 10, (i: number) => this.handleValueChange(day, i)) } <br />
+                                            { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, (i: number) => this.handleValueChange(day, i)) } <br />
                                             <TextArea style={{"width":200, "height":100}} autoFocus={true}
                                                 value={this.state.entries[day_fmt]["note"]}
                                                 onChange={(e: any) => this.handleTextAreaChange(day, e.target.value)}

@@ -103,6 +103,14 @@ class ArchiveDialog extends Component {
         this.props.archiveHabit(
             this.props.selectedGoalForArchive
         );
+        this.props.createRetro(
+            this.state.editedTitle,
+            this.props.habit.startDate,
+            this.props.habit.endDate,
+            this.state.editedValue,
+            this.state.editedNote,
+            this.props.selectedGoalForArchive
+        )
         this.props.selectGoalForArchive(undefined, false);
     }
 
