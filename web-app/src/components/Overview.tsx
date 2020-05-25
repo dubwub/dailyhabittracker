@@ -11,6 +11,8 @@ import DreamEditDialog from './dialog/DreamEditDialog';
 import DailyRetroContainer from './sheet/DailyRetroContainer';
 import LongRetroContainer from './sheet/LongRetroContainer';
 
+import ReflectionTab from './reflection/ReflectionTab';
+
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
@@ -114,7 +116,7 @@ class Overview extends React.Component<Props>{
             case "reflection":
                 pageContents = (
                     <div className={"layout-body"}>
-                        reflection tab goes here
+                        <ReflectionTab />
                     </div>
                 )
                 break;
