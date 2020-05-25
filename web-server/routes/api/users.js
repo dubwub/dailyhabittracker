@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const Entry = require('../../models/Entry');
 const Event = require('../../models/Event');
 const Retrospective = require('../../models/Retrospective');
+const _ = require('lodash');
 
 const express = require('express');
 const router = express.Router();
@@ -174,7 +175,7 @@ router.post('/:uid/habit/:hid', (req, res) => {
     let cleanedRequest = {}; // clean request so ppl can't change private fields like _id
     const validFields = ["title", "description", "category", "order", "thresholds", "entryType", "color", "tags", "startDate", "endDate", "archived"];
     validFields.forEach((field) => {
-        if (req.body[field]) {
+        if (!_.isNil(req.body[field])) {
             cleanedRequest[field] = req.body[field];
         }
     });
@@ -190,6 +191,35 @@ router.post('/:uid/habit/:hid', (req, res) => {
     {
         $set: {
             "habits.$": cleanedRequest
+        }
+    },
+    {
+        new: true
+    },
+    function(err, user) {
+        if (err) { res.status(500).json({error: err}); }
+        user["habits"].forEach((habit) => {
+            if (habit._id.toString() === req.params.hid) {
+                res.send(habit);
+            }
+        });  
+    })
+});
+
+// @route POST /api/users/:uid/habit/:hid/archive
+// @description modify user habit with clean fields
+router.post('/:uid/habit/:hid/archive', (req, res) => {
+    User.findOneAndUpdate({
+        _id: req.params.uid,
+        habits: { 
+            "$elemMatch": {
+                _id: req.params.hid 
+            }
+        }
+    },
+    {
+        $set: {
+            "habits.$.archived": true
         }
     },
     {

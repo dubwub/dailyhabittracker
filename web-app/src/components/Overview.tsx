@@ -5,6 +5,7 @@ import HabitBody from './sheet/HabitBody';
 import HabitEditDialog from './dialog/HabitEditDialog';
 import HabitBreakdownDialog from './dialog/HabitBreakdownDialog';
 // import EventEditDialog from './dialog/EventEditDialog';
+import ArchiveDialog from './dialog/ArchiveDialog';
 import RetroEditDialog from './dialog/RetroEditDialog';
 import DreamEditDialog from './dialog/DreamEditDialog';
 import DailyRetroContainer from './sheet/DailyRetroContainer';
@@ -61,6 +62,7 @@ class Overview extends React.Component<Props>{
         if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
             return (
                 <div>
+                    <ArchiveDialog />
                     <HabitEditDialog />
                     <HabitBreakdownDialog />
                     <RetroEditDialog />
@@ -74,37 +76,42 @@ class Overview extends React.Component<Props>{
                             <div style={{border: "2px solid gray", width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
                                 {
                                     this.props.enrichedCategories.map((category: any, index: number) => {
-                                        let categoryHeaderIcon = category.icon ? category.icon : "help";
+                                        // let categoryHeaderIcon = category.icon ? category.icon : "help";
                                         return (
-                                            <div key={category._id} style={{width: 100,
+                                            <div key={category._id} style={{
+                                                    width: "100%",
                                                     minHeight: 100,
-                                                    height: projectHeight*(category.habits.length),
-                                                    backgroundColor: category.color,
+                                                    height: projectHeight*(category.habits.length) + 30,
                                                     position: "absolute",
                                                     left: 0,
-                                                    top: category.indicesToJump * projectHeight,
+                                                    top: category.indicesToJump * projectHeight + index * 30,
                                                     }}>
-                                                <Icon
-                                                    icon={categoryHeaderIcon} />
-                                                {category.title}
-                                            </div>
-                                        )
-                                    })
-                                }
-                                {
-                                    this.props.habitOrder.map((habit: any, index: number) => 
+                                                <div style={{
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    backgroundColor: category.color,
+                                                    opacity: 0.4,
+                                                    position: "absolute",
+                                                    left: 0,
+                                                    top: 0
+                                                }}></div>
+                                                <div style={{paddingLeft: 10}}><b>{category.title}</b></div>
+                                                { category.habits.map((habit: any, index: number) => 
                                                         {
                                                             // const habit: any = this.props.habits[habitIndex];
-                                                            return (<div key={habit._id} style={{width: "100%", height: projectHeight, position: "absolute", left: 100, top: index * projectHeight}}>
+                                                            return (<div key={habit._id} style={{width: "100%", height: projectHeight, position: "absolute", left: 0, top: 25 + index * projectHeight}}>
                                                                 <div style={{width: "300", margin: 0}}>
                                                                     <HabitHeader habit={habit._id} />
                                                                 </div>
                                                                 {/* needs to be able to handle resizing windows */}
-                                                                <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 300}}>
+                                                                <div style={{position: "absolute", top: 0,width: "calc(100% - 400px)", left: 400}}>
                                                                     <HabitBody habit={habit._id} />
                                                                 </div>
                                                             </div>);
-                                                        })
+                                                        })}
+                                            </div>
+                                        )
+                                    })
                                 }
                             </div>
                             <DailyRetroContainer />

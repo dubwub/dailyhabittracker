@@ -51,7 +51,7 @@ class RetroEditDialog extends Component {
         this.state = {
             selectedRetro: undefined,
             showDialog: false,
-            editedTitle: "Long-form reflection up till today",
+            editedTitle: "I tried my best and accomplished very much!",
             editedStartDate: moment().toDate(), // TODO: these are JS dates, not moment dates
             editedEndDate: moment().toDate(),
             editedValue: -1,
@@ -78,7 +78,7 @@ class RetroEditDialog extends Component {
                     ...prevState,
                     selectedRetro: undefined,
                     showDialog: nextProps.showDialog,
-                    editedTitle: "Long-form reflection up till today",
+                    editedTitle: "I tried my best and accomplished very much!",
                     editedStartDate: moment().toDate(),
                     editedEndDate: moment().toDate(),
                     editedValue: -1,
@@ -93,7 +93,7 @@ class RetroEditDialog extends Component {
     undoChanges() {
         this.setState({
             ...this.state,
-            editedTitle: "Long-form reflection up till today",
+            editedTitle: "I tried my best and accomplished very much!",
             editedStartDate: moment().toDate(),
             editedEndDate: moment().toDate(),
             editedValue: -1,
@@ -183,7 +183,7 @@ class RetroEditDialog extends Component {
                             disabled={ this.state.selectedRetro ? false : true }>
                             Undo changes</Button>
                     <FormGroup
-                        label="Edit Retro Title">
+                        label="How do you want to remember this saga of your life?">
                         <InputGroup
                             id="edit-title" type="text" className="bp3-input" placeholder="Title"
                             value={this.state.editedTitle}

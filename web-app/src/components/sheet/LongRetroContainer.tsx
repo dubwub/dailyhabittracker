@@ -95,7 +95,7 @@ class Retros extends React.Component<RetrosProps, State> {
                 let durationOfRetro = truncEndDate.diff(truncStartDate, "days") + 1;
 
                 retroDisplay.push((
-                    <div style={{ verticalAlign: "top", display: "inline-block", position: "absolute", left: timeBeforeToday * 70, top: 30 * i, width: durationOfRetro * 70, height: 30 }}>
+                    <div style={{ verticalAlign: "top", display: "inline-block", position: "absolute", left: timeBeforeToday * 70 + 20, top: 30 * i, width: durationOfRetro * 70 - 20, height: 30 }}>
                         <Tag 
                             interactive={true}
                             style={{

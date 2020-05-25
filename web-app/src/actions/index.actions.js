@@ -227,7 +227,6 @@ export function updateHabit(habit, title, description, category, order, color, t
         category: category,
         order: order,
         color: color,
-        entry_type: "integer",
         thresholds: thresholds,
         tags: tags,
         startDate: startDate,
@@ -246,6 +245,25 @@ export function updateHabit(habit, title, description, category, order, color, t
 
         dispatch({
             type: "UPDATE_HABIT",
+            payload: payload
+        });
+    }
+}
+
+export function archiveHabit(habit) {
+    const data = {
+        archived: true
+    }
+
+    return async function(dispatch) {
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/habit/' + habit + '/archive', data);
+
+        const payload = {
+            ...res.data
+        }
+
+        dispatch({
+            type: "ARCHIVE_HABIT",
             payload: payload
         });
     }
@@ -441,6 +459,16 @@ export function selectRetroForEdit(retro, showDialog) {
         payload: {
             retro: retro,
             showRetroEditDialog: showDialog
+        }
+    })
+}
+
+export function selectGoalForArchive(goal, showDialog) {
+    return (dispatch) => dispatch({
+        type: "SELECT_GOAL_FOR_ARCHIVE",
+        payload: {
+            goal: goal,
+            showArchiveDialog: showDialog
         }
     })
 }

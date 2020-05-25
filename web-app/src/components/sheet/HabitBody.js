@@ -74,7 +74,7 @@ class HabitBody extends Component {
         return (
             <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll}>
                 { 
-                    this.props.days.map((day) => {
+                    this.props.days.map((day, index) => {
                         if (_.isNil(this.props.startDate) || day >= this.props.startDate) {
                             const day_fmt = day.format("MM/DD/YYYY");
                             let value = this.state.entries[day_fmt]["value"];
@@ -104,6 +104,11 @@ class HabitBody extends Component {
                                 }
                             } */}
 
+                            let notTodayOrYesterday = true;
+                            if (index === this.props.days.length - 1 || index === this.props.days.length - 2) {
+                                notTodayOrYesterday = false;
+                            }
+
                             let transactionTags = [];
                             if (!_.isNil(this.state.entries[day_fmt]["transactions"])) {
                                 const transactions = this.state.entries[day_fmt]["transactions"];
@@ -121,7 +126,8 @@ class HabitBody extends Component {
                             return (
                                 <div className={"cell"} key={day_fmt}>
                                     <Popover content={(
-                                        <div style={{width: 250, height: 250, overflowY: "auto", overflowX: "hidden"}}>
+                                        <div style={{width: 400, height: 400, overflowY: "auto", overflowX: "hidden"}}>
+                                            <h6>Press Escape or click outside this pop-over to close it!</h6>
                                             How do I feel about my progress today?<br/>
                                             My criteria for success: { this.props.description } <br />
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 1)}>1</Button>
@@ -132,6 +138,7 @@ class HabitBody extends Component {
                                             <TextArea style={{"width":200, "height":100}} autoFocus={true}
                                                 value={this.state.entries[day_fmt]["note"]}
                                                 onChange={(e) => this.handleTextAreaChange(this.props.habit, day, e.target.value)}
+                                                placeholder={"What would you keep, stop, start doing?"}
                                                 />
                                             <Button icon="camera" onClick={() => this.createTransaction(this.props.habit, day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Capture snapshot</Button>
                                             { transactionTags }
@@ -139,7 +146,8 @@ class HabitBody extends Component {
                                     )} modifiers={{preventOverflow: {enabled: true, boundariesElement: "window"}}} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
                                         <Button    
                                             className={"bp3-minimal bp3-outlined cell"}
-                                            style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}>
+                                            style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}
+                                            disabled={notTodayOrYesterday}>
                                             {/* <Icon icon={getThresholdFromValue(this.props.thresholds, value).icon}
                                                 style={{
                                                     color: "black",

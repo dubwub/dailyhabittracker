@@ -34,6 +34,10 @@ let INITIAL_STATE = {
     // HabitBreakdownDialog
     showHabitBreakdownDialog: false,
     selectedHabitForBreakdown: undefined,
+
+    // ArchiveDialog
+    showArchiveDialog: false,
+    selectedGoalForArchive: undefined,
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -59,6 +63,13 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 selectedHabitForBreakdown: action.payload.habit,
                 showHabitBreakdownDialog: action.payload.showHabitBreakdownDialog,
+            }
+        }
+        case "SELECT_GOAL_FOR_ARCHIVE": {
+            return {
+                ...state,
+                selectedGoalForArchive: action.payload.goal,
+                showArchiveDialog: action.payload.showArchiveDialog,
             }
         }
         case "SELECT_NEW_EVENT": {
@@ -131,6 +142,13 @@ export default function(state = INITIAL_STATE, action) {
         }
         case "UPDATE_HABIT": {
             state["habits"][action.payload._id] = action.payload;
+            return {
+                ...state,
+                habits: state["habits"]
+            };
+        }
+        case "ARCHIVE_HABIT": {
+            state["habits"][action.payload._id]['archived'] = true;
             return {
                 ...state,
                 habits: state["habits"]
