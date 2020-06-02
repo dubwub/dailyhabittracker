@@ -75,6 +75,10 @@ code {
     height: 30px;
 }
 
+.long-retro-ctr {
+    height: 60px;
+}
+
 .habit-edit-mode {
     height: 300px;
 }
@@ -92,11 +96,11 @@ code {
 }
 
 .layout-header {
-    height: 70px;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 150px;
     border: 2px solid black;
     z-index: 10;
     background-color: white;
@@ -105,17 +109,15 @@ code {
 
 .layout-body {
     position: absolute;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    padding-left: 10%;
-    padding-right: 10%;
+    top: 0;
+    left: 150px;
+    width: calc(100% - 150px);
     border: 2px solid red;
     overflow-y: auto;
     overflow-x: hidden;
     // TODO: make this work for other browsers
     // https://stackoverflow.com/questions/2434602/css-setting-width-height-as-percentage-minus-pixels
-    height: calc(100% - 70px);
+    height: 100%;
 }
 
 .retro {

@@ -75,7 +75,8 @@ class HabitBody extends Component {
             <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll}>
                 { 
                     this.props.days.map((day, index) => {
-                        if (_.isNil(this.props.startDate) || day >= this.props.startDate) {
+                        if ((_.isNil(this.props.startDate) || day >= this.props.startDate) &&
+                            (_.isNil(this.props.endDate) || day <= this.props.endDate)) {
                             const day_fmt = day.format("MM/DD/YYYY");
                             let value = this.state.entries[day_fmt]["value"];
 
@@ -103,11 +104,6 @@ class HabitBody extends Component {
                                     ))
                                 }
                             } */}
-
-                            let notTodayOrYesterday = true;
-                            if (index === this.props.days.length - 1 || index === this.props.days.length - 2) {
-                                notTodayOrYesterday = false;
-                            }
 
                             let transactionTags = [];
                             if (!_.isNil(this.state.entries[day_fmt]["transactions"])) {
@@ -146,8 +142,7 @@ class HabitBody extends Component {
                                     )} modifiers={{preventOverflow: {enabled: true, boundariesElement: "window"}}} hoverOpenDelay={0} minimal={true} transitionDuration={0} position={"right"}>
                                         <Button    
                                             className={"bp3-minimal bp3-outlined cell"}
-                                            style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}
-                                            disabled={notTodayOrYesterday}>
+                                            style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}>
                                             {/* <Icon icon={getThresholdFromValue(this.props.thresholds, value).icon}
                                                 style={{
                                                     color: "black",
@@ -188,6 +183,7 @@ function mapStateToProps(state, ownProps) {
         category: state["habits"][ownProps.habit]["category"] ? state["categories"][state["habits"][ownProps.habit]["category"]] : undefined,
         thresholds: state["habits"][ownProps.habit]["thresholds"],
         startDate: state["habits"][ownProps.habit]["startDate"],
+        endDate: state["habits"][ownProps.habit]["endDate"],
         tags: tags,
         entries: state["entries"][ownProps.habit],
     };

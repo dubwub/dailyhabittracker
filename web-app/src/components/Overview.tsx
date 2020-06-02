@@ -142,9 +142,10 @@ class Overview extends React.Component<Props>{
                         <Tabs id="headerTabs"
                               large={true}
                               onChange={(e) => this.props.selectTab(e)}
-                              selectedTabId={this.props.currentTab}>
+                              selectedTabId={this.props.currentTab}
+                              vertical={true}>
                             <div style={{paddingLeft: 20}}>
-                                <h3>Personal Improvement Planner</h3>
+                                <h3>Darwin</h3>
                             </div>
                             <Tab id="execution" title="Execution" />
                             <Tab id="reflection" title="Reflection" />

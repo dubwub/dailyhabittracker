@@ -100,7 +100,7 @@ class Retros extends React.Component<RetrosProps, State> {
                             interactive={true}
                             style={{
                                 "backgroundColor": getThresholdFromValue(DEFAULT_THRESHOLDS, retro.value).color,
-                                height: 30,
+                                height: 25,
                             }}
                             fill={true}
                             onRemove={() => this.props.deleteRetro(retro._id)}
@@ -133,7 +133,7 @@ class LongRetroContainer extends React.Component<LongFormProps, State> {
     render() {
         return (
             <div style={{position: "relative"}}>
-            <div className={"row-header habit"} style={{position: "relative", maxWidth: 500, paddingRight: 0}}>
+            <div className={"row-header long-retro-ctr"} style={{position: "relative", maxWidth: 500, paddingRight: 0}}>
                 <div className="habit-title">
                     <h5 style={{margin: 0}}>Sagas</h5>
                 </div>
@@ -142,7 +142,7 @@ class LongRetroContainer extends React.Component<LongFormProps, State> {
                     onClick={() => this.props.selectRetroForEdit(undefined, true)}
                     icon={"new-drawing"} />
             </div>
-            <div className={"row-contents hide-scrollbar habit"} onScroll={syncScroll} style={{overflowY: "auto", overflowX: "auto"}}>
+            <div className={"row-contents hide-scrollbar long-retro-ctr"} onScroll={syncScroll} style={{overflowY: "auto", overflowX: "auto"}}>
                 <Retros startDate={this.props.startDate}
                         endDate={this.props.endDate}
                         retroRows={this.props.retroRows}
@@ -163,6 +163,9 @@ function mapStateToProps(state: any) {
     
     let rowDisplay: any = [[]];
     for (let i = 0; i < sortedRetros.length; i++) {
+        if (!_.isNil(sortedRetros[i].goal)) {
+            continue;
+        }
         let insertionRow = 0;
         while (insertionRow < rowDisplay.length) {
             let willFitInRow = true;

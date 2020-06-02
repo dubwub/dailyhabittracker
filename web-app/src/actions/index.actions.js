@@ -290,13 +290,6 @@ export function deleteHabit(habit) {
     }
 }
 
-export function toggleHideArchived(hideArchived) {
-    return (dispatch) => dispatch({
-        type: "TOGGLE_HIDE_ARCHIVED",
-        payload: hideArchived,
-    })
-}
-
 /////////// EVENT ACTIONS ///////////
 
 export function createEvent(title, color, startDate, endDate) {
@@ -358,14 +351,14 @@ export function deleteEvent(event) {
 
 /////////// RETRO ACTIONS ///////////
 
-export function createRetro(title, startDate, endDate, value, note, habit) {
+export function createRetro(title, startDate, endDate, value, note, goal) {
     const data = {
         title: title,
         startDate: startDate,
         endDate: endDate,
         value: value,
         note: note,
-        habit: habit,
+        goal: goal,
     };
 
     return async function(dispatch) {
