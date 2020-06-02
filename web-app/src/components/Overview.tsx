@@ -85,7 +85,7 @@ class Overview extends React.Component<Props>{
                                                 width: "100%",
                                                 height: "100%",
                                                 backgroundColor: category.color,
-                                                opacity: 0.4,
+                                                opacity: 0.3,
                                                 position: "absolute",
                                                 left: 0,
                                                 top: 0
