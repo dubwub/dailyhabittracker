@@ -16,7 +16,7 @@ import ReflectionTab from './reflection/ReflectionTab';
 import { connect } from 'react-redux';
 import { returnLastXDays } from '../utils/habits.utils';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Tab, Tabs } from "@blueprintjs/core";
+import { Button, Tab, Tabs } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 
@@ -139,17 +139,21 @@ class Overview extends React.Component<Props>{
                     <DreamEditDialog />
                     <div>
                         <div className="layout-header">
-                        <Tabs id="headerTabs"
-                              large={true}
-                              onChange={(e) => this.props.selectTab(e)}
-                              selectedTabId={this.props.currentTab}
-                              vertical={true}>
-                            <div style={{paddingLeft: 20}}>
-                                <h3>Darwin</h3>
-                            </div>
-                            <Tab id="execution" title="Execution" />
-                            <Tab id="reflection" title="Reflection" />
-                        </Tabs>
+                            <Tabs id="headerTabs"
+                                large={true}
+                                onChange={(e) => this.props.selectTab(e)}
+                                selectedTabId={this.props.currentTab}
+                                vertical={true}>
+                                <div style={{paddingLeft: 20}}>
+                                    <h3>Darwin</h3>
+                                </div>
+                                <Tab id="execution" title="Execution" />
+                                <Tab id="reflection" title="Reflection" />
+                                
+                            </Tabs>
+                            <br/>
+                            <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Dreams</Button>
+                            <Button icon="add" onClick={() => this.props.selectHabitForEdit(undefined, true)}>Add New Goal</Button>
                         </div>
                         { pageContents }
                     </div>

@@ -37,14 +37,19 @@ const styles = [
 class DateLabel extends Component {
     render() {
         let className = "cell";
+        let todayTagDisplay = (<div />);
         if (
             moment().format("MM/DD/YYYY") === this.props.day.format('MM/DD/YYYY')) {
             className += " retro-top-selected";
+            todayTagDisplay = (
+                <Tag intent="primary">Today</Tag>
+            )
         }
         return (
-            <div className={className} style={{paddingLeft: 20}}>
+            <div className={className} style={{paddingLeft: 20, position: "relative"}}>
                 { this.props.day.format('ddd') }<br />
-                { this.props.day.format('M/D') }    
+                { this.props.day.format('M/D') }<br />
+                { todayTagDisplay }
             </div>
         )
     }
@@ -55,8 +60,6 @@ class SheetHeader extends Component {
         return (
             <div className="sheet-header">
                 <div className="row-header sheet-header">
-                    <Button icon="edit" onClick={() => this.props.toggleShowCategoryEditDialog(true)}>Update Dreams</Button>
-                    <Button icon="add" onClick={() => this.props.selectHabitForEdit(undefined, true)}>Add New Goal</Button>
                 </div>
                 <div className="row-contents sheet-date-labels" onScroll={syncScroll}>
                     {

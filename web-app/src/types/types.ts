@@ -38,6 +38,7 @@ export interface Props {
     updateEntryTransactions: any
     updateNote: any
     selectHabitForEdit: any
+    toggleShowCategoryEditDialog: any
     selectTab: any
     currentTab: string
 }

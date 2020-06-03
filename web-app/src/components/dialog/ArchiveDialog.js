@@ -64,7 +64,7 @@ class ArchiveDialog extends Component {
                 return {
                     ...prevState,
                     selectedHabit: nextProps.selectedGoalForArchive,
-                    editedEndDate: nextProps.habit.endDate ? nextProps.habit.endDate.toDate() : undefined,
+                    editedEndDate: nextProps.habit.endDate ? nextProps.habit.endDate.toDate() : moment().toDate(),
                 };
             } else { // create new habit
                 return {
