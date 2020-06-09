@@ -45,7 +45,7 @@ const DEFAULT_THRESHOLDS = [
     }
 ];
 
-class ArchiveDialog extends Component {
+class GoalActionDialog extends Component {
     constructor(props) {
         super(props);
         
@@ -59,11 +59,11 @@ class ArchiveDialog extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.selectedGoalForArchive !== prevState.selectedHabit) {
-            if (nextProps.selectedGoalForArchive) { // edit existing habit
+        if (nextProps.selectedGoalForAction !== prevState.selectedHabit) {
+            if (nextProps.selectedGoalForAction) { // edit existing habit
                 return {
                     ...prevState,
-                    selectedHabit: nextProps.selectedGoalForArchive,
+                    selectedHabit: nextProps.selectedGoalForAction,
                     editedEndDate: nextProps.habit.endDate ? nextProps.habit.endDate.toDate() : moment().toDate(),
                 };
             } else { // create new habit
@@ -101,7 +101,7 @@ class ArchiveDialog extends Component {
 
     archiveHabit() {
         this.props.archiveHabit(
-            this.props.selectedGoalForArchive
+            this.props.selectedGoalForAction
         );
         this.props.createRetro(
             this.state.editedTitle,
@@ -109,14 +109,14 @@ class ArchiveDialog extends Component {
             this.props.habit.endDate,
             this.state.editedValue,
             this.state.editedNote,
-            this.props.selectedGoalForArchive
+            this.props.selectedGoalForAction
         )
-        this.props.selectGoalForArchive(undefined, false);
+        this.props.selectGoalForAction(undefined, false);
     }
 
     dialogTitle() {
         if (!_.isNil(this.props.habit)) {
-            return "Archiving: " + this.props.habit.title;
+            return "Taking action on: " + this.props.habit.title;
         } else {
             return "";
         }
@@ -140,7 +140,7 @@ class ArchiveDialog extends Component {
                 canOutsideClickClose={true}
                 canEscapeKeyClose={true}
                 isCloseButtonShown={true}
-                onClose={() => this.props.selectGoalForArchive(undefined, false)}
+                onClose={() => this.props.selectGoalForAction(undefined, false)}
                 style={{
                     "width": 400
                 }}
@@ -196,15 +196,15 @@ class ArchiveDialog extends Component {
 
 function mapStateToProps(state) {
     let habit = undefined;
-    if (state.selectedGoalForArchive) {
-        habit = state.habits[state.selectedGoalForArchive];
+    if (state.selectedGoalForAction) {
+        habit = state.habits[state.selectedGoalForAction];
     }
 
     return {
-        selectedGoalForArchive: state.selectedGoalForArchive,
-        showDialog: state.showArchiveDialog,
+        selectedGoalForAction: state.selectedGoalForAction,
+        showDialog: state.showGoalActionDialog,
         habit: habit,
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArchiveDialog);
+export default connect(mapStateToProps, mapDispatchToProps)(GoalActionDialog);

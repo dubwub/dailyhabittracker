@@ -5,7 +5,7 @@ import HabitBody from './sheet/HabitBody';
 import HabitEditDialog from './dialog/HabitEditDialog';
 import HabitBreakdownDialog from './dialog/HabitBreakdownDialog';
 // import EventEditDialog from './dialog/EventEditDialog';
-import ArchiveDialog from './dialog/ArchiveDialog';
+import GoalActionDialog from './dialog/GoalActionDialog';
 import RetroEditDialog from './dialog/RetroEditDialog';
 import DreamEditDialog from './dialog/DreamEditDialog';
 import DailyRetroContainer from './sheet/DailyRetroContainer';
@@ -132,7 +132,7 @@ class Overview extends React.Component<Props>{
         if (this.props.user) { // because of async, this render happens twice, once on page load and once when we hear back from mongo
             return (
                 <div>
-                    <ArchiveDialog />
+                    <GoalActionDialog />
                     <HabitEditDialog />
                     <HabitBreakdownDialog />
                     <RetroEditDialog />

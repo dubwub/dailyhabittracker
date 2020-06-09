@@ -10,7 +10,6 @@ let INITIAL_STATE = {
     entries: {},
     retros: [],
     user: undefined,
-    hideArchived: true,
     currentTab: "execution",
 
     // date/habit for entryeditcontainer
@@ -36,9 +35,9 @@ let INITIAL_STATE = {
     showHabitBreakdownDialog: false,
     selectedHabitForBreakdown: undefined,
 
-    // ArchiveDialog
-    showArchiveDialog: false,
-    selectedGoalForArchive: undefined,
+    // GoalActionDialog
+    showGoalActionDialog: false,
+    selectedGoalForAction: undefined,
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -70,11 +69,11 @@ export default function(state = INITIAL_STATE, action) {
                 showHabitBreakdownDialog: action.payload.showHabitBreakdownDialog,
             }
         }
-        case "SELECT_GOAL_FOR_ARCHIVE": {
+        case "SELECT_GOAL_FOR_ACTION": {
             return {
                 ...state,
-                selectedGoalForArchive: action.payload.goal,
-                showArchiveDialog: action.payload.showArchiveDialog,
+                selectedGoalForAction: action.payload.goal,
+                showGoalActionDialog: action.payload.showGoalActionDialog,
             }
         }
         case "SELECT_NEW_EVENT": {
@@ -252,12 +251,6 @@ export default function(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 showCategoryEditDialog: action.payload,
-            }
-        }
-        case "TOGGLE_HIDE_ARCHIVED": {
-            return {
-                ...state,
-                hideArchived: action.payload,
             }
         }
         default:

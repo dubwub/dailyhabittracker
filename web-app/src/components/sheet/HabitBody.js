@@ -123,15 +123,14 @@ class HabitBody extends Component {
                                 <div className={"cell"} key={day_fmt}>
                                     <Popover content={(
                                         <div style={{width: 400, height: 400, overflowY: "auto", overflowX: "hidden"}}>
-                                            <h6>Press Escape or click outside this pop-over to close it!</h6>
-                                            How do I feel about my progress today?<br/>
-                                            My criteria for success: { this.props.description } <br />
+                                            <h4>How do I feel about my progress today?</h4>
+                                            <b>My criteria for success:</b> { this.props.description } <br />
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 1).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 1)}>1</Button>
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 2).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 2)}>2</Button>
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 3).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 3)}>3</Button>
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 4).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 4)}>4</Button>
                                             <Button style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, 5).color, width: 40, height: 30}} onClick={() => this.handleValueChange(day, 5)}>5</Button><br />
-                                            <TextArea style={{"width":200, "height":100}} autoFocus={true}
+                                            <TextArea style={{"width":350, "height":200}} autoFocus={true}
                                                 value={this.state.entries[day_fmt]["note"]}
                                                 onChange={(e) => this.handleTextAreaChange(this.props.habit, day, e.target.value)}
                                                 placeholder={"What would you keep, stop, start doing?"}
@@ -143,12 +142,6 @@ class HabitBody extends Component {
                                         <Button    
                                             className={"bp3-minimal bp3-outlined cell"}
                                             style={{"backgroundColor": getThresholdFromValue(this.props.thresholds, value).color, position: "relative"}}>
-                                            {/* <Icon icon={getThresholdFromValue(this.props.thresholds, value).icon}
-                                                style={{
-                                                    color: "black",
-                                                    display: "inline-block",
-                                                    flex: "0 0 auto"
-                                                }} /> */}
                                             <b>{ value }</b>
                                             { helperIcons }
                                             { tagIcons }

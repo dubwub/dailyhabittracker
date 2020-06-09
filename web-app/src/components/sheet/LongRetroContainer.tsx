@@ -99,7 +99,8 @@ class Retros extends React.Component<RetrosProps, State> {
                         <Tag 
                             interactive={true}
                             style={{
-                                "backgroundColor": getThresholdFromValue(DEFAULT_THRESHOLDS, retro.value).color,
+                                backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, retro.value).color,
+                                color: "black",
                                 height: 25,
                             }}
                             fill={true}

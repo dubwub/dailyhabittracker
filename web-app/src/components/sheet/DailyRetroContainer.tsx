@@ -180,10 +180,10 @@ class DailyRetroContainer extends React.Component<Props, State> {
                             return (
                                 <div className={"cell"} key={day_fmt}>
                                     <Popover content={(
-                                        <div>
-                                            How do I feel about my progress today?<br/>
+                                        <div style={{width: 400, height: 300}}>
+                                            <h4>How did today feel? What went well, what could've gone better?</h4>
                                             { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, (i: number) => this.handleValueChange(day, i)) } <br />
-                                            <TextArea style={{"width":200, "height":100}} autoFocus={true}
+                                            <TextArea style={{"width":350, "height":200}} autoFocus={true}
                                                 value={this.state.entries[day_fmt]["note"]}
                                                 onChange={(e: any) => this.handleTextAreaChange(day, e.target.value)}
                                                 />

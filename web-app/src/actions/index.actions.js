@@ -520,12 +520,12 @@ export function selectRetroForEdit(retro, showDialog) {
     })
 }
 
-export function selectGoalForArchive(goal, showDialog) {
+export function selectGoalForAction(goal, showDialog) {
     return (dispatch) => dispatch({
-        type: "SELECT_GOAL_FOR_ARCHIVE",
+        type: "SELECT_GOAL_FOR_ACTION",
         payload: {
             goal: goal,
-            showArchiveDialog: showDialog
+            showGoalActionDialog: showDialog
         }
     })
 }

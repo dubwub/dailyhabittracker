@@ -11,9 +11,11 @@ class HabitHeader extends Component {
 
     render() {
         const color = this.props.color || "";
-        let intent = "";
+        let intent = "none";
+        let iconForActionButton = "take-action";
         if (this.props.endDate <= moment().startOf('day')) {
             intent = "warning";
+            iconForActionButton="lightbulb";
         }
         const dateDisplay = this.props.endDate ? (
             <Tag icon={"time"} minimal={true} intent={intent}>
@@ -29,9 +31,9 @@ class HabitHeader extends Component {
                 {dateDisplay}
                 <Button 
                     style={{position: "absolute", top: 0, right: 30}}
-                    onClick={() => this.props.selectGoalForArchive(this.props.habit, true)}
+                    onClick={() => this.props.selectGoalForAction(this.props.habit, true)}
                     intent={intent}
-                    icon={"archive"} />
+                    icon={iconForActionButton} />
                 <Button 
                     style={{position: "absolute", top: 0, right: 0}}
                     onClick={() => this.props.selectHabitForEdit(this.props.habit, true)}
