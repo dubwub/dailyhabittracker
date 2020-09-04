@@ -2,6 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../../actions/index.actions.js'; 
+import { Button } from "@blueprintjs/core";
 
 const projectHeight: number = 40;
 
@@ -24,9 +25,36 @@ function _generateSortedCategoryOrder(categoryOrder: any, categories: any) {
 
 interface Props {
     enrichedCategories: any
+    entries: any
+    days: any
 }
 
-class ReflectionTab extends React.Component<Props>{
+interface State {
+    expandedHabits: any
+}
+
+class ReflectionTab extends React.Component<Props, State>{
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            expandedHabits: {}
+        };
+    }
+
+    toggleExpandCollapse(id: string) {
+        if (_.isNil(this.state.expandedHabits[id]) || (!_.isNil(this.state.expandedHabits[id]) && this.state.expandedHabits[id] === false)) {
+            let newState: any = {};
+            Object.assign(newState, this.state);
+            newState.expandedHabits[id] = true;
+            this.setState(newState);
+        } else {
+            let newState: any = {};
+            Object.assign(newState, this.state);
+            newState.expandedHabits[id] = false;
+            this.setState(newState);
+        }
+    }
+
     render() {
         return (
             <div style={{border: "2px solid gray", width: "100%", height: "100%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
@@ -59,6 +87,23 @@ class ReflectionTab extends React.Component<Props>{
                                                             &nbsp;Archived: {!_.isNil(habit.archived) ? habit.archived.toString() : "false"} 
                                                             &nbsp;Start Date: {!_.isNil(habit.startDate) ? habit.startDate.format("MM/DD/YYYY") : undefined}
                                                             &nbsp;End Date: {!_.isNil(habit.endDate) ? habit.endDate.format("MM/DD/YYYY") : undefined}
+                                                            <Button onClick={() => this.toggleExpandCollapse(habit._id)}>Expand/Collapse</Button>
+
+                                                            <div style={{
+                                                                display: !_.isNil(this.state.expandedHabits[habit._id]) && this.state.expandedHabits[habit._id] ? "block" : "none",
+                                                                height: 300,
+                                                                overflowY: "auto"
+                                                            }}>
+                                                                {
+                                                                    this.props.days.map((day: any) => {
+                                                                        if (!_.isNull(this.props.entries[habit._id][day.format("MM/DD/YYYY")])) {
+                                                                            return (
+                                                                                <div style={{height: 50}}>{this.props.entries[habit._id][day.format("MM/DD/YYYY")].entry}: {this.props.entries[habit._id][day.format("MM/DD/YYYY")].note}</div>
+                                                                            )
+                                                                        }
+                                                                    })
+                                                                }
+                                                            </div>
                                                         </div>);
                                                     })}
                                         </div>
@@ -106,7 +151,9 @@ function mapStateToProps(state: any) {
     }
 
     return {
-        enrichedCategories: enrichedCategories
+        enrichedCategories: enrichedCategories,
+        entries: state.entries,
+        days: state.days,
     };
 }
 

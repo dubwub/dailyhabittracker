@@ -204,10 +204,10 @@ class RetroEditDialog extends Component {
 
                     <FormGroup
                         label="How did you feel about your progress?">
-                        { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, onClick) }
+                        { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, onClick, this.state.editedValue) }
                     </FormGroup>
 
-                    <TextArea style={{"width":200, "height":100}} autoFocus={true}
+                    <TextArea style={{"width":600, "height":300}} autoFocus={true}
                         value={this.state.editedNote}
                         onChange={(e) => this.modifyNote(e.target.value)}
                         />

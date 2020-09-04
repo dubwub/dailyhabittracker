@@ -142,7 +142,7 @@ class GoalActionDialog extends Component {
                 isCloseButtonShown={true}
                 onClose={() => this.props.selectGoalForAction(undefined, false)}
                 style={{
-                    "width": 400
+                    "width": 800
                 }}
                 title={this.dialogTitle()}>
                 <div className="bp3-dialog-body">
@@ -154,23 +154,25 @@ class GoalActionDialog extends Component {
                             onChange={(e) => this.modifyTitle(e.target.value)} />
                     </FormGroup>
                     
-                    <DateInput
-                        formatDate={date => moment(date).format('MM/DD/YYYY')}
-                        onChange={(date) => this.modifyEndDate(date)}
-                        parseDate={str => moment(str, 'MM/DD/YYYY').toDate()}
-                        value={this.state.editedEndDate}
-                        shortcuts={false}
-                        enableTimePicker={false}
-                        allowSingleDayRange={true}
-                        timePrecision={undefined}
-                    />
+                    <FormGroup label="When did this goal end?">
+                        <DateInput
+                            formatDate={date => moment(date).format('MM/DD/YYYY')}
+                            onChange={(date) => this.modifyEndDate(date)}
+                            parseDate={str => moment(str, 'MM/DD/YYYY').toDate()}
+                            value={this.state.editedEndDate}
+                            shortcuts={false}
+                            enableTimePicker={false}
+                            allowSingleDayRange={true}
+                            timePrecision={undefined}
+                        />
+                    </FormGroup>
 
                     <FormGroup
                         label="How did you feel about your progress?">
-                        { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, onClick) }
+                        { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 5, onClick, this.state.editedValue) }
                     </FormGroup>
 
-                    <TextArea style={{"width":200, "height":100}} autoFocus={true}
+                    <TextArea style={{"width":600, "height":400}} autoFocus={true}
                         value={this.state.editedNote}
                         onChange={(e) => this.modifyNote(e.target.value)}
                         />

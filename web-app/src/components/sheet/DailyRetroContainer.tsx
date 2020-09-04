@@ -127,6 +127,15 @@ class DailyRetroContainer extends React.Component<Props, State> {
     render() {
         return (
             <div style={{position: "relative"}}>
+                <div style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "#106BA3",
+                    opacity: 0.3,
+                    position: "absolute",
+                    left: 0,
+                    top: 0
+                }}></div>
                 <div className={"row-header habit"} style={{position: "relative", maxWidth: 500, paddingRight: 0}}>
                     <div className="habit-title">
                         <h5 style={{margin: 0}}>Daily Retrospectives</h5>

@@ -68,6 +68,7 @@ class Overview extends React.Component<Props>{
                     <div className={"layout-body"}>
                         <SheetHeader />
                         <LongRetroContainer />
+                        <DailyRetroContainer />
                         <div style={{border: "2px solid gray", width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
                             {
                                 this.props.enrichedCategories.map((category: any, index: number) => {
@@ -109,7 +110,6 @@ class Overview extends React.Component<Props>{
                                 })
                             }
                         </div>
-                        <DailyRetroContainer />
                     </div>
                 )
                 break;

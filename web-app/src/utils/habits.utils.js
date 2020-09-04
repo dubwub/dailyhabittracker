@@ -92,13 +92,13 @@ export function getThresholdFromValue(thresholds, value) {
     }
 }
 
-export function generateQuickAddButtons(thresholds, fromVal, toVal, onClick) {
+export function generateQuickAddButtons(thresholds, fromVal, toVal, onClick, disableValue) {
     let output = [];
 
     for (let i = fromVal; i <= toVal; i++) {
         output.push(
             (
-                <Button key={i} style={{"backgroundColor": getThresholdFromValue(thresholds, i).color, width: 40, height: 30}} onClick={() => onClick(i)}>{i}</Button>
+                <Button key={i} style={{"backgroundColor": getThresholdFromValue(thresholds, i).color, width: 40, height: 30}} disabled={i === disableValue} onClick={() => onClick(i)}>{i}</Button>
             )
         )
     }
