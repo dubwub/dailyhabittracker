@@ -237,11 +237,14 @@ export default function(state = INITIAL_STATE, action) {
             let habit = _.isNil(action.payload.habit) ? "daily-retro" : action.payload.habit;
             let new_habit_entries = Object.assign({}, state["entries"][habit]);
             new_habit_entries[action.payload.date] = action.payload;
-            state["entries"][habit][action.payload.date] = {
-                value: action.payload.value,
-                note: action.payload.note,
-                transactions: action.payload.transactions,
-            };
+
+            let props = ["value", "note", "transactions"];
+            for (let i = 0; i < props.length; i++) {
+                if (!_.isNil(action.payload[props[i]])) {
+                    state["entries"][habit][action.payload.date][props[i]] = action.payload[props[i]];
+                }
+            }
+
             return {
                 ...state,
                 entries: state["entries"]

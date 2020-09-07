@@ -113,7 +113,7 @@ class Overview extends React.Component<Props>{
                     </div>
                 )
                 break;
-            case "reflection":
+            case "storyboard":
                 pageContents = (
                     <div className={"layout-body"}>
                         <ReflectionTab />
@@ -148,7 +148,7 @@ class Overview extends React.Component<Props>{
                                     <h3>Darwin</h3>
                                 </div>
                                 <Tab id="execution" title="Execution" />
-                                <Tab id="reflection" title="Reflection" />
+                                <Tab id="storyboard" title="Storyboard" />
                                 
                             </Tabs>
                             <br/>
