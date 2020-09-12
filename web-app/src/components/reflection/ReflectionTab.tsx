@@ -2,9 +2,48 @@ import * as React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../../actions/index.actions.js'; 
-import { Button } from "@blueprintjs/core";
+import { Button, Tag } from "@blueprintjs/core";
+import { getThresholdFromValue } from '../../utils/habits.utils';
 
 const projectHeight: number = 40;
+
+const DEFAULT_THRESHOLDS = [
+    {
+        icon: "heart-broken",
+        color: "#ea9999",
+        condition: "le",
+        minValue: undefined,
+        maxValue: 1
+    },
+    {
+        icon: "cross",
+        color: "#f5b880",
+        condition: "eq",
+        minValue: 2,
+        maxValue: 2
+    },
+    {
+        icon: "",
+        color: "#ffd666",
+        condition: "eq",
+        minValue: 3,
+        maxValue: 3
+    },
+    {
+        icon: "tick",
+        color: "#abc978",
+        condition: "eq",
+        minValue: 4,
+        maxValue: 4
+    },
+    {
+        icon: "clean",
+        color: "#57bb8a",
+        condition: "ge",
+        minValue: 5,
+        maxValue: undefined
+    }
+];
 
 // below are helper functions used for display
 
@@ -26,91 +65,91 @@ function _generateSortedCategoryOrder(categoryOrder: any, categories: any) {
 interface Props {
     enrichedCategories: any
     entries: any
-    days: any
 }
 
 interface State {
-    expandedHabits: any
+    selectedGoal: string,
+    selectedDream: number
 }
 
 class ReflectionTab extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
-            expandedHabits: {}
+            selectedGoal: "",
+            selectedDream: 0,
         };
     }
 
-    toggleExpandCollapse(id: string) {
-        if (_.isNil(this.state.expandedHabits[id]) || (!_.isNil(this.state.expandedHabits[id]) && this.state.expandedHabits[id] === false)) {
-            let newState: any = {};
-            Object.assign(newState, this.state);
-            newState.expandedHabits[id] = true;
-            this.setState(newState);
-        } else {
-            let newState: any = {};
-            Object.assign(newState, this.state);
-            newState.expandedHabits[id] = false;
-            this.setState(newState);
+    goToNextDream() {
+        let nextDream = this.state.selectedDream + 1;
+        if (nextDream >= this.props.enrichedCategories.length) {
+            nextDream = 0;
         }
+
+        this.setState({
+            selectedGoal: "",
+            selectedDream: nextDream
+        })
+    }
+
+    goToPrevDream() {
+        let nextDream = this.state.selectedDream - 1;
+        if (nextDream < 0) {
+            nextDream = this.props.enrichedCategories.length - 1;
+        }
+
+        this.setState({
+            selectedGoal: "",
+            selectedDream: nextDream
+        })
+    }
+
+    selectNewGoal(id: string) {
+        this.setState({
+            ...this.state,
+            selectedGoal: id,
+        })
     }
 
     render() {
-        return (
-            <div style={{border: "2px solid gray", width: "100%", height: "100%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
-                            {
-                                this.props.enrichedCategories.map((category: any, index: number) => {
-                                    return (
-                                        <div key={category._id} style={{
-                                                width: "100%",
-                                                minHeight: 100,
-                                                height: projectHeight*(category.habits.length) + 30,
-                                                position: "absolute",
-                                                left: 0,
-                                                top: category.top,
-                                                }}>
-                                            <div style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                backgroundColor: category.color,
-                                                opacity: 0.4,
-                                                position: "absolute",
-                                                left: 0,
-                                                top: 0
-                                            }}></div>
-                                            <div style={{paddingLeft: 10}}><b>{category.title}</b></div>
-                                            { category.habits.map((habit: any, index: number) => 
-                                                    {
-                                                        // const habit: any = this.props.habits[habitIndex];
-                                                        return (<div key={habit._id} style={{width: "100%", height: projectHeight, position: "absolute", left: 0, top: 25 + index * projectHeight}}>
-                                                            <b>{ habit.title }</b>
-                                                            &nbsp;Archived: {!_.isNil(habit.archived) ? habit.archived.toString() : "false"} 
-                                                            &nbsp;Start Date: {!_.isNil(habit.startDate) ? habit.startDate.format("MM/DD/YYYY") : undefined}
-                                                            &nbsp;End Date: {!_.isNil(habit.endDate) ? habit.endDate.format("MM/DD/YYYY") : undefined}
-                                                            <Button onClick={() => this.toggleExpandCollapse(habit._id)}>Expand/Collapse</Button>
+        const category = this.props.enrichedCategories[this.state.selectedDream];
+        const selectedGoalDivs = [];
+        if (this.state.selectedGoal !== "") {
+            for (let key in this.props.entries[this.state.selectedGoal]) {
+                selectedGoalDivs.push((
+                    <Tag large={true} style={{
+                        backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, this.props.entries[this.state.selectedGoal][key].value).color,
+                        color: "black"
+                    }}>({key}) {this.props.entries[this.state.selectedGoal][key].value}: {this.props.entries[this.state.selectedGoal][key].note}</Tag>
+                ))
+            }
+        }
 
-                                                            <div style={{
-                                                                display: !_.isNil(this.state.expandedHabits[habit._id]) && this.state.expandedHabits[habit._id] ? "block" : "none",
-                                                                height: 300,
-                                                                overflowY: "auto"
-                                                            }}>
-                                                                {
-                                                                    this.props.days.map((day: any) => {
-                                                                        if (!_.isNull(this.props.entries[habit._id][day.format("MM/DD/YYYY")])) {
-                                                                            return (
-                                                                                <div style={{height: 50}}>{this.props.entries[habit._id][day.format("MM/DD/YYYY")].entry}: {this.props.entries[habit._id][day.format("MM/DD/YYYY")].note}</div>
-                                                                            )
-                                                                        }
-                                                                    })
-                                                                }
-                                                            </div>
-                                                        </div>);
-                                                    })}
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
+        return (
+            <div style={{border: "2px solid gray", width: "100%", height: "100%", position: "relative", overflowY: "auto", overflowX: "hidden", backgroundColor: category.color}}>
+                <div style={{width: "50%", height: "100%", position: "absolute", top: 0, left: 0}}>
+                    <div style={{paddingLeft: 10}}><b>{category.title}</b></div>
+                    <Button onClick={() => this.goToPrevDream()}>Go previous dream</Button><Button onClick={() => this.goToNextDream()}>Go next dream</Button>
+                    { category.habits.map((habit: any, index: number) => 
+                        {
+                            // const habit: any = this.props.habits[habitIndex];
+                            return (<div key={habit._id} style={{width: "100%", height: projectHeight}}>
+                                <b>{ habit.title }</b>
+                                &nbsp;Archived: {!_.isNil(habit.archived) ? habit.archived.toString() : "false"} 
+                                &nbsp;Start Date: {!_.isNil(habit.startDate) ? habit.startDate.format("MM/DD/YYYY") : undefined}
+                                &nbsp;End Date: {!_.isNil(habit.endDate) ? habit.endDate.format("MM/DD/YYYY") : undefined}
+                                <Button onClick={() => this.selectNewGoal(habit._id)}>Select for drilldown</Button>
+                            </div>);
+                        })}
+                </div>
+                <div style={{width: "50%", height: "100%", position: "absolute", top: 0, left: "50%"}}>
+                    {
+                        selectedGoalDivs
+                    }
+                </div>
+                
+            </div>
         )
     }
 }
@@ -152,8 +191,7 @@ function mapStateToProps(state: any) {
 
     return {
         enrichedCategories: enrichedCategories,
-        entries: state.entries,
-        days: state.days,
+        entries: state.entries
     };
 }
 

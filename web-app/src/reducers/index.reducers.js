@@ -1,4 +1,4 @@
-import { returnLastXDays } from "../utils/habits.utils";
+import { returnLastXDays, prompts } from "../utils/habits.utils";
 import _ from 'lodash';
 
 let INITIAL_STATE = {

@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../../actions/index.actions.js'; 
-import { Button, Colors, Icon, Popover, TextArea } from "@blueprintjs/core";
+import { Button, Colors, Icon, Popover, Tag, TextArea } from "@blueprintjs/core";
 import { syncScroll, getThresholdFromValue, generateQuickAddButtons } from '../../utils/habits.utils';
 import _ from 'lodash';
 import * as moment from "moment";
@@ -177,11 +177,11 @@ class DailyRetroContainer extends React.Component<Props, State> {
                                 const transactions = this.state.entries[day_fmt]["transactions"];
                                 for (let i = 0; i < transactions.length; i++) {
                                     transactionTags.push((
-                                        <div key={i} style={{width: 200}}>
+                                        <Tag key={i} style={{backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, transactions[i].value).color}}>
                                             <Button icon={"cross"}
                                                     onClick={() => this.deleteTransaction(day, this.state.entries[day_fmt]["transactions"], i)} />
-                                            Time: {moment.default(transactions[i].time).calendar()}, Value: {transactions[i].value}, Note: {transactions[i].note}
-                                        </div>
+                                            Time: {moment.default(transactions[i].time).calendar()}, Note: {transactions[i].note}
+                                        </Tag>
                                     ))
                                 }
                             }
@@ -196,7 +196,7 @@ class DailyRetroContainer extends React.Component<Props, State> {
                                                 value={this.state.entries[day_fmt]["note"]}
                                                 onChange={(e: any) => this.handleTextAreaChange(day, e.target.value)}
                                                 />
-                                            <Button icon="camera" onClick={() => this.createTransaction(day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Capture snapshot</Button>
+                                            <Button icon="bookmark" intent={"success"} onClick={() => this.createTransaction(day, this.state.entries[day_fmt]["value"], this.state.entries[day_fmt]["note"], this.state.entries[day_fmt]["transactions"])}>Save checkpoint</Button>
                                             { transactionTags }
                                         </div>
                                     )} hoverOpenDelay={0} modifiers={{preventOverflow: {boundariesElement: "window"}}} minimal={true} transitionDuration={0} position={"left"}>

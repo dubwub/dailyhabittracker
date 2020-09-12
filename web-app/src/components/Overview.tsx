@@ -10,6 +10,7 @@ import RetroEditDialog from './dialog/RetroEditDialog';
 import DreamEditDialog from './dialog/DreamEditDialog';
 import DailyRetroContainer from './sheet/DailyRetroContainer';
 import LongRetroContainer from './sheet/LongRetroContainer';
+import PromptBar from "./PromptBar";
 
 import ReflectionTab from './reflection/ReflectionTab';
 
@@ -66,6 +67,7 @@ class Overview extends React.Component<Props>{
             case "execution":
                 pageContents = (
                     <div className={"layout-body"}>
+                        <PromptBar />
                         <SheetHeader />
                         <LongRetroContainer />
                         <DailyRetroContainer />

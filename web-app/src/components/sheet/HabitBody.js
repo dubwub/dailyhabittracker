@@ -128,11 +128,11 @@ class HabitBody extends Component {
                                 const transactions = this.state.entries[day_fmt]["transactions"];
                                 for (let i = 0; i < transactions.length; i++) {
                                     transactionTags.push((
-                                        <div key={i} style={{width: 200}}>
+                                        <Tag key={i} style={{backgroundColor: getThresholdFromValue(this.props.thresholds, transactions[i].value).color}}>
                                             <Button icon={"cross"}
                                                     onClick={() => this.deleteTransaction(this.props.habit, day, this.state.entries[day_fmt]["transactions"], i)} />
-                                            Time: {moment(transactions[i].time).calendar()}, Value: {transactions[i].value}, Note: {transactions[i].note}
-                                        </div>
+                                            Time: {moment.default(transactions[i].time).calendar()}, Note: {transactions[i].note}
+                                        </Tag>
                                     ))
                                 }
                             }
