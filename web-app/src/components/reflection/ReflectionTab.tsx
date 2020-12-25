@@ -69,7 +69,8 @@ interface Props {
 
 interface State {
     selectedGoal: string,
-    selectedDream: number
+    selectedDream: number,
+    showDailyRetro: boolean,
 }
 
 class ReflectionTab extends React.Component<Props, State>{
@@ -78,6 +79,7 @@ class ReflectionTab extends React.Component<Props, State>{
         this.state = {
             selectedGoal: "",
             selectedDream: 0,
+            showDailyRetro: true,
         };
     }
 
@@ -112,17 +114,86 @@ class ReflectionTab extends React.Component<Props, State>{
         })
     }
 
+    toggleShowDailyRetro() {
+        this.setState({
+            ...this.state,
+            showDailyRetro: !this.state.showDailyRetro,
+        })
+    }
+
     render() {
         const category = this.props.enrichedCategories[this.state.selectedDream];
         const selectedGoalDivs = [];
         if (this.state.selectedGoal !== "") {
-            for (let key in this.props.entries[this.state.selectedGoal]) {
-                selectedGoalDivs.push((
-                    <Tag large={true} style={{
-                        backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, this.props.entries[this.state.selectedGoal][key].value).color,
-                        color: "black"
-                    }}>({key}) {this.props.entries[this.state.selectedGoal][key].value}: {this.props.entries[this.state.selectedGoal][key].note}</Tag>
-                ))
+            let sortedKeys = Object.keys(this.props.entries[this.state.selectedGoal]);
+            sortedKeys.sort(function (a: string, b: string) {
+                if (Date.parse(a) < Date.parse(b)) {
+                    return -1;
+                } else if (Date.parse(a) > Date.parse(b)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            })
+
+            for (let key of sortedKeys) {
+                if (this.props.entries[this.state.selectedGoal][key].value ||
+                    this.props.entries[this.state.selectedGoal][key].note ||
+                    (this.props.entries[this.state.selectedGoal][key].transactions && this.props.entries[this.state.selectedGoal][key].transactions.length > 0)) {
+                    selectedGoalDivs.push((
+                        <div style={{
+                            backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, this.props.entries[this.state.selectedGoal][key].value).color,
+                            color: "black"
+                        }}><b>({key}) {this.props.entries[this.state.selectedGoal][key].value}</b>: {this.props.entries[this.state.selectedGoal][key].note}</div>
+                    ))
+                }
+            }
+        } else {
+            let allEntries: any = [];
+            let habits = category.habits;
+            if (this.state.showDailyRetro) {
+                habits = habits.concat([{_id: "daily-retro", title: "Daily Retro"}]);
+            }
+
+            habits.map((goalObject: any) => {
+                let goal = goalObject._id;
+                let keys = Object.keys(this.props.entries[goal]);
+                for (let key of keys) {
+                    allEntries.push({
+                        ...this.props.entries[goal][key],
+                        date: key,
+                        goalTitle: goalObject.title,
+                    })
+                }
+            });
+
+            allEntries.sort(function (a: any, b: any) {
+                if (Date.parse(a.date) < Date.parse(b.date)) {
+                    return 1;
+                } else if (Date.parse(a.date) > Date.parse(b.date)) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            })
+
+            for (let entry of allEntries) {
+                if (entry.value || entry.note || (entry.transactions && entry.transactions.length > 0)) {
+                    for (let transaction of entry.transactions) {
+                        selectedGoalDivs.push((
+                            <div style={{
+                                backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, entry.value).color,
+                                color: "black"
+                            }}><b>({transaction.time}) {entry.goalTitle} {transaction.value}:</b> {transaction.note}</div>
+                        ))
+                    }
+                    selectedGoalDivs.push((
+                        <div style={{
+                            backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, entry.value).color,
+                            color: "black"
+                        }}><b>({entry.date}) {entry.goalTitle} {entry.value}:</b> {entry.note}</div>
+                    ))
+                }
             }
         }
 
@@ -130,7 +201,9 @@ class ReflectionTab extends React.Component<Props, State>{
             <div style={{border: "2px solid gray", width: "100%", height: "100%", position: "relative", overflowY: "auto", overflowX: "hidden", backgroundColor: category.color}}>
                 <div style={{width: "50%", height: "100%", position: "absolute", top: 0, left: 0}}>
                     <div style={{paddingLeft: 10}}><b>{category.title}</b></div>
-                    <Button onClick={() => this.goToPrevDream()}>Go previous dream</Button><Button onClick={() => this.goToNextDream()}>Go next dream</Button>
+                    <Button onClick={() => this.goToPrevDream()}>Go previous dream</Button>
+                    <Button onClick={() => this.goToNextDream()}>Go next dream</Button>
+                    <Button onClick={() => this.toggleShowDailyRetro()}>Toggle Daily Retros</Button>
                     { category.habits.map((habit: any, index: number) => 
                         {
                             // const habit: any = this.props.habits[habitIndex];

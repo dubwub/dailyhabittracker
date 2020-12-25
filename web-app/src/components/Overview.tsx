@@ -67,11 +67,11 @@ class Overview extends React.Component<Props>{
             case "execution":
                 pageContents = (
                     <div className={"layout-body"}>
-                        <PromptBar />
+                        {/* <PromptBar /> */}
                         <SheetHeader />
                         <LongRetroContainer />
                         <DailyRetroContainer />
-                        <div style={{border: "2px solid gray", width: "100%", height: "75%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
+                        <div style={{border: "2px solid gray", width: "100%", height: "80%", position: "relative", overflowY: "auto", overflowX: "hidden"}}>
                             {
                                 this.props.enrichedCategories.map((category: any, index: number) => {
                                     // let categoryHeaderIcon = category.icon ? category.icon : "help";
