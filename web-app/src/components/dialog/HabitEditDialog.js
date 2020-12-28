@@ -341,6 +341,7 @@ class HabitEditDialog extends Component {
                             formatDate={date => moment(date).format('MM/DD/YYYY')}
                             onChange={(dates) => this.modifyDates(dates)}
                             parseDate={str => moment(str, 'MM/DD/YYYY').toDate()}
+                            maxDate={new Date(new Date().getFullYear() + 1, 11, 31)}
                             value={[this.state.editedStartDate, this.state.editedEndDate]}
                             shortcuts={false}
                             enableTimePicker={false}
