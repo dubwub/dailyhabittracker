@@ -10,7 +10,8 @@ const UserSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: true
-	},
+    },
+    // deprecated
     categories: [{
         title: {
             type: String,
@@ -49,7 +50,30 @@ const UserSchema = new mongoose.Schema({
                 title: String
             }
         ]
-    }]
+    }],
+    // start v2
+    dreams: [{
+        title: {
+            type: String,
+            required: true
+        },
+        description: String,
+        color: String,
+        order: Number,
+    }],
+    experiments: [{
+        title: {
+            type: String,
+            required: true
+        },
+        description: String,
+        color: String,
+        startDate: Date,
+        endDate: Date,
+        dream: {type: mongoose.Schema.Types.ObjectId},
+        order: Number,
+    }],
+    netWorth: Number,
 });
 
 module.exports = User = mongoose.model('user', UserSchema);

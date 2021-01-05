@@ -12,6 +12,14 @@ let INITIAL_STATE = {
     user: undefined,
     currentTab: "execution",
 
+    // v2
+    currentTabV2: "write",
+    entriesV2: [],
+    dreams: {},
+    experiments: {},
+    dreamOrder: [],
+    experimentOrder: [],
+
     // date/habit for entryeditcontainer
     dateOfSelectedEntry: undefined,
     habitOfSelectedEntry: undefined,
@@ -42,6 +50,51 @@ let INITIAL_STATE = {
 
 export default function(state = INITIAL_STATE, action) {
     switch (action.type) {
+        // V2
+        case "SELECT_TAB_V2": {
+            return {
+                ...state,
+                currentTabV2: action.payload,
+            }
+        }
+        case "CREATE_EXPERIMENT": {
+            state["experiments"][action.payload._id] = action.payload;
+            return {
+                ...state,
+                experimentOrder: state.experimentOrder.concat([action.payload._id]),
+                experiments: state["experiments"]
+            };
+        }
+        case "CREATE_DREAM": {
+            state["dreams"][action.payload._id] = action.payload;
+            return {
+                ...state,
+                dreamOrder: state.dreamOrder.concat([action.payload._id]),
+                dreams: state["dreams"]
+            };
+        }
+        case "CREATE_ENTRY_V2": {
+            return {
+                ...state,
+                entriesV2: state["entriesV2"].concat([action.payload])
+            };
+        }
+        case "LOAD_USER_V2": {
+            console.log(action.payload);
+            return {
+                ...state,
+                dreamOrder: action.payload.dreamOrder,
+                dreams: action.payload.dreams,
+                experimentOrder: action.payload.experimentOrder,
+                experiments: action.payload.experiments,
+                entriesV2: action.payload.entries,
+                user: action.payload.user,
+            };
+        }
+
+
+
+        // V1
         case "SELECT_TAB": {
             return {
                 ...state,

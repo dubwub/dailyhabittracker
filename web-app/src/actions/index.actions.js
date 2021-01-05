@@ -3,10 +3,154 @@ import _ from 'lodash';
 import axios from 'axios';
 import hardcoded_server_url from '../config/constants'; 
 
-const moment = require('moment');
-
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e804a079f8c170c7f812eeb";
+
+const moment = require('moment');
+
+// V2
+
+export function selectTabV2(tab) {
+    return (dispatch) => dispatch({
+        type: "SELECT_TAB_V2",
+        payload: tab,
+    })
+}
+
+
+export function loadUserV2(days) {
+    return async function(dispatch) {
+        const res = await axios.get(hardcoded_server_url + '/api/users/v2/' + user_id);
+        console.log('Loaded user: ' + user_id);
+        
+        let dreamOrder = [];
+        let dreams = {};
+        let experimentOrder = [];
+        let experiments = {};
+        let entries = [];
+
+        // setup habits/habit-orders to get ready for loading entries
+        const raw_experiments = res.data.experiments;
+        raw_experiments.forEach((experiment) => {
+            experimentOrder.push(experiment._id);
+            if (experiment.startDate) {
+                experiment.startDate = _momentDateFromMongo(experiment.startDate);
+            }
+            if (experiment.endDate) {
+                experiment.endDate = _momentDateFromMongo(experiment.endDate);
+            }
+            experiments[experiment._id] = experiment;
+        });
+
+        const raw_dreams = res.data.dreams;
+        raw_dreams.forEach((dream) => {
+            dreamOrder.push(dream._id);
+            dreams[dream._id] = dream;
+        });
+
+        // preprocess incoming entries
+        const raw_entries = res.data.entries;
+
+        dispatch({
+            type: "LOAD_USER_V2",
+            payload: {
+                user: user_id,
+                days: days,
+                experiments: experiments,
+                experimentOrder: experimentOrder,
+                dreams: dreams,
+                dreamOrder: dreamOrder,
+                entries: raw_entries,
+            }
+        });
+    }
+}
+
+export function createExperiment(title, startDate, endDate) {
+    const data = {
+        title: title,
+        startDate: startDate,
+        endDate: endDate
+    }
+
+    return async function(dispatch) {
+        let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/experiments', data);
+
+        const payload = {
+            ...res.data,
+            startDate: _.isNil(res.data.startDate) ? undefined: _momentDateFromMongo(res.data.startDate),
+            endDate: _.isNil(res.data.endDate) ? undefined : _momentDateFromMongo(res.data.endDate),
+        }
+
+        dispatch({
+            type: "CREATE_EXPERIMENT",
+            payload: payload,
+        });
+    }
+}
+
+export function createDream(title) {
+    const data = {
+        title: title,
+    }
+
+    return async function(dispatch) {
+        let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/dreams', data);
+        dispatch({
+            type: "CREATE_DREAM",
+            payload: res.data
+        });
+    }
+}
+
+export function createEntryV2(dreams, experiments, feelingScore, note, observations) {
+    return async function(dispatch) {
+        let data = {
+            lastUpdatedAt: Date.now(), 
+            dreams: dreams,
+            experiments: experiments,
+            feelingScore: feelingScore,
+            note: note,
+            observations: observations,
+        };
+        const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
+        let res = await axios.put(URL, data);
+        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
+        dispatch({
+            type: "CREATE_ENTRY_V2",
+            payload: res.data
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// V1
 
 // TODO: is there a better way of storing dates with mongo? can i just store a moment object?
 function _momentDateFromMongo(day) {

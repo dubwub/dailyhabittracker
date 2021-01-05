@@ -29,6 +29,27 @@ export interface Props {
     habitOfSelectedEntry: String
     enrichedCategories: any
 
+    // V2
+    dreamOrder: string[]
+    dreams: any
+    experimentOrder: string[]
+    experiments: any
+    entriesV2: any[]
+    selectTabV2: any
+    loadUserV2: any
+    currentTabV2: string
+    editedTitle: string
+    editedFeelingScore: number
+    editedNote: string
+    editedExperiments: [string]
+    editedDreams: [string]
+    editedObservations: [string]
+    createExperiment: any
+    createDream: any
+    createEntryV2: any
+
+
+
     // functions from index.actions
     loadUser: any
     createHabit: any

@@ -24,6 +24,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.topbar {
+    position: absolute;
+    height: 40px;
+    width: 100%;
+    top: 0;
+}
+.mainpage {
+    position: absolute;
+    height: calc(100% - 40px);
+    top: 40px;
+    width: 100%;
+    border: 2px solid red;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

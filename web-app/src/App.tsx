@@ -6,6 +6,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import reduxThunk from 'redux-thunk';
 
 import Overview from './components/Overview';
+import OverviewV2 from './components/OverviewV2';
 
 // initial state with days and such is set in the reducers
 import reducers from './reducers/index.reducers';
@@ -18,6 +19,7 @@ const App: React.FC = () => {
             <Router>
                 <div>
                     <Route exact path='/' component={Overview} />
+                    <Route exact path='/v2' component={OverviewV2} />
                 </div>
             </Router>
         </Provider>

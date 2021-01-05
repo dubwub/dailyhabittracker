@@ -1,5 +1,8 @@
 // TODO: split into separate files
 const User = require('../../models/User');
+const EntryV2 = require('../../models/EntryV2');
+
+// v1 (DEPRECATED)
 const Entry = require('../../models/Entry');
 const Event = require('../../models/Event');
 const Retrospective = require('../../models/Retrospective');
@@ -7,6 +10,103 @@ const _ = require('lodash');
 
 const express = require('express');
 const router = express.Router();
+
+
+// @route GET V2 /api/users/v2/:id
+// [V2 USERS]
+router.get('/v2/:id', (req, res) => {
+    console.log('here');
+    let output = {};
+
+    // first query user to get list of habits, then query entries to get all entries
+    User.findById(req.params.id)
+        .then(user => {
+            output['username'] = user['username'];
+            output['dreams'] = user['dreams'];
+            output['experiments'] = user['experiments'];
+            EntryV2.find({
+                user: req.params.id
+            }, function(err, entries) {
+                if (err) {
+                    res.status(400).json({ error: 'Error loading entries' });
+                } else {
+                    output['entries'] = entries;
+                    res.send(output);
+                }
+            });
+        }).catch(err => res.status(404).json({ nouserfound: 'No User Found' }));
+});
+
+// [DREAMS]
+router.put('/:id/dreams', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    const newDream = user.dreams.create(req.body);
+    user.dreams.push(newDream);
+    const updatedUser = await user.save();
+
+    if (updatedUser) { res.send(newDream); }
+    else { res.status(400).json({ error: err }); }
+});
+// router.delete('/:uid/dreams/:did', (req, res) => {
+// 	User.findByIdAndUpdate(req.params.uid, {
+// 		$pull: {
+// 			dreams: {
+// 				_id: req.params.did
+// 			}
+// 		}
+// 	}).then( _ => {
+//         User.findOneAndUpdate({
+//                 _id: req.params.uid,
+//                 habits: { 
+//                     "$elemMatch": {
+//                         category: req.params.cid 
+//                     }
+//                 }
+//             },
+//             {
+//                 $set: {
+//                     "habits.$.category": undefined
+//                 }
+//             },
+//             {
+//                 new: true
+//             },
+//             function(err, user) {
+//                 if (err) { res.status(500).json({error: err}); }
+//                 res.json({ msg: "Category removed successfully" });
+//             }
+//         );
+//     }).catch(err => res.status(400).json({ error: err }));
+// });
+
+// [EXPERIMENTS]
+router.put('/:id/experiments', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    const newExperiment = user.experiments.create(req.body);
+    user.experiments.push(newExperiment);
+    const updatedUser = await user.save();
+
+    if (updatedUser) { res.send(newExperiment); }
+    else { res.status(400).json({ error: err }); }
+});
+
+// [ENTRIES]
+router.put('/:id/entries', async (req, res) => {
+    const params = {
+        ...req.body,
+        user: req.params.id,
+    };
+    let newEntry = new EntryV2(params);
+    newEntry.save(function(err, entry) {
+        if (err) { res.status(400).json({error: err}) }
+        else { res.send(entry); }
+    });
+});
+
+
+
+///////// DEPRECATED
+
 
 // @route GET /api/users/:id
 // @description get user
