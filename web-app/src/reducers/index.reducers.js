@@ -13,7 +13,7 @@ let INITIAL_STATE = {
     currentTab: "execution",
 
     // v2
-    currentTabV2: "write",
+    currentTabV2: "reflect",
     entriesV2: [],
     dreams: {},
     experiments: {},
@@ -76,7 +76,8 @@ export default function(state = INITIAL_STATE, action) {
         case "CREATE_ENTRY_V2": {
             return {
                 ...state,
-                entriesV2: state["entriesV2"].concat([action.payload])
+                entriesV2: state["entriesV2"].concat([action.payload]),
+                currentTabV2: "reflect",
             };
         }
         case "LOAD_USER_V2": {

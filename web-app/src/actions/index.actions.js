@@ -115,7 +115,7 @@ export function createEntryV2(dreams, experiments, feelingScore, note, observati
         };
         const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
         let res = await axios.put(URL, data);
-        res.data["date"] = _momentDateFromMongo(res.data["date"]).format("MM/DD/YYYY");
+        res.data["lastUpdatedAt"] = _momentDateFromMongo(res.data["lastUpdatedAt"]).format("MM/DD/YYYY");
         dispatch({
             type: "CREATE_ENTRY_V2",
             payload: res.data

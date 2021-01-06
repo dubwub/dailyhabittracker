@@ -2,10 +2,11 @@ import * as React from 'react';
 
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button, InputGroup, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
+import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 import { getThresholdFromValue, generateQuickAddButtons } from '../utils/habits.utils';
+const moment = require('moment');
 
 const EMOTIONS = [
     "enjoyment",
@@ -75,7 +76,10 @@ const EMOTIONS = [
     "intrigued",
     "curious",
     "wonder",
-    "inspired"
+    "inspired",
+    "tired",
+    "exhausted",
+    "bored"
 ])
 
 const DEFAULT_THRESHOLDS = [
@@ -306,16 +310,16 @@ class OverviewV2 extends React.Component<Props, State>{
                         {
                             this.props.dreamOrder.map((dream: any) => {
                                 return <Checkbox 
-                                    checked={this.state.editedDreams.includes(this.props.dreams[dream].title)}
-                                    onChange={(e: any) => e.target.checked ? this.addDream(this.props.dreams[dream].title) : this.removeDream(this.props.dreams[dream].title)}
+                                    checked={this.state.editedDreams.includes(dream)}
+                                    onChange={(e: any) => e.target.checked ? this.addDream(dream) : this.removeDream(dream)}
                                 >{this.props.dreams[dream].title}</Checkbox>
                             })
                         }
                         {
                             this.props.experimentOrder.map((experiment: any) => (
                                 <Checkbox 
-                                    checked={this.state.editedDreams.includes(this.props.experiments[experiment].title)}
-                                    onChange={(e: any) => e.target.checked ? this.addExperiment(this.props.experiments[experiment].title) : this.removeDream(this.props.experiments[experiment].title)}
+                                    checked={this.state.editedExperiments.includes(experiment)}
+                                    onChange={(e: any) => e.target.checked ? this.addExperiment(experiment) : this.removeExperiment(experiment)}
                                 >{this.props.experiments[experiment].title}</Checkbox>
                             ))
                         }
@@ -364,6 +368,11 @@ class OverviewV2 extends React.Component<Props, State>{
                 )
                 break;
             case "reflect":
+                // const datesAreOnSameDay = (first: Date, second: Date) =>
+                //     first.getFullYear() === second.getFullYear() &&
+                //     first.getMonth() === second.getMonth() &&
+                //     first.getDate() === second.getDate();
+                let prevDay: any = moment();
                 pageContents = (
                     <div className={"mainpage"}>
                         <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
@@ -395,16 +404,34 @@ class OverviewV2 extends React.Component<Props, State>{
                                     }
                                     return true;
                                 }
-                            ).map((entry: any) => (
-                                <div style={{whiteSpace: "pre-line", padding: 10, backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, entry.feelingScore).color}}>
-                                    <H5>[{entry.feelingScore}]</H5>{entry.note}
+                            ).map((entry: any) => {
+                                let entryDate = moment(entry.lastUpdatedAt.substring(0, 10));
+                                let dayIsSame = entryDate.isSame(prevDay, "day");
+                                prevDay = entryDate;
+                                return (
                                     <div>
-                                        {
-                                            entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
-                                        }
+                                        { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
+                                        <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10, backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, entry.feelingScore).color}}>
+                                            <H5>[{entry.feelingScore}]</H5>
+                                            {entry.lastUpdatedAt}
+                                            <div>
+                                                {
+                                                    entry.dreams.map((dream: string) => <Tag>{this.props.dreams[dream].title}</Tag>)
+                                                }
+                                                {
+                                                    entry.experiments.map((experiment: string) => <Tag>{this.props.experiments[experiment].title}</Tag>)
+                                                }
+                                            </div>
+                                            {entry.note}
+                                            <div>
+                                                {
+                                                    entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
+                                                }
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                )
+                            })
                         }
                     </div>
                 )
