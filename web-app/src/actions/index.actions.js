@@ -89,15 +89,53 @@ export function createExperiment(title, startDate, endDate) {
     }
 }
 
-export function createDream(title) {
+export function createDream(title, description, color, order) {
     const data = {
         title: title,
+        description: description,
+        color: color,
+        order: order
     }
 
     return async function(dispatch) {
         let res = await axios.put(hardcoded_server_url + '/api/users/' + user_id + '/dreams', data);
         dispatch({
             type: "CREATE_DREAM",
+            payload: res.data
+        });
+    }
+}
+
+export function editDream(dream, title, description, color, order) {
+    let data = {};
+    if (!_.isNil(title)) { data["title"] = title; }
+    if (!_.isNil(description)) { data["icon"] = description; }
+    if (!_.isNil(color)) { data["order"] = color; }
+    if (!_.isNil(order)) { data["color"] = order; }
+
+    return async function(dispatch) {
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/dreams/' + dream, data);
+        dispatch({
+            type: "UPDATE_DREAM",
+            payload: res.data
+        });
+    }
+}
+
+export function editExperiment(experiment, title, description, color, startDate, endDate, dream, order) {
+    let data = {};
+    if (!_.isNil(title)) { data["title"] = title; }
+    if (!_.isNil(description)) { data["description"] = description; }
+    if (!_.isNil(color)) { data["color"] = color; }
+    if (!_.isNil(startDate)) { data["startDate"] = startDate; }
+    if (!_.isNil(endDate)) { data["endDate"] = endDate; }
+    if (!_.isNil(dream)) { data["dream"] = dream; }
+    if (!_.isNil(order)) { data["order"] = order; }
+
+    return async function(dispatch) {
+        let res = await axios.post(hardcoded_server_url + '/api/users/' + user_id + '/experiments/' + experiment, data);
+        dispatch({
+            type: "UPDATE_EXPERIMENT",
             payload: res.data
         });
     }

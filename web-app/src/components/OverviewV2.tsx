@@ -6,7 +6,7 @@ import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } fr
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 import { getThresholdFromValue, generateQuickAddButtons } from '../utils/habits.utils';
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 const EMOTIONS = [
     "enjoyment",
@@ -190,6 +190,23 @@ class OverviewV2 extends React.Component<Props, State>{
         }
     }
 
+    clear(){
+        this.setState({
+            ...this.state,
+            editedTitle: "",
+            editedFeelingScore: -1,
+            editedNote: "",
+            editedExperiments: [],
+            editedDreams: [],
+            editedObservations: [],
+            editedDreamTitle: "",
+            editedExperimentTitle: "",
+            observationSearch: "",
+            reflectEmotionSearch: [],
+            reflectNoteSearch: "",
+        })
+    }
+
     modifyNoteSearch(search: string) {
         this.setState({
             ...this.state,
@@ -364,15 +381,22 @@ class OverviewV2 extends React.Component<Props, State>{
                         <br/>
                         <Button icon="floppy-disk" intent={"success"} onClick={() => 
                             this.props.createEntryV2(this.state.editedDreams, this.state.editedExperiments, this.state.editedFeelingScore, this.state.editedNote, this.state.editedObservations)}>Save new entry</Button>
+                        <br/><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
                     </div>
                 )
                 break;
             case "reflect":
-                // const datesAreOnSameDay = (first: Date, second: Date) =>
-                //     first.getFullYear() === second.getFullYear() &&
-                //     first.getMonth() === second.getMonth() &&
-                //     first.getDate() === second.getDate();
-                let prevDay: any = moment();
+                let prevDay: any = moment().tz('America/New_York').add(1, 'days');
+
+                let flatEmotions: string[] = [];
+                for (let entry of this.props.entriesV2) {
+                    for (let emotion of entry.observations) {
+                        if (flatEmotions.indexOf(entry) === -1) {
+                            flatEmotions.push(emotion);
+                        }
+                    }
+                }
+
                 pageContents = (
                     <div className={"mainpage"}>
                         <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
@@ -380,7 +404,7 @@ class OverviewV2 extends React.Component<Props, State>{
                                 onChange={(e: any) => this.modifyNoteSearch(e.target.value)}
                                 />
                         {
-                            EMOTIONS.map((emotion: string) => <Button onClick={() => {
+                            flatEmotions.map((emotion: string) => <Button onClick={() => {
                                 if (this.state.reflectEmotionSearch.indexOf(emotion) === -1) {
                                     this.addEmotionSearch(emotion)
                                 } else {
@@ -405,7 +429,7 @@ class OverviewV2 extends React.Component<Props, State>{
                                     return true;
                                 }
                             ).map((entry: any) => {
-                                let entryDate = moment(entry.lastUpdatedAt.substring(0, 10));
+                                let entryDate = moment.utc(entry.lastUpdatedAt).subtract(5, 'hours'); // hardcoded for EST
                                 let dayIsSame = entryDate.isSame(prevDay, "day");
                                 prevDay = entryDate;
                                 return (
@@ -413,7 +437,7 @@ class OverviewV2 extends React.Component<Props, State>{
                                         { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10, backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, entry.feelingScore).color}}>
                                             <H5>[{entry.feelingScore}]</H5>
-                                            {entry.lastUpdatedAt}
+                                            {entryDate.format()}
                                             <div>
                                                 {
                                                     entry.dreams.map((dream: string) => <Tag>{this.props.dreams[dream].title}</Tag>)
