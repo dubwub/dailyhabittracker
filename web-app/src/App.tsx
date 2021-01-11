@@ -18,7 +18,7 @@ const App: React.FC = () => {
         <Provider store={store}>
             <Router>
                 <div>
-                    <Route exact path='/' component={Overview} />
+                    <Route exact path='/v1' component={Overview} />
                     <Route exact path='/v2' component={OverviewV2} />
                 </div>
             </Router>
