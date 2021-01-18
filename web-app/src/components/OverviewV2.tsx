@@ -98,6 +98,7 @@ interface State {
     observationSearch: string,
 
     editedHighlights: string[]
+    editedSelection: string
 }
 
 class OverviewV2 extends React.Component<Props, State>{    
@@ -117,6 +118,7 @@ class OverviewV2 extends React.Component<Props, State>{
             reflectEmotionSearch: [],
             reflectNoteSearch: "",
             editedHighlights: [],
+            editedSelection: "",
         }
     }
 
@@ -135,6 +137,7 @@ class OverviewV2 extends React.Component<Props, State>{
             reflectEmotionSearch: [],
             reflectNoteSearch: "",
             editedHighlights: [],
+            editedSelection: "",
         })
     }
 
@@ -237,6 +240,30 @@ class OverviewV2 extends React.Component<Props, State>{
         })
     }
 
+    addHighlight(highlight: string) {
+        this.setState({
+            ...this.state,
+            editedHighlights: this.state.editedHighlights.concat([highlight]),
+        })
+    }
+
+    removeHighlight(index: number) {
+        let newHighlights = this.state.editedHighlights;
+        newHighlights.splice(index, 1);
+
+        this.setState({
+            ...this.state,
+            editedHighlights: newHighlights,
+        })
+    }
+
+    setHighlightSelection(selection: string) {
+        this.setState({
+            ...this.state,
+            editedSelection: selection,
+        })
+    }
+
     modifyObservationSearch(search: string) {
         this.setState({
             ...this.state,
@@ -254,11 +281,13 @@ class OverviewV2 extends React.Component<Props, State>{
             case "write":
                 let cleanedNote = (this.state.editedTitle + " " + this.state.editedNote).toLowerCase().split(/\W/);
                 let cleanedTags: any = {};
+                let specificTagMap: any = {};
                 let numTags = this.props.dreamOrder.length + this.props.experimentOrder.length;
                 for (let i of this.props.dreamOrder) {
                     let dream = this.props.dreams[i];
                     let cleanedTitle = dream.title.toLowerCase().split(/\W/);
                     for (let word of cleanedTitle) {
+                        if (stop_words.indexOf(word) !== -1) continue;
                         if (cleanedTags[word]) {
                             cleanedTags[word].push(dream.title);
                         } else {
@@ -270,10 +299,41 @@ class OverviewV2 extends React.Component<Props, State>{
                     let experiment = this.props.experiments[i];
                     let cleanedTitle = experiment.title.toLowerCase().split(/\W/);
                     for (let word of cleanedTitle) {
+                        if (stop_words.indexOf(word) !== -1) continue;
                         if (cleanedTags[word]) {
                             cleanedTags[word].push(experiment.title);
                         } else {
                             cleanedTags[word] = [experiment.title];
+                        }
+                    }
+                }
+                for (let entry of this.props.entriesV2) {
+                    let cleanWords = entry.note.toLowerCase().split(/\W/);
+                    for (let word of cleanWords) {
+                        if (stop_words.indexOf(word) !== -1) continue;
+                        if (entry.dreams.length > 0) {
+                            let dreamsExploded = entry.dreams.map((i: string) => this.props.dreams[i].title);
+                            if (specificTagMap[word]) {
+                                for (let i = 0; i < dreamsExploded.length; i++) {
+                                    if (specificTagMap[word].indexOf(dreamsExploded[i]) === -1) {
+                                        specificTagMap[word].push(dreamsExploded[i]);
+                                    }
+                                }
+                            } else {
+                                specificTagMap[word] = dreamsExploded;
+                            }
+                        }
+                        if (entry.experiments.length > 0) {
+                            let experimentsExploded = entry.dreams.map((i: string) => this.props.dreams[i].title);
+                            if (specificTagMap[word]) {
+                                for (let i = 0; i < experimentsExploded.length; i++) {
+                                    if (specificTagMap[word].indexOf(experimentsExploded[i]) === -1) {
+                                        specificTagMap[word].push(experimentsExploded[i]);
+                                    }
+                                }
+                            } else {
+                                specificTagMap[word] = experimentsExploded;
+                            }
                         }
                     }
                 }
@@ -282,6 +342,13 @@ class OverviewV2 extends React.Component<Props, State>{
                 for (let i = 0; i < cleanedNote.length; i++) {
                     if (cleanedTags[cleanedNote[i]] && cleanedTags[cleanedNote[i]].length <= numTags / 2) {
                         for (let addTag of cleanedTags[cleanedNote[i]]) {
+                            if (relevantTagTitles.indexOf(addTag) === -1) {
+                                relevantTagTitles.push(addTag);
+                            }
+                        }
+                    }
+                    if (specificTagMap[cleanedNote[i]] && specificTagMap[cleanedNote[i]].length < 3) {
+                        for (let addTag of specificTagMap[cleanedNote[i]]) {
                             if (relevantTagTitles.indexOf(addTag) === -1) {
                                 relevantTagTitles.push(addTag);
                             }
@@ -336,7 +403,12 @@ class OverviewV2 extends React.Component<Props, State>{
                             large={true}
                             placeholder="Write whatever you want!"
                             value={this.state.editedNote}
-                            onSelect={(e) => { e.persist(); console.log(e)}}
+                            onSelect={(e: any) => { 
+                                // e.persist();
+                                // console.log(e);
+                                // console.log(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd))
+                                this.setHighlightSelection(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd))
+                            }}
                             onChange={(e) => { this.modifyNote(e.target.value)}}
                             style={{
                                 width: "40%",
@@ -369,6 +441,23 @@ class OverviewV2 extends React.Component<Props, State>{
                                     />
                             {
                                 emotions.filter((emotion: string) => this.state.editedObservations.indexOf(emotion) === -1 && (this.state.editedNote.includes(emotion) || (emotion.includes(this.state.observationSearch) && this.state.observationSearch.length > 0))).map((emotion: string) => <Button onClick={() => this.addObservation(emotion)}>{emotion}</Button>)
+                            }
+                        </div>
+
+                        <div style={{
+                            width: "30%",
+                            position: "absolute",
+                            left: "70%",
+                            top: "50%",
+                        }}>
+                            <Button onClick={() => this.addHighlight(this.state.editedSelection)}>Save highlight</Button>
+                            {
+                                this.state.editedHighlights.map((highlight: string, index: number) => (
+                                    <div>
+                                        {highlight}
+                                        <Button onClick={() => this.removeHighlight(index)}>X</Button>
+                                    </div>
+                                ))
                             }
                         </div>
 
