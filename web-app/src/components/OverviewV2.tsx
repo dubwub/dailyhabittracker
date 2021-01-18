@@ -6,81 +6,8 @@ import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } fr
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 import { getThresholdFromValue, generateQuickAddButtons } from '../utils/habits.utils';
+import { stop_words, emotions } from '../config/constants'; 
 const moment = require('moment-timezone');
-
-const EMOTIONS = [
-    "enjoyment",
-    "happiness",
-    "love",
-    "relief",
-    "contentment",
-    "amusement",
-    "joy",
-    "pride",
-    "excitement",
-    "peace",
-    "satisfaction",
-    "compassion",
-    "sadness",
-    "lonely",
-    "heartbroken",
-    "gloomy",
-    "disappointed",
-    "hopeless",
-    "grieved",
-    "unhappy",
-    "lost",
-    "troubled",
-    "resigned",
-    "miserable",
-    "fear",
-    "worried",
-    "doubtful",
-    "nervous",
-    "anxious",
-    "terrified",
-    "panicked",
-    // "horrified",
-    "desperate",
-    "confused",
-    "stressed",
-    "anger",
-    "annoyed",
-    "frustrated",
-    "peeved",
-    "contrary",
-    "bitter",
-    "infuriated",
-    "irritated",
-    "mad",
-    "cheated",
-    "vengeful",
-    "insulted",
-    "disgust",
-    "dislike",
-    "revulsion",
-    "loathing",
-    "disapproving",
-    "offended",
-    "horrified",
-    "uncomfortable",
-    "nauseated",
-    "disturbed",
-    "withdrawal",
-    "aversion"
-].concat([
-    "resentful",
-    "proud",
-    "excited",
-    "belittled",
-    "intrigued",
-    "curious",
-    "wonder",
-    "inspired",
-    "tired",
-    "exhausted",
-    "bored"
-])
 
 const DEFAULT_THRESHOLDS = [
     {
@@ -169,6 +96,8 @@ interface State {
     editedDreamTitle: string,
     editedExperimentTitle: string,
     observationSearch: string,
+
+    editedHighlights: string[]
 }
 
 class OverviewV2 extends React.Component<Props, State>{    
@@ -187,6 +116,7 @@ class OverviewV2 extends React.Component<Props, State>{
             observationSearch: "",
             reflectEmotionSearch: [],
             reflectNoteSearch: "",
+            editedHighlights: [],
         }
     }
 
@@ -204,6 +134,7 @@ class OverviewV2 extends React.Component<Props, State>{
             observationSearch: "",
             reflectEmotionSearch: [],
             reflectNoteSearch: "",
+            editedHighlights: [],
         })
     }
 
@@ -321,67 +252,132 @@ class OverviewV2 extends React.Component<Props, State>{
         let pageContents = (<div />);
         switch (this.props.currentTabV2) {
             case "write":
+                let cleanedNote = (this.state.editedTitle + " " + this.state.editedNote).toLowerCase().split(/\W/);
+                let cleanedTags: any = {};
+                let numTags = this.props.dreamOrder.length + this.props.experimentOrder.length;
+                for (let i of this.props.dreamOrder) {
+                    let dream = this.props.dreams[i];
+                    let cleanedTitle = dream.title.toLowerCase().split(/\W/);
+                    for (let word of cleanedTitle) {
+                        if (cleanedTags[word]) {
+                            cleanedTags[word].push(dream.title);
+                        } else {
+                            cleanedTags[word] = [dream.title];
+                        }
+                    }
+                }
+                for (let i of this.props.experimentOrder) {
+                    let experiment = this.props.experiments[i];
+                    let cleanedTitle = experiment.title.toLowerCase().split(/\W/);
+                    for (let word of cleanedTitle) {
+                        if (cleanedTags[word]) {
+                            cleanedTags[word].push(experiment.title);
+                        } else {
+                            cleanedTags[word] = [experiment.title];
+                        }
+                    }
+                }
+
+                let relevantTagTitles: string[] = [];
+                for (let i = 0; i < cleanedNote.length; i++) {
+                    if (cleanedTags[cleanedNote[i]] && cleanedTags[cleanedNote[i]].length <= numTags / 2) {
+                        for (let addTag of cleanedTags[cleanedNote[i]]) {
+                            if (relevantTagTitles.indexOf(addTag) === -1) {
+                                relevantTagTitles.push(addTag);
+                            }
+                        }
+                    }
+                }
+
                 pageContents = (
                     <div className={"mainpage"}>
-                        <H4>What dreams/experiments are this entry related to?</H4>
+                        <div style={{
+                            position: "absolute",
+                            top: 50,
+                        }}>
+                            {
+                                this.props.dreamOrder.filter((dream: any) => relevantTagTitles.indexOf(this.props.dreams[dream].title) !== -1).map((dream: any) => {
+                                    return <Checkbox 
+                                        checked={this.state.editedDreams.includes(dream)}
+                                        onChange={(e: any) => e.target.checked ? this.addDream(dream) : this.removeDream(dream)}
+                                    >{this.props.dreams[dream].title}</Checkbox>
+                                })
+                            }
+                            {
+                                this.props.experimentOrder.filter((experiment: any) => relevantTagTitles.indexOf(this.props.experiments[experiment].title) !== -1).map((experiment: any) => (
+                                    <Checkbox 
+                                        checked={this.state.editedExperiments.includes(experiment)}
+                                        onChange={(e: any) => e.target.checked ? this.addExperiment(experiment) : this.removeExperiment(experiment)}
+                                    >{this.props.experiments[experiment].title}</Checkbox>
+                                ))
+                            }
+                        </div>
+
+
+                        <InputGroup id="edit-title" type="text" className="bp3-input" placeholder="Title (OPTIONAL)" 
+                                    value={this.state.editedTitle}
+                                    onChange={(e: any) => this.modifyTitle(e.target.value)}
+                                    style={{
+                                        width: "40%",
+                                        marginLeft: "30%",
+                                        position: "absolute",
+                                        top: 20,
+                                    }}
+                                    />
+
                         {
-                            this.props.dreamOrder.map((dream: any) => {
-                                return <Checkbox 
-                                    checked={this.state.editedDreams.includes(dream)}
-                                    onChange={(e: any) => e.target.checked ? this.addDream(dream) : this.removeDream(dream)}
-                                >{this.props.dreams[dream].title}</Checkbox>
-                            })
+                            <div style={{marginLeft: "30%", position: "absolute", top: 60}}>
+                                { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 10, onClick, this.state.editedFeelingScore) }
+                            </div>
                         }
-                        {
-                            this.props.experimentOrder.map((experiment: any) => (
-                                <Checkbox 
-                                    checked={this.state.editedExperiments.includes(experiment)}
-                                    onChange={(e: any) => e.target.checked ? this.addExperiment(experiment) : this.removeExperiment(experiment)}
-                                >{this.props.experiments[experiment].title}</Checkbox>
-                            ))
-                        }
-
-
-                        <H4>How did it feel?</H4>
-                        { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 10, onClick, this.state.editedFeelingScore) }
-
-                        <H4>Write anything you want :)</H4>
-                        <TextArea
-                            id="edit-desc"
+                        <br/><TextArea
+                            id="edit-note"
                             growVertically={false}
                             large={true}
-                            placeholder="Description"
+                            placeholder="Write whatever you want!"
                             value={this.state.editedNote}
-                            onChange={(e) => this.modifyNote(e.target.value)}
+                            onSelect={(e) => { e.persist(); console.log(e)}}
+                            onChange={(e) => { this.modifyNote(e.target.value)}}
                             style={{
-                                width: "90%",
-                                height: 600,
+                                width: "40%",
+                                height: 400,
+                                position: "absolute",
+                                marginLeft: "30%",
+                                top: 100,
                             }}
                             />
                         
-                        <H4>Add some feelings!</H4>
-                        {
-                            this.state.editedObservations.map((observation: string, index: number) => (
-                                <div>
-                                    {observation}
-                                    <Button onClick={() => this.removeObservation(index)}>X</Button>
-                                </div>
-                            ))
-                        }
+                        <div style={{
+                            width: "30%",
+                            position: "absolute",
+                            left: "70%"
+                        }}>
+                            <H4>Add some feelings!</H4>
+                            {
+                                this.state.editedObservations.map((observation: string, index: number) => (
+                                    <div>
+                                        {observation}
+                                        <Button onClick={() => this.removeObservation(index)}>X</Button>
+                                    </div>
+                                ))
+                            }
 
 
-                        <InputGroup type="text" className="bp3-input" placeholder="Observation Search" 
-                                value={this.state.observationSearch}
-                                onChange={(e: any) => this.modifyObservationSearch(e.target.value)}
-                                />
-                        {
-                            EMOTIONS.filter((emotion: string) => this.state.editedObservations.indexOf(emotion) === -1 && (this.state.editedNote.includes(emotion) || (emotion.includes(this.state.observationSearch) && this.state.observationSearch.length > 0))).map((emotion: string) => <Button onClick={() => this.addObservation(emotion)}>{emotion}</Button>)
-                        }
+                            <InputGroup type="text" className="bp3-input" placeholder="Observation Search" 
+                                    value={this.state.observationSearch}
+                                    onChange={(e: any) => this.modifyObservationSearch(e.target.value)}
+                                    />
+                            {
+                                emotions.filter((emotion: string) => this.state.editedObservations.indexOf(emotion) === -1 && (this.state.editedNote.includes(emotion) || (emotion.includes(this.state.observationSearch) && this.state.observationSearch.length > 0))).map((emotion: string) => <Button onClick={() => this.addObservation(emotion)}>{emotion}</Button>)
+                            }
+                        </div>
 
                         <br/>
-                        <Button icon="floppy-disk" intent={"success"} onClick={() => 
-                            this.props.createEntryV2(this.state.editedDreams, this.state.editedExperiments, this.state.editedFeelingScore, this.state.editedNote, this.state.editedObservations)}>Save new entry</Button>
-                        <br/><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
+                        <div style={{position: "absolute", top: 550, marginLeft: "30%"}}>
+                            <Button icon="floppy-disk" intent={"success"} onClick={() => 
+                                this.props.createEntryV2(this.state.editedTitle, this.state.editedDreams, this.state.editedExperiments, this.state.editedFeelingScore, this.state.editedNote, this.state.editedObservations, this.state.editedHighlights)}>Save new entry</Button>
+                            <div style={{display:"inline-block",    width: 100}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
+                        </div>
                     </div>
                 )
                 break;

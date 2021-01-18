@@ -1,7 +1,7 @@
 // TODO: split into separate files
 import _ from 'lodash';
 import axios from 'axios';
-import hardcoded_server_url from '../config/constants'; 
+import { hardcoded_server_url } from '../config/constants'; 
 
 // TODO: when signup/login is implemented, remove this hardcoded id
 const user_id = "5e804a079f8c170c7f812eeb";
@@ -141,15 +141,17 @@ export function editExperiment(experiment, title, description, color, startDate,
     }
 }
 
-export function createEntryV2(dreams, experiments, feelingScore, note, observations) {
+export function createEntryV2(title, dreams, experiments, feelingScore, note, observations, highlights) {
     return async function(dispatch) {
         let data = {
             lastUpdatedAt: Date.now(), 
+            title: title,
             dreams: dreams,
             experiments: experiments,
             feelingScore: feelingScore,
             note: note,
             observations: observations,
+            highlights: highlights,
         };
         const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
         let res = await axios.put(URL, data);

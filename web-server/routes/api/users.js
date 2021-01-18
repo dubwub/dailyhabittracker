@@ -15,7 +15,6 @@ const router = express.Router();
 // @route GET V2 /api/users/v2/:id
 // [V2 USERS]
 router.get('/v2/:id', (req, res) => {
-    console.log('here');
     let output = {};
 
     // first query user to get list of habits, then query entries to get all entries
