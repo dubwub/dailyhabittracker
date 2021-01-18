@@ -6,7 +6,7 @@ import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } fr
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 import { getThresholdFromValue, generateQuickAddButtons } from '../utils/habits.utils';
-import { stop_words, emotions } from '../config/constants'; 
+import { stop_words, emotions } from '../utils/safe-constants'; 
 const moment = require('moment-timezone');
 
 const DEFAULT_THRESHOLDS = [
