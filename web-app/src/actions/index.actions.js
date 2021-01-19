@@ -141,7 +141,7 @@ export function editExperiment(experiment, title, description, color, startDate,
     }
 }
 
-export function createEntryV2(title, dreams, experiments, feelingScore, note, observations, highlights) {
+export function createEntryV2(title, dreams, experiments, feelingScore, note, observations, highlights, subnotes) {
     return async function(dispatch) {
         let data = {
             lastUpdatedAt: Date.now(), 
@@ -152,6 +152,7 @@ export function createEntryV2(title, dreams, experiments, feelingScore, note, ob
             note: note,
             observations: observations,
             highlights: highlights,
+            subnotes: subnotes,
         };
         const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
         let res = await axios.put(URL, data);

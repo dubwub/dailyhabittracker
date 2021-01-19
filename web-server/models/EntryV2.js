@@ -12,6 +12,11 @@ const EntrySchema = new mongoose.Schema({
     dreams: [{type: mongoose.Schema.Types.ObjectId}],
     observations: [String],
     highlights: [String],
+    subnotes: [{
+        dream: {type: mongoose.Schema.Types.ObjectId},
+        experiment: {type: mongoose.Schema.Types.ObjectId},
+        note: String
+    }]
 });
 
 module.exports = Entry = mongoose.model('entryv2', EntrySchema);

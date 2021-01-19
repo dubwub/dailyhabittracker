@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
 import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
@@ -99,6 +100,9 @@ interface State {
 
     editedHighlights: string[]
     editedSelection: string
+    editedSubnotes: any[]
+
+    tagSearch: string[]
 }
 
 class OverviewV2 extends React.Component<Props, State>{    
@@ -119,6 +123,8 @@ class OverviewV2 extends React.Component<Props, State>{
             reflectNoteSearch: "",
             editedHighlights: [],
             editedSelection: "",
+            editedSubnotes: [],
+            tagSearch: [],
         }
     }
 
@@ -138,6 +144,8 @@ class OverviewV2 extends React.Component<Props, State>{
             reflectNoteSearch: "",
             editedHighlights: [],
             editedSelection: "",
+            editedSubnotes: [],
+            tagSearch: [],
         })
     }
 
@@ -145,6 +153,18 @@ class OverviewV2 extends React.Component<Props, State>{
         this.setState({
             ...this.state,
             reflectNoteSearch: search,
+        })
+    }
+    addTagSearch(tag: string) {
+        this.setState({
+            ...this.state,
+            tagSearch: this.state.tagSearch.concat([tag])
+        })
+    }
+    removeTagSearch(tag: string) {
+        this.setState({
+            ...this.state,
+            tagSearch: this.state.tagSearch.filter((e: string) => e !== tag)
         })
     }
     addEmotionSearch(emotion: string) {
@@ -195,33 +215,54 @@ class OverviewV2 extends React.Component<Props, State>{
         })
     }
 
-    addExperiment(experiment: string) {
+    // addExperiment(experiment: string) {
+    //     this.setState({
+    //         ...this.state,
+    //         editedExperiments: this.state.editedExperiments.concat([experiment]),
+    //     })
+    // }
+
+    // removeExperiment(experiment: string) {
+    //     this.setState({
+    //         ...this.state,
+    //         editedExperiments: this.state.editedExperiments.filter((shouldIFilter: string) => shouldIFilter !== experiment),
+    //     })
+    // }
+
+    addSubnote(dream?: string, experiment?: string) {
         this.setState({
             ...this.state,
-            editedExperiments: this.state.editedExperiments.concat([experiment]),
+            editedSubnotes: this.state.editedSubnotes.concat([{
+                dream: dream,
+                experiment: experiment,
+                note: this.state.editedSelection,
+            }]),
         })
     }
 
-    removeExperiment(experiment: string) {
+    removeSubnote(index: number) {
+        let newSubnotes = this.state.editedSubnotes;
+        newSubnotes.splice(index, 1);
+
         this.setState({
             ...this.state,
-            editedExperiments: this.state.editedExperiments.filter((shouldIFilter: string) => shouldIFilter !== experiment),
+            editedSubnotes: newSubnotes,
         })
     }
 
-    addDream(dream: string) {
-        this.setState({
-            ...this.state,
-            editedDreams: this.state.editedDreams.concat([dream]),
-        })
-    }
+    // addDream(dream: string) {
+    //     this.setState({
+    //         ...this.state,
+    //         editedDreams: this.state.editedDreams.concat([dream]),
+    //     })
+    // }
 
-    removeDream(dream: string) {
-        this.setState({
-            ...this.state,
-            editedDreams: this.state.editedDreams.filter((shouldIFilter: string) => shouldIFilter !== dream),
-        })
-    }
+    // removeDream(dream: string) {
+    //     this.setState({
+    //         ...this.state,
+    //         editedDreams: this.state.editedDreams.filter((shouldIFilter: string) => shouldIFilter !== dream),
+    //     })
+    // }
 
     addObservation(observation: string) {
         this.setState({
@@ -241,6 +282,7 @@ class OverviewV2 extends React.Component<Props, State>{
     }
 
     addHighlight(highlight: string) {
+        if (highlight.trim().length === 0) return;
         this.setState({
             ...this.state,
             editedHighlights: this.state.editedHighlights.concat([highlight]),
@@ -270,6 +312,22 @@ class OverviewV2 extends React.Component<Props, State>{
             observationSearch: search,
         })
     }
+
+    loadEntryAsState(entry: any) {
+        this.setState({
+            ...this.state,
+            editedTitle: entry.title,
+            editedFeelingScore: entry.feelingScore,
+            editedNote: entry.note,
+            editedExperiments: entry.experiments,
+            editedDreams: entry.dreams,
+            editedObservations: entry.observations,
+            editedHighlights: entry.highlights,
+            editedSubnotes: entry.subnotes,
+        })
+    }
+
+
 
     render() {
         const onClick = (i: number) => {
@@ -360,28 +418,60 @@ class OverviewV2 extends React.Component<Props, State>{
                     <div className={"mainpage"}>
                         <div style={{
                             position: "absolute",
+                            width: "30%",
+                            height: "80%",
+                            overflowY: "auto",
                             top: 50,
                         }}>
                             {
-                                this.props.dreamOrder.filter((dream: any) => relevantTagTitles.indexOf(this.props.dreams[dream].title) !== -1).map((dream: any) => {
-                                    return <Checkbox 
-                                        checked={this.state.editedDreams.includes(dream)}
-                                        onChange={(e: any) => e.target.checked ? this.addDream(dream) : this.removeDream(dream)}
-                                    >{this.props.dreams[dream].title}</Checkbox>
+                                this.props.dreamOrder.filter((dream: any) => 
+                                    (relevantTagTitles.indexOf(this.props.dreams[dream].title) !== -1) ||
+                                    (this.state.editedSubnotes.map((subnote: any) => subnote.dream).indexOf(dream) !== -1)).map((dream: any) => {
+                                    // return <Checkbox 
+                                    //     checked={this.state.editedDreams.includes(dream)}
+                                    //     onChange={(e: any) => e.target.checked ? this.addDream(dream) : this.removeDream(dream)}
+                                    // >{this.props.dreams[dream].title}</Checkbox>
+                                    return <Button 
+                                        onClick={(e: any) => this.addSubnote(dream, undefined)}
+                                        intent={this.state.editedSubnotes.map((subnote: any) => subnote.dream).indexOf(dream) !== -1 ? "primary" : "none"}
+                                    >{this.props.dreams[dream].title}</Button>
                                 })
                             }
                             {
-                                this.props.experimentOrder.filter((experiment: any) => relevantTagTitles.indexOf(this.props.experiments[experiment].title) !== -1).map((experiment: any) => (
-                                    <Checkbox 
-                                        checked={this.state.editedExperiments.includes(experiment)}
-                                        onChange={(e: any) => e.target.checked ? this.addExperiment(experiment) : this.removeExperiment(experiment)}
-                                    >{this.props.experiments[experiment].title}</Checkbox>
+                                this.props.experimentOrder.filter((experiment: any) => 
+                                    (relevantTagTitles.indexOf(this.props.experiments[experiment].title) !== -1) || 
+                                    (this.state.editedSubnotes.map((subnote: any) => subnote.experiment).indexOf(experiment) !== -1)).map((experiment: any) => (
+                                    // <Checkbox 
+                                    //     checked={this.state.editedExperiments.includes(experiment)}
+                                    //     onChange={(e: any) => e.target.checked ? this.addExperiment(experiment) : this.removeExperiment(experiment)}
+                                    // >{this.props.experiments[experiment].title}</Checkbox>
+                                    <Button 
+                                        onClick={(e: any) => this.addSubnote(undefined, experiment)}
+                                        intent={this.state.editedSubnotes.map((subnote: any) => subnote.experiment).indexOf(experiment) !== -1 ? "primary" : "none"}
+                                    >{this.props.experiments[experiment].title}</Button>
                                 ))
+                            }
+                            {
+                                this.state.editedSubnotes.map((subnote: any, index: number) => {
+                                    let tagTitle = "";
+                                    if (!_.isNil(subnote.dream)) {
+                                        tagTitle = this.props.dreams[subnote.dream].title;
+                                    } else if (!_.isNil(subnote.experiment)) {
+                                        tagTitle = this.props.experiments[subnote.experiment].title;
+                                    }
+
+                                    return (
+                                        <div style={{width: "100%", wordWrap: "break-word"}}>
+                                            <Button onClick={(e: any) => { this.removeSubnote(index) }}>X</Button>
+                                            {tagTitle}: {subnote.note}
+                                        </div>
+                                    )
+                                })
                             }
                         </div>
 
 
-                        <InputGroup id="edit-title" type="text" className="bp3-input" placeholder="Title (OPTIONAL)" 
+                        <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
                                     value={this.state.editedTitle}
                                     onChange={(e: any) => this.modifyTitle(e.target.value)}
                                     style={{
@@ -420,11 +510,11 @@ class OverviewV2 extends React.Component<Props, State>{
                             />
                         
                         <div style={{
-                            width: "30%",
+                            width: "28%",
                             position: "absolute",
-                            left: "70%"
+                            left: "72%"
                         }}>
-                            <H4>Add some feelings!</H4>
+                            {/* <H4>Add some feelings!</H4>
                             {
                                 this.state.editedObservations.map((observation: string, index: number) => (
                                     <div>
@@ -435,19 +525,19 @@ class OverviewV2 extends React.Component<Props, State>{
                             }
 
 
-                            <InputGroup type="text" className="bp3-input" placeholder="Observation Search" 
+                            <InputGroup type="text" placeholder="Observation Search" 
                                     value={this.state.observationSearch}
                                     onChange={(e: any) => this.modifyObservationSearch(e.target.value)}
                                     />
                             {
                                 emotions.filter((emotion: string) => this.state.editedObservations.indexOf(emotion) === -1 && (this.state.editedNote.includes(emotion) || (emotion.includes(this.state.observationSearch) && this.state.observationSearch.length > 0))).map((emotion: string) => <Button onClick={() => this.addObservation(emotion)}>{emotion}</Button>)
-                            }
+                            } */}
                         </div>
 
                         <div style={{
-                            width: "30%",
+                            width: "28%",
                             position: "absolute",
-                            left: "70%",
+                            left: "72%",
                             top: "50%",
                         }}>
                             <Button onClick={() => this.addHighlight(this.state.editedSelection)}>Save highlight</Button>
@@ -464,8 +554,8 @@ class OverviewV2 extends React.Component<Props, State>{
                         <br/>
                         <div style={{position: "absolute", top: 550, marginLeft: "30%"}}>
                             <Button icon="floppy-disk" intent={"success"} onClick={() => 
-                                this.props.createEntryV2(this.state.editedTitle, this.state.editedDreams, this.state.editedExperiments, this.state.editedFeelingScore, this.state.editedNote, this.state.editedObservations, this.state.editedHighlights)}>Save new entry</Button>
-                            <div style={{display:"inline-block",    width: 100}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
+                                this.props.createEntryV2(this.state.editedTitle, this.state.editedDreams, this.state.editedExperiments, this.state.editedFeelingScore, this.state.editedNote, this.state.editedObservations, this.state.editedHighlights, this.state.editedSubnotes)}>Save new entry</Button>
+                            <div style={{display:"inline-block", width: 100}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
                         </div>
                     </div>
                 )
@@ -488,7 +578,7 @@ class OverviewV2 extends React.Component<Props, State>{
                                 value={this.state.reflectNoteSearch}
                                 onChange={(e: any) => this.modifyNoteSearch(e.target.value)}
                                 />
-                        {
+                        {/* {
                             flatEmotions.map((emotion: string) => <Button onClick={() => {
                                 if (this.state.reflectEmotionSearch.indexOf(emotion) === -1) {
                                     this.addEmotionSearch(emotion)
@@ -498,6 +588,35 @@ class OverviewV2 extends React.Component<Props, State>{
                             }}
                                 intent={this.state.reflectEmotionSearch.indexOf(emotion) === -1 ? "none" : "primary"}
                             >{emotion}</Button>)
+                        } */}
+                        {
+                            this.props.dreamOrder.concat(this.props.experimentOrder).map((tag: string) => {
+                                if (!_.isNil(this.props.dreams[tag])) {
+                                    return (<Button
+                                        intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
+                                        onClick={() => {
+                                            if (this.state.tagSearch.indexOf(tag) !== -1) {
+                                                this.removeTagSearch(tag);
+                                            } else {
+                                                this.addTagSearch(tag);
+                                            }
+                                        }}>
+                                            {this.props.dreams[tag].title}
+                                    </Button>)
+                                } else if (!_.isNil(this.props.experiments[tag])) {
+                                    return (<Button
+                                        intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
+                                        onClick={() => {
+                                            if (this.state.tagSearch.indexOf(tag) !== -1) {
+                                                this.removeTagSearch(tag);
+                                            } else {
+                                                this.addTagSearch(tag);
+                                            }
+                                        }}>
+                                            {this.props.experiments[tag].title}
+                                    </Button>)
+                                }
+                            })
                         }
                         
                         {
@@ -505,6 +624,14 @@ class OverviewV2 extends React.Component<Props, State>{
                                 (entry: any) => {
                                     if (this.state.reflectNoteSearch.length > 0) {
                                         if (!entry.note.toLowerCase().includes(this.state.reflectNoteSearch)) return false;
+                                    }
+                                    for (let tag of this.state.tagSearch) {
+                                        if (entry.dreams.indexOf(tag) === -1 && entry.experiments.indexOf(tag) === -1 &&
+                                            entry.subnotes.map((subnote: any) => subnote.dream).indexOf(tag) === -1 &&
+                                            entry.subnotes.map((subnote: any) => subnote.experiment).indexOf(tag) === -1
+                                        ) {
+                                            return false;
+                                        }
                                     }
                                     for (let emotion of this.state.reflectEmotionSearch) {
                                         if (entry.observations.indexOf(emotion) === -1) {
@@ -522,6 +649,9 @@ class OverviewV2 extends React.Component<Props, State>{
                                         { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10, backgroundColor: getThresholdFromValue(DEFAULT_THRESHOLDS, entry.feelingScore).color}}>
                                             <H5>[{entry.feelingScore}]</H5>
+                                            <Button icon={"upload"} onClick={() => {
+                                                this.loadEntryAsState(entry);
+                                            }}>Load</Button>
                                             {entryDate.format()}
                                             <div>
                                                 {
@@ -554,7 +684,7 @@ class OverviewV2 extends React.Component<Props, State>{
                                 <div>{this.props.dreams[dream].title}</div>
                             ))
                         }
-                        <InputGroup type="text" className="bp3-input" placeholder="Dream Title" 
+                        <InputGroup type="text" placeholder="Dream Title" 
                                 value={this.state.editedDreamTitle}
                                 onChange={(e: any) => this.modifyDreamTitle(e.target.value)}
                                 />
@@ -566,7 +696,7 @@ class OverviewV2 extends React.Component<Props, State>{
                                 <div>{this.props.experiments[experiment].title}</div>
                             ))
                         }
-                        <InputGroup type="text" className="bp3-input" placeholder="Experiment Title" 
+                        <InputGroup type="text" placeholder="Experiment Title" 
                                 value={this.state.editedExperimentTitle}
                                 onChange={(e: any) => this.modifyExperimentTitle(e.target.value)}
                                 />
