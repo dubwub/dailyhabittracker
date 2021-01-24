@@ -74,6 +74,13 @@ const UserSchema = new mongoose.Schema({
         order: Number,
     }],
     netWorth: Number,
+    // start v3
+    tags: [{
+        type: String,
+        tag: String,
+        parents: [{type: mongoose.Schema.Types.ObjectId}],
+        neighbors: [{type: mongoose.Schema.Types.ObjectId}],
+    }]
 });
 
 module.exports = User = mongoose.model('user', UserSchema);
