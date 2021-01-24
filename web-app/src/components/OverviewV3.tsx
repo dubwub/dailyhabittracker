@@ -35,7 +35,7 @@ interface State {
 class OverviewV3 extends React.Component<Props, State>{    
     constructor(props: Props) {
         super(props);
-        this.props.loadUserV2();
+        this.props.loadUserV3();
         this.state = {
             editedEntryId: undefined,
             editedTitle: "",
@@ -85,7 +85,8 @@ class OverviewV3 extends React.Component<Props, State>{
     addTag(tag: any) {
         this.setState({
             ...this.state,
-            editedTags: this.state.editedTags.concat([tag])
+            editedTags: this.state.editedTags.concat([tag]),
+            editedTag: "",
         })
     }
     removeTag(tag: string) {
@@ -124,7 +125,7 @@ class OverviewV3 extends React.Component<Props, State>{
             editedTags: entry.tags,
             editedTransactions: [{
                 time: entry.time,
-                type: entry.type,
+                entryType: entry.type,
                 note: entry.note,
                 title: entry.title,
             }, ...entry.transactions],
@@ -226,40 +227,13 @@ class OverviewV3 extends React.Component<Props, State>{
                         <div style={{
                             position: "absolute",
                             width: "30%",
-                            height: "80%",
+                            height: "50%",
                             overflowY: "auto",
-                            top: 50,
-                        }}>
-                            {/* {
-
-                                this.props.dreamOrder.filter((dream: any) => 
-                                    (relevantTagTitles.indexOf(this.props.dreams[dream].title) !== -1) ||
-                                    (this.state.editedSubnotes.map((subnote: any) => subnote.dream).indexOf(dream) !== -1)).map((dream: any) => {
-                                    // return <Checkbox 
-                                    //     checked={this.state.editedDreams.includes(dream)}
-                                    //     onChange={(e: any) => e.target.checked ? this.addDream(dream) : this.removeDream(dream)}
-                                    // >{this.props.dreams[dream].title}</Checkbox>
-                                    return <Button 
-                                        onClick={(e: any) => this.addSubnote(dream, undefined)}
-                                        intent={this.state.editedSubnotes.map((subnote: any) => subnote.dream).indexOf(dream) !== -1 ? "primary" : "none"}
-                                    >{this.props.dreams[dream].title}</Button>
-                                })
-                            }
-                            {
-                                this.props.experimentOrder.filter((experiment: any) => 
-                                    (relevantTagTitles.indexOf(this.props.experiments[experiment].title) !== -1) || 
-                                    (this.state.editedSubnotes.map((subnote: any) => subnote.experiment).indexOf(experiment) !== -1)).map((experiment: any) => (
-                                    // <Checkbox 
-                                    //     checked={this.state.editedExperiments.includes(experiment)}
-                                    //     onChange={(e: any) => e.target.checked ? this.addExperiment(experiment) : this.removeExperiment(experiment)}
-                                    // >{this.props.experiments[experiment].title}</Checkbox>
-                                    <Button 
-                                        onClick={(e: any) => this.addSubnote(undefined, experiment)}
-                                        intent={this.state.editedSubnotes.map((subnote: any) => subnote.experiment).indexOf(experiment) !== -1 ? "primary" : "none"}
-                                    >{this.props.experiments[experiment].title}</Button>
-                                ))
-                            } */}
-                            
+                            top: 0,
+                        }}> 
+                            <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
+                            <Button disabled={this.state.editedType === "journal"} onClick={() => this.modifyType("journal")}>journal</Button>
+                            <Button disabled={this.state.editedType === "essay"} onClick={() => this.modifyType("essay")}>essay</Button>
                             {
                                 <div>
                                     {
@@ -292,8 +266,50 @@ class OverviewV3 extends React.Component<Props, State>{
                             }
                         </div>
 
+                        <div style={{
+                            position: "absolute",
+                            width: "30%",
+                            height: "50%",
+                            overflowY: "auto",
+                            top: "50%",
+                        }}>
+                            <InputGroup id="edit-tag" type="text" placeholder="Add a tag" 
+                                    value={this.state.editedTag}
+                                    onChange={(e: any) => this.modifyTag(e.target.value)}
+                                    style={{
+                                        width: "70%",
+                                    }}
+                                    />
+                            <Button icon={"floppy-disk"} style={{
+                                position: "absolute",
+                                top: 0,
+                                left: "70%",
+                            }} onClick={() => { this.addTag({ tag: this.state.editedTag, type: "other" }); }}
+                            ></Button>
+                            {
+                                this.state.editedTags.map((tag: any) => (
+                                    <div><Button 
+                                        onClick={(e: any) => this.removeTag(tag.tag)}
+                                        intent={"primary"}
+                                        >{tag.tag}</Button></div>
+                                ))
+                            }
+                            {
+                                this.props.tagOrder.filter((tag: any) => 
+                                    {
+                                        if (_.isNil(this.props.tags[tag])) { return false; }
+                                        return this.props.tags[tag].tag.includes(this.state.editedTag);
+                                    }
+                                ).map((tag: any) => (
+                                    <div><Button 
+                                        onClick={(e: any) => this.addTag(this.props.tags[tag])}
+                                        >{this.props.tags[tag].tag}</Button></div>
+                                ))
+                            }
+                        </div>
 
-                        {/* <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
+
+                        <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
                                     value={this.state.editedTitle}
                                     onChange={(e: any) => this.modifyTitle(e.target.value)}
                                     style={{
@@ -303,24 +319,12 @@ class OverviewV3 extends React.Component<Props, State>{
                                         top: 20,
                                     }}
                                     />
-
-                        {
-                            <div style={{marginLeft: "30%", position: "absolute", top: 60}}>
-                                { generateQuickAddButtons(DEFAULT_THRESHOLDS, 1, 10, onClick, this.state.editedFeelingScore) }
-                            </div>
-                        }
                         <br/><TextArea
                             id="edit-note"
                             growVertically={false}
                             large={true}
                             placeholder="Write whatever you want!"
                             value={this.state.editedNote}
-                            onSelect={(e: any) => { 
-                                // e.persist();
-                                // console.log(e);
-                                // console.log(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd))
-                                this.setHighlightSelection(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd))
-                            }}
                             onChange={(e) => { this.modifyNote(e.target.value)}}
                             style={{
                                 width: "40%",
@@ -330,37 +334,12 @@ class OverviewV3 extends React.Component<Props, State>{
                                 top: 100,
                             }}
                             />
-                        
-                        <div style={{
-                            width: "28%",
-                            position: "absolute",
-                            left: "72%"
-                        }}>
-                        </div>
-
-                        <div style={{
-                            width: "28%",
-                            position: "absolute",
-                            left: "72%",
-                            top: "50%",
-                        }}>
-                            <Button onClick={() => this.addHighlight(this.state.editedSelection)}>Save highlight</Button>
-                            {
-                                this.state.editedHighlights.map((highlight: string, index: number) => (
-                                    <div>
-                                        {highlight}
-                                        <Button onClick={() => this.removeHighlight(index)}>X</Button>
-                                    </div>
-                                ))
-                            }
-                        </div>
 
                         <br/>
-                        <div style={{position: "absolute", top: 550, marginLeft: "30%"}}>
-                            <Button icon="floppy-disk" intent={"success"} onClick={() => 
-                                this.props.createEntryV2(this.state.editedTitle, this.state.editedDreams, this.state.editedExperiments, this.state.editedFeelingScore, this.state.editedNote, this.state.editedObservations, this.state.editedHighlights, this.state.editedSubnotes)}>Save new entry</Button>
-                            <div style={{display:"inline-block", width: 100}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
-                        </div> */}
+                        <div style={{position: "absolute", top: 30, right: "10%"}}>
+                            <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedTransactions)}>Save new entry</Button>
+                            <div style={{display:"inline-block", width: 50}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
+                        </div>
                     </div>
                 )
                 break;

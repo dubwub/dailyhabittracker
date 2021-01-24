@@ -29,6 +29,14 @@ export interface Props {
     habitOfSelectedEntry: String
     enrichedCategories: any
 
+    // V3
+    tags: any
+    tagOrder: string[]
+    entriesV3: any
+    entriesV3Order: string[]
+    loadUserV3: any
+    createEntryV3: any
+
     // V2
     dreamOrder: string[]
     dreams: any

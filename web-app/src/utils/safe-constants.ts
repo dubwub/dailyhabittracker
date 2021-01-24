@@ -190,7 +190,7 @@ let baseEmotions = [
     { emotion: "sad", background: "#48AFF0", textColor: "#10161A"},
     { emotion: "disgusted", background: "#394B59", textColor: "#FFFFFF"},
     { emotion: "angry", background: "#FF7373", textColor: "#10161A"},
-    { emotion: "fearful", background: "#FFE4A0", textColor: "#10161A"},
+    { emotion: "fearful", background: "#FFB366", textColor: "#10161A"},
     { emotion: "bad", background: "#3DCC91", textColor: "#10161A"},
     { emotion: "surprised", background: "#C274C2", textColor: "#10161A"},
 ]

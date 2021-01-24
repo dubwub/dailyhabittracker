@@ -12,6 +12,12 @@ let INITIAL_STATE = {
     user: undefined,
     currentTab: "execution",
 
+    // v3
+    entriesV3Order: [],
+    entriesV3: {},
+    tagOrder: [],
+    tags: {},
+
     // v2
     currentTabV2: "reflect",
     entriesV2: [],
@@ -50,6 +56,28 @@ let INITIAL_STATE = {
 
 export default function(state = INITIAL_STATE, action) {
     switch (action.type) {
+        // V3
+        case "LOAD_USER_V3": {
+            console.log(action.payload);
+            return {
+                ...state,
+                tagOrder: action.payload.tagOrder,
+                tags: action.payload.tags,
+                entriesV3: action.payload.entries,
+                user: action.payload.user,
+            };
+        }
+        case "CREATE_ENTRY_V3": {
+            let newEntries = Object.assign({}, state["entriesV3"]);
+            newEntries[action.payload._id] = action.payload;
+            return {
+                ...state,
+                entriesV3Order: state["entriesV3Order"].concat([action.payload._id]),
+                entriesV3: newEntries,
+            };
+        }
+
+
         // V2
         case "SELECT_TAB_V2": {
             return {
@@ -92,8 +120,6 @@ export default function(state = INITIAL_STATE, action) {
                 user: action.payload.user,
             };
         }
-
-
 
         // V1
         case "SELECT_TAB": {

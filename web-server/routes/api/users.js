@@ -11,6 +11,29 @@ const _ = require('lodash');
 const express = require('express');
 const router = express.Router();
 
+// @route GET V3 /api/users/v3/:id
+// [V3 USERS]
+router.get('/v3/:id', (req, res) => {
+    let output = {};
+
+    // first query user to get list of habits, then query entries to get all entries
+    User.findById(req.params.id)
+        .then(user => {
+            output['username'] = user['username'];
+            output['tags'] = user['tags'];
+            EntryV2.find({
+                user: req.params.id
+            }, function(err, entries) {
+                if (err) {
+                    res.status(400).json({ error: 'Error loading entries' });
+                } else {
+                    output['entries'] = entries;
+                    res.send(output);
+                }
+            });
+        }).catch(err => res.status(404).json({ nouserfound: 'No User Found' }));
+});
+
 
 // @route GET V2 /api/users/v2/:id
 // [V2 USERS]

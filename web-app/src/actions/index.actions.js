@@ -8,6 +8,72 @@ const user_id = "5e804a079f8c170c7f812eeb";
 
 const moment = require('moment');
 
+// V3
+
+export function loadUserV3() {
+    return async function(dispatch) {
+        const res = await axios.get(hardcoded_server_url + '/api/users/v2/' + user_id);
+        console.log('Loaded user: ' + user_id);
+        
+        let tagOrder = [];
+        let tags = {};
+        // let entries = [];
+
+        // setup habits/habit-orders to get ready for loading entries
+        // const raw_experiments = res.data.experiments;
+        // raw_experiments.forEach((experiment) => {
+        //     experimentOrder.push(experiment._id);
+        //     if (experiment.startDate) {
+        //         experiment.startDate = _momentDateFromMongo(experiment.startDate);
+        //     }
+        //     if (experiment.endDate) {
+        //         experiment.endDate = _momentDateFromMongo(experiment.endDate);
+        //     }
+        //     experiments[experiment._id] = experiment;
+        // });
+
+        // const raw_dreams = res.data.dreams;
+        // raw_dreams.forEach((dream) => {
+        //     dreamOrder.push(dream._id);
+        //     dreams[dream._id] = dream;
+        // });
+
+        // preprocess incoming entries
+        const raw_entries = res.data.entries;
+
+        dispatch({
+            type: "LOAD_USER_V3",
+            payload: {
+                user: user_id,
+                tagOrder: tagOrder,
+                tags: tags,
+                entries: raw_entries,
+            }
+        });
+    }
+}
+
+export function createEntryV3(type, title, note, tags, transactions) {
+    return async function(dispatch) {
+        let data = {
+            time: Date.now(), 
+            entryType: type,
+            title: title,
+            note: note,
+            tags: tags.map((tag) => {return { tag: tag.tag, entryType: tag.type }}),
+            transactions: transactions,
+        };
+        const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
+        let res = await axios.put(URL, data);
+        res.data["time"] = _momentDateFromMongo(res.data["time"]).format("MM/DD/YYYY");
+        dispatch({
+            type: "CREATE_ENTRY_V3",
+            payload: res.data
+        });
+    }
+}
+
+
 // V2
 
 export function selectTabV2(tab) {

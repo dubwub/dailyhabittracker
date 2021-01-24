@@ -5,15 +5,15 @@ const mongoose = require('mongoose');
 const EntrySchema = new mongoose.Schema({
     // V3
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    tags: [{type: mongoose.Schema.Types.ObjectId}],
+    tags: [{ tag: String, entryType: String }],
     transactions: [{
         time: Date,
-        type: String,
+        entryType: String,
         title: String,
         // feelingScore: Number,
         note: String,
     }],
-    type: String,
+    entryType: String,
     time: Date,
     title: String,
     note: String,
