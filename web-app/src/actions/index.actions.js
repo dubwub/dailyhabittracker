@@ -17,7 +17,8 @@ export function loadUserV3() {
         
         let tagOrder = [];
         let tags = {};
-        // let entries = [];
+        let entries = {};
+        let entryOrder = [];
 
         // setup habits/habit-orders to get ready for loading entries
         // const raw_experiments = res.data.experiments;
@@ -40,6 +41,10 @@ export function loadUserV3() {
 
         // preprocess incoming entries
         const raw_entries = res.data.entries;
+        entryOrder = raw_entries.map((entry) => {
+            entries[entry._id] = entry;
+            return entry._id;
+        })
 
         dispatch({
             type: "LOAD_USER_V3",
@@ -47,7 +52,8 @@ export function loadUserV3() {
                 user: user_id,
                 tagOrder: tagOrder,
                 tags: tags,
-                entries: raw_entries,
+                entriesV3Order: entryOrder,
+                entriesV3: entries,
             }
         });
     }

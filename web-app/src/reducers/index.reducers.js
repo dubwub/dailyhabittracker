@@ -63,7 +63,8 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 tagOrder: action.payload.tagOrder,
                 tags: action.payload.tags,
-                entriesV3: action.payload.entries,
+                entriesV3Order: action.payload.entriesV3Order,
+                entriesV3: action.payload.entriesV3,
                 user: action.payload.user,
             };
         }

@@ -357,10 +357,82 @@ class OverviewV3 extends React.Component<Props, State>{
 
                 pageContents = (
                     <div className={"mainpage"}>
-                        <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
-                                value={this.state.searchString}
-                                // onChange={(e: any) => this.modifyNoteSearch(e.target.value)}
-                                />
+                        {/* <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
+                                value={this.state.reflectNoteSearch}
+                                onChange={(e: any) => this.modifyNoteSearch(e.target.value)}
+                                /> */}
+                        {/* {
+                            flatEmotions.map((emotion: string) => <Button onClick={() => {
+                                if (this.state.reflectEmotionSearch.indexOf(emotion) === -1) {
+                                    this.addEmotionSearch(emotion)
+                                } else {
+                                    this.removeEmotionSearch(emotion)
+                                }
+                            }}
+                                intent={this.state.reflectEmotionSearch.indexOf(emotion) === -1 ? "none" : "primary"}
+                            >{emotion}</Button>)
+                        } */}
+                        {
+                            this.props.dreamOrder.concat(this.props.experimentOrder).map((tag: string) => {
+                                if (!_.isNil(this.props.dreams[tag])) {
+                                    return (<Button
+                                        intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
+                                        onClick={() => {
+                                            if (this.state.tagSearch.indexOf(tag) !== -1) {
+                                                this.removeTagSearch(tag);
+                                            } else {
+                                                this.addTagSearch(tag);
+                                            }
+                                        }}>
+                                            {this.props.dreams[tag].title}
+                                    </Button>)
+                                } else if (!_.isNil(this.props.experiments[tag])) {
+                                    return (<Button
+                                        intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
+                                        onClick={() => {
+                                            if (this.state.tagSearch.indexOf(tag) !== -1) {
+                                                this.removeTagSearch(tag);
+                                            } else {
+                                                this.addTagSearch(tag);
+                                            }
+                                        }}>
+                                            {this.props.experiments[tag].title}
+                                    </Button>)
+                                }
+                            })
+                        }
+                        
+                        {
+                            this.props.entriesV3Order.reverse().map((_entry: any) => {
+                                let entry = this.props.entriesV3[_entry];
+                                let entryDate = moment.utc(entry.lastUpdatedAt).subtract(5, 'hours'); // hardcoded for EST
+                                let dayIsSame = entryDate.isSame(prevDay, "day");
+                                prevDay = entryDate;
+                                return (
+                                    <div>
+                                        { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
+                                        <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
+                                            <H5>[{entry.title}]</H5>
+                                            <Button icon={"upload"} onClick={() => {
+                                                this.loadEntryAsState(entry);
+                                            }}>Load</Button>
+                                            {entryDate.format()}
+                                            <div>
+                                                {
+                                                    entry.tags.map((tag: any) => <Tag>{tag.tag}</Tag>)
+                                                }
+                                            </div>
+                                            {entry.note}
+                                            {/* <div>
+                                                {
+                                                    entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
+                                                }
+                                            </div> */}
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
                 )
                 break;
