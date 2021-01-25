@@ -6,7 +6,7 @@ import * as mapDispatchToProps from '../actions/index.actions.js';
 import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
-import { base_emotions, feelings_wheel } from '../utils/safe-constants'; 
+import { base_emotions, color_map, feelings_wheel } from '../utils/safe-constants'; 
 const moment = require('moment-timezone');
 
 interface State {
@@ -408,11 +408,19 @@ class OverviewV3 extends React.Component<Props, State>{
                                 let entryDate = moment.utc(entry.lastUpdatedAt).subtract(5, 'hours'); // hardcoded for EST
                                 let dayIsSame = entryDate.isSame(prevDay, "day");
                                 prevDay = entryDate;
+                                let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion").map((tag: any) => {
+                                    let color = color_map[tag.tag];
+                                    return (
+                                        <div style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>
+                                    )
+                                });
+
                                 return (
                                     <div>
                                         { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
-                                            <H5>[{entry.title}]</H5>
+                                            <div>{emotionColors}</div>
+                                            <H5>{entry.entryType} : [{entry.title}]</H5>
                                             <Button icon={"upload"} onClick={() => {
                                                 this.loadEntryAsState(entry);
                                             }}>Load</Button>

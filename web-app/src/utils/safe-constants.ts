@@ -196,10 +196,12 @@ let baseEmotions = [
 ]
 const base_emotions = [...baseEmotions];
 let feelingsWheel: any = {};
+let colorMap: any = {};
 
 while (baseEmotions.length > 0) {
     let emotion = baseEmotions.pop();
     if (typeof emotion === "undefined") break;
+    colorMap[emotion.emotion] = emotion.background;
     if (typeof rawFeelingsWheel[emotion.emotion] === "undefined") continue;
     feelingsWheel[emotion.emotion] = rawFeelingsWheel[emotion.emotion].map((name: string) => {
         let processedEmotion = {
@@ -293,4 +295,5 @@ export {
     stop_words as stop_words,
     feelingsWheel as feelings_wheel,
     base_emotions as base_emotions,
+    colorMap as color_map,
 };
