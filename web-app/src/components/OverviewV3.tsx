@@ -403,7 +403,7 @@ class OverviewV3 extends React.Component<Props, State>{
                         }
                         
                         {
-                            this.props.entriesV3Order.reverse().map((_entry: any) => {
+                            this.props.entriesV3Order.slice().reverse().map((_entry: any) => {
                                 let entry = this.props.entriesV3[_entry];
                                 let entryDate = moment.utc(entry.lastUpdatedAt).subtract(5, 'hours'); // hardcoded for EST
                                 let dayIsSame = entryDate.isSame(prevDay, "day");
