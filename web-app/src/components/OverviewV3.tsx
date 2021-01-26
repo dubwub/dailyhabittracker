@@ -284,7 +284,7 @@ class OverviewV3 extends React.Component<Props, State>{
                 }
 
                 let levels = [
-                    "document", "journal", "curiosity"
+                    "document", "journal", "curiosity", ""
                 ]
 
                 pageContents = (
@@ -323,7 +323,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 } else {
                                                     if (this.state.tagSearch.length > 0) return false;
                                                 }
-                                                return entry.latest && entry.entryType === level && !(this.state.searchString.length > 0 && !cleanedEntryForFilter.includes(this.state.searchString))
+                                                return entry.latest && (entry.entryType === level || (_.isNil(entry.entryType) && level === "")) && !(this.state.searchString.length > 0 && !cleanedEntryForFilter.includes(this.state.searchString))
                                             }).slice().reverse().map((_entry: any, index: number) => {
                                                 let entry = this.props.entriesV3[_entry];
                                                 let entryDate = moment.utc(entry.time).subtract(5, 'hours'); // hardcoded for EST
