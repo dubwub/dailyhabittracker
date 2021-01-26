@@ -42,9 +42,19 @@ export function loadUserV3() {
         // preprocess incoming entries
         const raw_entries = res.data.entries;
         entryOrder = raw_entries.map((entry) => {
+            entry.latest = true; // is the latest in the chain of parents
             entries[entry._id] = entry;
+            if (!_.isNil(entry.parents)) {
+                for (let i = 0; i < entry.parents.length; i++) {
+                    let parent = entry.parents[i];
+                    if (!_.isNil(entries[parent])) {
+                        entries[parent].latest = false;
+                    }
+                }
+            }
             return entry._id;
         })
+        console.log(entries);
 
         dispatch({
             type: "LOAD_USER_V3",
@@ -59,7 +69,7 @@ export function loadUserV3() {
     }
 }
 
-export function createEntryV3(type, title, note, tags, transactions) {
+export function createEntryV3(type, title, note, tags, parents, neighbors) {
     return async function(dispatch) {
         let data = {
             time: Date.now(), 
@@ -67,7 +77,8 @@ export function createEntryV3(type, title, note, tags, transactions) {
             title: title,
             note: note,
             tags: tags.map((tag) => {return { tag: tag.tag, entryType: tag.type }}),
-            transactions: transactions,
+            parents: parents,
+            neighbors: neighbors,
         };
         const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
         let res = await axios.put(URL, data);

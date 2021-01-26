@@ -10,7 +10,6 @@ import { base_emotions, color_map, feelings_wheel } from '../utils/safe-constant
 const moment = require('moment-timezone');
 
 interface State {
-    editedEntryId: string | undefined
     editedTitle: string
     editedNote: string
     editedType: string
@@ -20,12 +19,8 @@ interface State {
         background: string,
         textColor: string,
     }[]
-    editedTransactions: {
-        time: any,
-        type: string,
-        title: string,
-        note: string,
-    }[]
+    editedParents: string[]
+    editedNeighbors: string[]
     editedTag: string
 
     searchString: string
@@ -37,30 +32,30 @@ class OverviewV3 extends React.Component<Props, State>{
         super(props);
         this.props.loadUserV3();
         this.state = {
-            editedEntryId: undefined,
             editedTitle: "",
             editedNote: "",
             editedType: "journal",
             editedTags: [],
-            editedTransactions: [],
             editedTag: "",
             tagSearch: [],
             searchString: "",
+            editedParents: [],
+            editedNeighbors: [],
         }
     }
 
     clear(){
         this.setState({
             ...this.state,
-            editedEntryId: undefined,
             editedTitle: "",
             editedNote: "",
             editedType: "journal",
             editedTags: [],
-            editedTransactions: [],
             editedTag: "",
             tagSearch: [],
             searchString: "",
+            editedParents: [],
+            editedNeighbors: [],
         })
     }
 
@@ -115,20 +110,22 @@ class OverviewV3 extends React.Component<Props, State>{
         })
     }
 
+    modifySearchString(searchString: string) {
+        this.setState({
+            ...this.state,
+            searchString: searchString
+        })
+    }
+
     loadEntryAsState(entry: any) {
         this.setState({
             ...this.state,
-            editedEntryId: entry._id,
             editedTitle: entry.title,
             editedNote: entry.note,
-            editedType: entry.type,
+            editedType: entry.entryType,
             editedTags: entry.tags,
-            editedTransactions: [{
-                time: entry.time,
-                entryType: entry.type,
-                note: entry.note,
-                title: entry.title,
-            }, ...entry.transactions],
+            editedParents: [entry._id],
+            editedNeighbors: [],
         })
     }
 
@@ -136,83 +133,6 @@ class OverviewV3 extends React.Component<Props, State>{
         let pageContents = (<div />);
         switch (this.props.currentTabV2) {
             case "write":
-                // let cleanedNote = (this.state.editedTitle + " " + this.state.editedNote).toLowerCase().split(/\W/);
-                // let cleanedTags: any = {};
-                // let specificTagMap: any = {};
-                // let numTags = this.props.dreamOrder.length + this.props.experimentOrder.length;
-                // for (let i of this.props.dreamOrder) {
-                //     let dream = this.props.dreams[i];
-                //     let cleanedTitle = dream.title.toLowerCase().split(/\W/);
-                //     for (let word of cleanedTitle) {
-                //         if (stop_words.indexOf(word) !== -1) continue;
-                //         if (cleanedTags[word]) {
-                //             cleanedTags[word].push(dream.title);
-                //         } else {
-                //             cleanedTags[word] = [dream.title];
-                //         }
-                //     }
-                // }
-                // for (let i of this.props.experimentOrder) {
-                //     let experiment = this.props.experiments[i];
-                //     let cleanedTitle = experiment.title.toLowerCase().split(/\W/);
-                //     for (let word of cleanedTitle) {
-                //         if (stop_words.indexOf(word) !== -1) continue;
-                //         if (cleanedTags[word]) {
-                //             cleanedTags[word].push(experiment.title);
-                //         } else {
-                //             cleanedTags[word] = [experiment.title];
-                //         }
-                //     }
-                // }
-                // for (let entry of this.props.entriesV2) {
-                //     let cleanWords = entry.note.toLowerCase().split(/\W/);
-                //     for (let word of cleanWords) {
-                //         if (stop_words.indexOf(word) !== -1) continue;
-                //         if (entry.dreams.length > 0) {
-                //             let dreamsExploded = entry.dreams.map((i: string) => this.props.dreams[i].title);
-                //             if (specificTagMap[word]) {
-                //                 for (let i = 0; i < dreamsExploded.length; i++) {
-                //                     if (specificTagMap[word].indexOf(dreamsExploded[i]) === -1) {
-                //                         specificTagMap[word].push(dreamsExploded[i]);
-                //                     }
-                //                 }
-                //             } else {
-                //                 specificTagMap[word] = dreamsExploded;
-                //             }
-                //         }
-                //         if (entry.experiments.length > 0) {
-                //             let experimentsExploded = entry.dreams.map((i: string) => this.props.dreams[i].title);
-                //             if (specificTagMap[word]) {
-                //                 for (let i = 0; i < experimentsExploded.length; i++) {
-                //                     if (specificTagMap[word].indexOf(experimentsExploded[i]) === -1) {
-                //                         specificTagMap[word].push(experimentsExploded[i]);
-                //                     }
-                //                 }
-                //             } else {
-                //                 specificTagMap[word] = experimentsExploded;
-                //             }
-                //         }
-                //     }
-                // }
-
-                // let relevantTagTitles: string[] = [];
-                // for (let i = 0; i < cleanedNote.length; i++) {
-                //     if (cleanedTags[cleanedNote[i]] && cleanedTags[cleanedNote[i]].length <= numTags / 2) {
-                //         for (let addTag of cleanedTags[cleanedNote[i]]) {
-                //             if (relevantTagTitles.indexOf(addTag) === -1) {
-                //                 relevantTagTitles.push(addTag);
-                //             }
-                //         }
-                //     }
-                //     if (specificTagMap[cleanedNote[i]] && specificTagMap[cleanedNote[i]].length < 3) {
-                //         for (let addTag of specificTagMap[cleanedNote[i]]) {
-                //             if (relevantTagTitles.indexOf(addTag) === -1) {
-                //                 relevantTagTitles.push(addTag);
-                //             }
-                //         }
-                //     }
-                // }
-
                 // get first layer of emotional depth
                 let selectedEmotions = this.state.editedTags.filter((tag: any) => tag.type === "emotion");
                 let suggestedEmotions: any[] = base_emotions;
@@ -233,7 +153,7 @@ class OverviewV3 extends React.Component<Props, State>{
                         }}> 
                             <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
                             <Button disabled={this.state.editedType === "journal"} onClick={() => this.modifyType("journal")}>journal</Button>
-                            <Button disabled={this.state.editedType === "essay"} onClick={() => this.modifyType("essay")}>essay</Button>
+                            <Button disabled={this.state.editedType === "document"} onClick={() => this.modifyType("document")}>document</Button>
                             {
                                 <div>
                                     {
@@ -337,14 +257,22 @@ class OverviewV3 extends React.Component<Props, State>{
 
                         <br/>
                         <div style={{position: "absolute", top: 30, right: "10%"}}>
-                            <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedTransactions)}>Save new entry</Button>
+                            <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedParents, this.state.editedNeighbors)}>Save new entry</Button>
                             <div style={{display:"inline-block", width: 50}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
                         </div>
                     </div>
                 )
                 break;
             case "reflect":
-                let prevDay: any = moment().tz('America/New_York').add(1, 'days');
+                let tags: string[] = [];
+                for (let id of this.props.entriesV3Order) {
+                    let entry = this.props.entriesV3[id];
+                    for (let tag of entry.tags) {
+                        if (tags.indexOf(tag.tag) === -1 && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString)) {
+                            tags.push(tag.tag)
+                        }
+                    }
+                }
 
                 let flatEmotions: string[] = [];
                 for (let entry of this.props.entriesV2) {
@@ -355,88 +283,86 @@ class OverviewV3 extends React.Component<Props, State>{
                     }
                 }
 
+                let levels = [
+                    "document", "journal", "curiosity"
+                ]
+
                 pageContents = (
                     <div className={"mainpage"}>
-                        {/* <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
-                                value={this.state.reflectNoteSearch}
-                                onChange={(e: any) => this.modifyNoteSearch(e.target.value)}
-                                /> */}
-                        {/* {
-                            flatEmotions.map((emotion: string) => <Button onClick={() => {
-                                if (this.state.reflectEmotionSearch.indexOf(emotion) === -1) {
-                                    this.addEmotionSearch(emotion)
+                        <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
+                                value={this.state.searchString}
+                                onChange={(e: any) => this.modifySearchString(e.target.value.toLowerCase().replace(/[^a-z]+/g, ''))}
+                                />
+                        {tags.map((tag: string) => {
+                            return <Button intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
+                            onClick={() => {
+                                if (this.state.tagSearch.indexOf(tag) !== -1) {
+                                    this.removeTagSearch(tag);
                                 } else {
-                                    this.removeEmotionSearch(emotion)
+                                    this.addTagSearch(tag);
                                 }
-                            }}
-                                intent={this.state.reflectEmotionSearch.indexOf(emotion) === -1 ? "none" : "primary"}
-                            >{emotion}</Button>)
-                        } */}
-                        {
-                            this.props.dreamOrder.concat(this.props.experimentOrder).map((tag: string) => {
-                                if (!_.isNil(this.props.dreams[tag])) {
-                                    return (<Button
-                                        intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
-                                        onClick={() => {
-                                            if (this.state.tagSearch.indexOf(tag) !== -1) {
-                                                this.removeTagSearch(tag);
-                                            } else {
-                                                this.addTagSearch(tag);
-                                            }
-                                        }}>
-                                            {this.props.dreams[tag].title}
-                                    </Button>)
-                                } else if (!_.isNil(this.props.experiments[tag])) {
-                                    return (<Button
-                                        intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
-                                        onClick={() => {
-                                            if (this.state.tagSearch.indexOf(tag) !== -1) {
-                                                this.removeTagSearch(tag);
-                                            } else {
-                                                this.addTagSearch(tag);
-                                            }
-                                        }}>
-                                            {this.props.experiments[tag].title}
-                                    </Button>)
-                                }
-                            })
-                        }
+                            }}>{tag}</Button>
+                        })}
                         
                         {
-                            this.props.entriesV3Order.slice().reverse().map((_entry: any) => {
-                                let entry = this.props.entriesV3[_entry];
-                                let entryDate = moment.utc(entry.lastUpdatedAt).subtract(5, 'hours'); // hardcoded for EST
-                                let dayIsSame = entryDate.isSame(prevDay, "day");
-                                prevDay = entryDate;
-                                let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion").map((tag: any) => {
-                                    let color = color_map[tag.tag];
-                                    return (
-                                        <div style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>
-                                    )
-                                });
-
+                            levels.map((level: string, index: number) => {
+                                let prevDay: any = moment().tz('America/New_York').add(1, 'days');
                                 return (
-                                    <div>
-                                        { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
-                                        <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
-                                            <div>{emotionColors}</div>
-                                            <H5>{entry.entryType} : [{entry.title}]</H5>
-                                            <Button icon={"upload"} onClick={() => {
-                                                this.loadEntryAsState(entry);
-                                            }}>Load</Button>
-                                            {entryDate.format()}
-                                            <div>
-                                                {
-                                                    entry.tags.map((tag: any) => <Tag>{tag.tag}</Tag>)
+                                    <div style={{width: "100%", position: "absolute", height: 400, top: index * 400 + 80, overflowX: "auto", overflowY: "hidden", wordWrap: "break-word"}}>
+                                        {
+                                            this.props.entriesV3Order.filter((id: any) => { 
+                                                let entry = this.props.entriesV3[id];
+                                                let cleanedEntryForFilter = ((_.isNil(entry.title) ? "" : entry.title) + entry.note).toLowerCase().replace(/[^a-z]+/g, '');
+                                                if (!_.isNil(entry.tags)) {
+                                                    for (let tag of entry.tags) {
+                                                        cleanedEntryForFilter += tag.tag.toLowerCase().replace(/[^a-z]+/g, '')
+                                                    }
+                                                    for (let tag of this.state.tagSearch) {
+                                                        if (entry.tags.map((tag: any) => tag.tag).indexOf(tag) === -1) return false;
+                                                    }
+                                                } else {
+                                                    if (this.state.tagSearch.length > 0) return false;
                                                 }
-                                            </div>
-                                            {entry.note}
-                                            {/* <div>
-                                                {
-                                                    entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
-                                                }
-                                            </div> */}
-                                        </div>
+                                                return entry.latest && entry.entryType === level && !(this.state.searchString.length > 0 && !cleanedEntryForFilter.includes(this.state.searchString))
+                                            }).slice().reverse().map((_entry: any, index: number) => {
+                                                let entry = this.props.entriesV3[_entry];
+                                                let entryDate = moment.utc(entry.time).subtract(5, 'hours'); // hardcoded for EST
+                                                let dayIsSame = entryDate.isSame(prevDay, "day");
+                                                prevDay = entryDate;
+                                                let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion").map((tag: any) => {
+                                                    let color = color_map[tag.tag];
+                                                    return (
+                                                        <div style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>
+                                                    )
+                                                });
+
+                                                return (
+                                                    <div style={{position: "absolute", top: 0, left: index * 310, width: 300, height: 150}}>
+                                                        { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
+                                                        <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
+                                                            <div>{emotionColors}</div>
+                                                            <H5>{entry.entryType} : [{entry.title}]</H5>
+                                                            <Button icon={"upload"} onClick={() => {
+                                                                this.loadEntryAsState(entry);
+                                                                this.props.selectTabV2("write");
+                                                            }}>Load</Button>
+                                                            {entryDate.format()}
+                                                            <div>
+                                                                {
+                                                                    entry.tags.map((tag: any) => <Tag>{tag.tag}</Tag>)
+                                                                }
+                                                            </div>
+                                                            {entry.note}
+                                                            {/* <div>
+                                                                {
+                                                                    entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
+                                                                }
+                                                            </div> */}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                        }
                                     </div>
                                 )
                             })

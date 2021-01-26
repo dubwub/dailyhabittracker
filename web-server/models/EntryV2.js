@@ -6,6 +6,14 @@ const EntrySchema = new mongoose.Schema({
     // V3
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     tags: [{ tag: String, entryType: String }],
+    entryType: String,
+    time: Date,
+    title: String,
+    note: String,
+    parents: [{type: mongoose.Schema.Types.ObjectId}],
+    neighbors: [{type: mongoose.Schema.Types.ObjectId}],
+
+    // not V3
     transactions: [{
         time: Date,
         entryType: String,
@@ -13,12 +21,6 @@ const EntrySchema = new mongoose.Schema({
         // feelingScore: Number,
         note: String,
     }],
-    entryType: String,
-    time: Date,
-    title: String,
-    note: String,
-
-    // not V3
     feelingScore: Number,
     lastUpdatedAt: Date,
     experiments: [{type: mongoose.Schema.Types.ObjectId}],
