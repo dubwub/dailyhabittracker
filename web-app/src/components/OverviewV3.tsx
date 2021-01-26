@@ -25,12 +25,13 @@ interface State {
 
     searchString: string
     tagSearch: string[]
+
+    password: string
 }
 
 class OverviewV3 extends React.Component<Props, State>{    
     constructor(props: Props) {
         super(props);
-        this.props.loadUserV3();
         this.state = {
             editedTitle: "",
             editedNote: "",
@@ -41,6 +42,7 @@ class OverviewV3 extends React.Component<Props, State>{
             searchString: "",
             editedParents: [],
             editedNeighbors: [],
+            password: "",
         }
     }
 
@@ -56,6 +58,7 @@ class OverviewV3 extends React.Component<Props, State>{
             searchString: "",
             editedParents: [],
             editedNeighbors: [],
+            password: "",
         })
     }
 
@@ -115,6 +118,17 @@ class OverviewV3 extends React.Component<Props, State>{
             ...this.state,
             searchString: searchString
         })
+    }
+
+    modifyPassword(password: string) {
+        this.setState({
+            ...this.state,
+            password: password
+        })
+
+        if (password === "darwinisthebest") {
+            this.props.loadUserV3();
+        }
     }
 
     loadEntryAsState(entry: any) {
@@ -398,7 +412,10 @@ class OverviewV3 extends React.Component<Props, State>{
                 </div>
             );
         } else { // wait, cuz we're loading
-            return (<div>Loading... (if you see this for more than 5 seconds, the server is probably dead, tell Darwin)</div>);
+            return (<InputGroup type="text" placeholder="who are you" 
+            value={this.state.password}
+            onChange={(e: any) => this.modifyPassword(e.target.value)}
+            />);
         }
     }
 }
