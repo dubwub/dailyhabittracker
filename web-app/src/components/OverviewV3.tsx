@@ -145,6 +145,15 @@ class OverviewV3 extends React.Component<Props, State>{
 
     render() {
         let pageContents = (<div />);
+        let tags: string[] = [];
+        for (let id of this.props.entriesV3Order) {
+            let entry = this.props.entriesV3[id];
+            for (let tag of entry.tags) {
+                if (tags.indexOf(tag.tag) === -1 && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString)) {
+                    tags.push(tag.tag)
+                }
+            }
+        }
         switch (this.props.currentTabV2) {
             case "write":
                 // get first layer of emotional depth
@@ -229,6 +238,14 @@ class OverviewV3 extends React.Component<Props, State>{
                                 ))
                             }
                             {
+                                tags.filter((tag: string) => this.state.editedTags.map((_tag: any) => _tag.tag).indexOf(tag) === -1 && this.state.editedTag.length > 0 && tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.editedTag.toLowerCase().replace(/[^a-z]+/g, ''))).map((tag: any) => (
+                                    <div><Button 
+                                        onClick={(e: any) => this.addTag({tag: tag, type: "other"})}
+                                        intent={"none"}
+                                        >{tag}</Button></div>
+                                ))
+                            }
+                            {
                                 this.props.tagOrder.filter((tag: any) => 
                                     {
                                         if (_.isNil(this.props.tags[tag])) { return false; }
@@ -278,16 +295,6 @@ class OverviewV3 extends React.Component<Props, State>{
                 )
                 break;
             case "reflect":
-                let tags: string[] = [];
-                for (let id of this.props.entriesV3Order) {
-                    let entry = this.props.entriesV3[id];
-                    for (let tag of entry.tags) {
-                        if (tags.indexOf(tag.tag) === -1 && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString)) {
-                            tags.push(tag.tag)
-                        }
-                    }
-                }
-
                 let flatEmotions: string[] = [];
                 for (let entry of this.props.entriesV2) {
                     for (let emotion of entry.observations) {
@@ -298,7 +305,7 @@ class OverviewV3 extends React.Component<Props, State>{
                 }
 
                 let levels = [
-                    "document", "journal", "curiosity", ""
+                    "document", "curiosity", "journal", ""
                 ]
 
                 pageContents = (
@@ -322,7 +329,7 @@ class OverviewV3 extends React.Component<Props, State>{
                             levels.map((level: string, index: number) => {
                                 let prevDay: any = moment().tz('America/New_York').add(1, 'days');
                                 return (
-                                    <div style={{width: "100%", position: "absolute", height: 400, top: index * 400 + 80, overflowX: "auto", overflowY: "hidden", wordWrap: "break-word"}}>
+                                    <div style={{height: 400, display: "flex", overflowX: "auto", overflowY: "hidden", padding: 10}}>
                                         {
                                             this.props.entriesV3Order.filter((id: any) => { 
                                                 let entry = this.props.entriesV3[id];
@@ -351,7 +358,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 });
 
                                                 return (
-                                                    <div style={{position: "absolute", top: 0, left: index * 310, width: 300, height: 150}}>
+                                                    <div style={{display: "inline", minWidth: 300, maxWidth: 300, height: 400, padding: 10, wordWrap: "break-word", float: "left"}}>
                                                         { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
                                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
                                                             <div>{emotionColors}</div>
