@@ -58,7 +58,6 @@ export default function(state = INITIAL_STATE, action) {
     switch (action.type) {
         // V3
         case "LOAD_USER_V3": {
-            console.log(action.payload);
             return {
                 ...state,
                 tagOrder: action.payload.tagOrder,
@@ -69,6 +68,7 @@ export default function(state = INITIAL_STATE, action) {
             };
         }
         case "CREATE_ENTRY_V3": {
+            console.log("adding: " + action.payload._id);
             let newEntries = Object.assign({}, state["entriesV3"]);
             newEntries[action.payload._id] = action.payload;
             return {
@@ -110,7 +110,6 @@ export default function(state = INITIAL_STATE, action) {
             };
         }
         case "LOAD_USER_V2": {
-            console.log(action.payload);
             return {
                 ...state,
                 dreamOrder: action.payload.dreamOrder,

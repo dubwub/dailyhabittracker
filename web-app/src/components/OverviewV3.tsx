@@ -27,6 +27,8 @@ interface State {
     tagSearch: string[]
 
     password: string
+
+    editedEntriesV3Order: string[]
 }
 
 class OverviewV3 extends React.Component<Props, State>{    
@@ -43,6 +45,7 @@ class OverviewV3 extends React.Component<Props, State>{
             editedParents: [],
             editedNeighbors: [],
             password: "",
+            editedEntriesV3Order: [],
         }
     }
 
@@ -146,6 +149,7 @@ class OverviewV3 extends React.Component<Props, State>{
     render() {
         let pageContents = (<div />);
         let tags: string[] = [];
+        let nonEmotionTags: string[] = [];
         for (let id of this.props.entriesV3Order) {
             let entry = this.props.entriesV3[id];
             for (let tag of entry.tags) {
@@ -163,6 +167,7 @@ class OverviewV3 extends React.Component<Props, State>{
                     if (typeof feelings_wheel[selectedEmotions[i].tag] === "undefined") continue;
                     suggestedEmotions = suggestedEmotions.concat(feelings_wheel[selectedEmotions[i].tag])
                 }
+
                 suggestedEmotions = suggestedEmotions.filter((tag: any) => this.state.editedTags.map((_tag: any) => _tag.tag).indexOf(tag.emotion) === -1);
 
                 pageContents = (
@@ -231,18 +236,18 @@ class OverviewV3 extends React.Component<Props, State>{
                             ></Button>
                             {
                                 this.state.editedTags.map((tag: any) => (
-                                    <div><Button 
+                                    <Button 
                                         onClick={(e: any) => this.removeTag(tag.tag)}
                                         intent={"primary"}
-                                        >{tag.tag}</Button></div>
+                                        >{tag.tag}</Button>
                                 ))
                             }
                             {
                                 tags.filter((tag: string) => this.state.editedTags.map((_tag: any) => _tag.tag).indexOf(tag) === -1 && this.state.editedTag.length > 0 && tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.editedTag.toLowerCase().replace(/[^a-z]+/g, ''))).map((tag: any) => (
-                                    <div><Button 
+                                    <Button 
                                         onClick={(e: any) => this.addTag({tag: tag, type: "other"})}
                                         intent={"none"}
-                                        >{tag}</Button></div>
+                                        >{tag}</Button>
                                 ))
                             }
                             {
@@ -252,9 +257,9 @@ class OverviewV3 extends React.Component<Props, State>{
                                         return this.props.tags[tag].tag.includes(this.state.editedTag);
                                     }
                                 ).map((tag: any) => (
-                                    <div><Button 
+                                    <Button 
                                         onClick={(e: any) => this.addTag(this.props.tags[tag])}
-                                        >{this.props.tags[tag].tag}</Button></div>
+                                        >{this.props.tags[tag].tag}</Button>
                                 ))
                             }
                         </div>
@@ -295,21 +300,26 @@ class OverviewV3 extends React.Component<Props, State>{
                 )
                 break;
             case "reflect":
-                let flatEmotions: string[] = [];
-                for (let entry of this.props.entriesV2) {
-                    for (let emotion of entry.observations) {
-                        if (flatEmotions.indexOf(entry) === -1) {
-                            flatEmotions.push(emotion);
-                        }
-                    }
-                }
+                // let flatEmotions: string[] = [];
+                // for (let entry of this.props.entriesV2) {
+                //     for (let emotion of entry.observations) {
+                //         if (flatEmotions.indexOf(entry) === -1) {
+                //             flatEmotions.push(emotion);
+                //         }
+                //     }
+                // }
 
                 let levels = [
                     "document", "curiosity", "journal", ""
                 ]
 
+                let key = "";
+                if (this.state.editedEntriesV3Order.length > 0) {
+                    key = this.state.editedEntriesV3Order[this.state.editedEntriesV3Order.length - 1];
+                }
+
                 pageContents = (
-                    <div className={"mainpage"}>
+                    <div className={"mainpage"} key={key}>
                         <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
                                 value={this.state.searchString}
                                 onChange={(e: any) => this.modifySearchString(e.target.value.toLowerCase().replace(/[^a-z]+/g, ''))}
@@ -329,7 +339,7 @@ class OverviewV3 extends React.Component<Props, State>{
                             levels.map((level: string, index: number) => {
                                 let prevDay: any = moment().tz('America/New_York').add(1, 'days');
                                 return (
-                                    <div style={{height: 400, display: "flex", overflowX: "auto", overflowY: "hidden", padding: 10}}>
+                                    <div key={this.props.entriesV3Order.length.toString()} style={{height: 400, display: "flex", overflowX: "auto", overflowY: "hidden", padding: 10}}>
                                         {
                                             this.props.entriesV3Order.filter((id: any) => { 
                                                 let entry = this.props.entriesV3[id];
@@ -353,12 +363,12 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion").map((tag: any) => {
                                                     let color = color_map[tag.tag];
                                                     return (
-                                                        <div style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>
+                                                        <div key={tag.tag} style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>
                                                     )
                                                 });
 
                                                 return (
-                                                    <div style={{display: "inline", minWidth: 300, maxWidth: 300, height: 400, padding: 10, wordWrap: "break-word", float: "left"}}>
+                                                    <div key={entry._id} style={{display: "inline", minWidth: 300, maxWidth: 300, height: 400, padding: 10, wordWrap: "break-word", float: "left"}}>
                                                         { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
                                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
                                                             <div>{emotionColors}</div>
@@ -428,7 +438,7 @@ class OverviewV3 extends React.Component<Props, State>{
 }
 
 function mapStateToProps(state: any) {
-
+    console.log('updating');
     return {
         ...state
     };

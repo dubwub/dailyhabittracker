@@ -83,6 +83,7 @@ export function createEntryV3(type, title, note, tags, parents, neighbors) {
         const URL = hardcoded_server_url + '/api/users/' + user_id + '/entries';
         let res = await axios.put(URL, data);
         res.data["time"] = _momentDateFromMongo(res.data["time"]).format("MM/DD/YYYY");
+        res.data["latest"] = true;
         dispatch({
             type: "CREATE_ENTRY_V3",
             payload: res.data
