@@ -158,6 +158,15 @@ class OverviewV3 extends React.Component<Props, State>{
                 }
             }
         }
+
+        let helperMap: any = {
+            "journal": "I'm not sure how this will be helpful in the future, but writing will help me process my emotions.",
+            "curiosity": "I have a feeling this will be helpful in the future, but it's not a fully fledged idea.",
+            "document": "This is a full complete idea that I want to iterate on."
+        }
+
+        let emotionsOrder: string[] = base_emotions.map((emotion: any) => emotion.color);
+
         switch (this.props.currentTabV2) {
             case "write":
                 // get first layer of emotional depth
@@ -173,15 +182,38 @@ class OverviewV3 extends React.Component<Props, State>{
                 pageContents = (
                     <div className={"mainpage"}>
                         <div style={{
-                            position: "absolute",
-                            width: "30%",
-                            height: "50%",
+                            // position: "absolute",
+                            width: "80%",
                             overflowY: "auto",
-                            top: 0,
+                            paddingLeft: "10%",
                         }}> 
+                            <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedParents, this.state.editedNeighbors)}>Save new entry</Button>
+                            <div style={{display:"inline-block", width: 50}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
+                            <br/><br/>
                             <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
                             <Button disabled={this.state.editedType === "journal"} onClick={() => this.modifyType("journal")}>journal</Button>
                             <Button disabled={this.state.editedType === "document"} onClick={() => this.modifyType("document")}>document</Button>
+                            <span style={{paddingLeft: 40}}>{ helperMap[this.state.editedType] }</span>
+                            <br/><br/>
+
+                            <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
+                                        value={this.state.editedTitle}
+                                        onChange={(e: any) => this.modifyTitle(e.target.value)}
+                                        />
+                            <br/><TextArea
+                                id="edit-note"
+                                growVertically={false}
+                                large={true}
+                                placeholder="Write whatever you want!"
+                                value={this.state.editedNote}
+                                style={{
+                                    width: "100%",
+                                    minHeight: 200,
+                                }}
+                                onChange={(e) => { this.modifyNote(e.target.value)}}
+                                />
+                            
+                            <br/>
                             {
                                 <div>
                                     {
@@ -199,8 +231,9 @@ class OverviewV3 extends React.Component<Props, State>{
                                     }
                                 </div>
                             }
+                            <br/>
                             {
-                                suggestedEmotions.map((tag: any) => {
+                                suggestedEmotions.sort((a: any, b: any) => emotionsOrder.indexOf(a.color) <= emotionsOrder.indexOf(b.color) ? 1:-1).map((tag: any) => {
                                     return (
                                             <Button 
                                                 style={{
@@ -212,28 +245,21 @@ class OverviewV3 extends React.Component<Props, State>{
                                     )
                                 })
                             }
-                        </div>
 
-                        <div style={{
-                            position: "absolute",
-                            width: "30%",
-                            height: "50%",
-                            overflowY: "auto",
-                            top: "50%",
-                        }}>
-                            <InputGroup id="edit-tag" type="text" placeholder="Add a tag" 
-                                    value={this.state.editedTag}
-                                    onChange={(e: any) => this.modifyTag(e.target.value)}
-                                    style={{
-                                        width: "70%",
-                                    }}
-                                    />
-                            <Button icon={"floppy-disk"} style={{
-                                position: "absolute",
-                                top: 0,
-                                left: "70%",
-                            }} onClick={() => { this.addTag({ tag: this.state.editedTag, type: "other" }); }}
-                            ></Button>
+                            <div style={{
+                                position: "relative"
+                            }}>
+                                <InputGroup id="edit-tag" type="text" placeholder="Add a tag" 
+                                        value={this.state.editedTag}
+                                        onChange={(e: any) => this.modifyTag(e.target.value)}
+                                        style={{
+                                            width: "70%",
+                                            display: "inline-block"
+                                        }}
+                                        />
+                                <Button icon={"floppy-disk"} style={{position: "absolute", top: 0, right: 0}} onClick={() => { this.addTag({ tag: this.state.editedTag, type: "other" }); }}
+                                ></Button>
+                            </div>
                             {
                                 this.state.editedTags.map((tag: any) => (
                                     <Button 
@@ -262,39 +288,6 @@ class OverviewV3 extends React.Component<Props, State>{
                                         >{this.props.tags[tag].tag}</Button>
                                 ))
                             }
-                        </div>
-
-
-                        <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
-                                    value={this.state.editedTitle}
-                                    onChange={(e: any) => this.modifyTitle(e.target.value)}
-                                    style={{
-                                        width: "40%",
-                                        marginLeft: "30%",
-                                        position: "absolute",
-                                        top: 20,
-                                    }}
-                                    />
-                        <br/><TextArea
-                            id="edit-note"
-                            growVertically={false}
-                            large={true}
-                            placeholder="Write whatever you want!"
-                            value={this.state.editedNote}
-                            onChange={(e) => { this.modifyNote(e.target.value)}}
-                            style={{
-                                width: "40%",
-                                height: 400,
-                                position: "absolute",
-                                marginLeft: "30%",
-                                top: 100,
-                            }}
-                            />
-
-                        <br/>
-                        <div style={{position: "absolute", top: 30, right: "10%"}}>
-                            <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedParents, this.state.editedNeighbors)}>Save new entry</Button>
-                            <div style={{display:"inline-block", width: 50}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
                         </div>
                     </div>
                 )
