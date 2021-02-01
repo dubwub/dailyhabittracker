@@ -26,14 +26,14 @@ body {
 
 .topbar {
     position: absolute;
-    height: 40px;
+    height: 140px;
     width: 100%;
     top: 0;
 }
 .mainpage {
     position: absolute;
-    height: calc(100% - 40px);
-    top: 40px;
+    height: calc(100% - 140px);
+    top: 140px;
     width: 100%;
     border: 2px solid red;
     overflow-y: auto;

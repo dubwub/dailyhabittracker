@@ -36,6 +36,8 @@ export interface Props {
     entriesV3Order: string[]
     loadUserV3: any
     createEntryV3: any
+    editSelfMessage: any
+    selfMessage: string
 
     // V2
     dreamOrder: string[]

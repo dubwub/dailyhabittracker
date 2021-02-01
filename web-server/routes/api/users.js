@@ -21,6 +21,7 @@ router.get('/v3/:id', (req, res) => {
         .then(user => {
             output['username'] = user['username'];
             output['tags'] = user['tags'];
+            output['selfMessage'] = user['selfMessage'];
             EntryV2.find({
                 user: req.params.id
             }, function(err, entries) {
@@ -32,6 +33,16 @@ router.get('/v3/:id', (req, res) => {
                 }
             });
         }).catch(err => res.status(404).json({ nouserfound: 'No User Found' }));
+});
+
+// [SELF MESSAGE]
+router.put('/v3/:id/selfmessage', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    user.selfMessage = req.body.selfMessage;
+    const updatedUser = await user.save();
+
+    if (updatedUser) { res.send(req.body.selfMessage); }
+    else { res.status(400).json({ error: err }); }
 });
 
 

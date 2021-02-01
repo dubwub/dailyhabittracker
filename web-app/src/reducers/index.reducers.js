@@ -17,6 +17,7 @@ let INITIAL_STATE = {
     entriesV3: {},
     tagOrder: [],
     tags: {},
+    selfMessage: "",
 
     // v2
     currentTabV2: "reflect",
@@ -65,6 +66,7 @@ export default function(state = INITIAL_STATE, action) {
                 entriesV3Order: action.payload.entriesV3Order,
                 entriesV3: action.payload.entriesV3,
                 user: action.payload.user,
+                selfMessage: action.payload.selfMessage,
             };
         }
         case "CREATE_ENTRY_V3": {
@@ -76,6 +78,12 @@ export default function(state = INITIAL_STATE, action) {
                 entriesV3Order: state["entriesV3Order"].concat([action.payload._id]),
                 entriesV3: newEntries,
             };
+        }
+        case "EDIT_SELF_MESSAGE": {
+            return {
+                ...state,
+                selfMessage: action.payload,
+            }
         }
 
 

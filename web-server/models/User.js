@@ -80,7 +80,8 @@ const UserSchema = new mongoose.Schema({
         tag: String,
         parents: [{type: mongoose.Schema.Types.ObjectId}],
         neighbors: [{type: mongoose.Schema.Types.ObjectId}],
-    }]
+    }],
+    selfMessage: String,
 });
 
 module.exports = User = mongoose.model('user', UserSchema);

@@ -10,10 +10,25 @@ const moment = require('moment');
 
 // V3
 
+export function editSelfMessage(message) {
+    const data = {
+        selfMessage: message
+    }
+
+    return async function(dispatch) {
+        let res = await axios.put(hardcoded_server_url + '/api/users/v3/' + user_id + '/selfmessage', data);
+        dispatch({
+            type: "EDIT_SELF_MESSAGE",
+            payload: res.data
+        });
+    }
+}
+
 export function loadUserV3() {
     return async function(dispatch) {
-        const res = await axios.get(hardcoded_server_url + '/api/users/v2/' + user_id);
+        const res = await axios.get(hardcoded_server_url + '/api/users/v3/' + user_id);
         console.log('Loaded user: ' + user_id);
+        console.log(res.data);
         
         let tagOrder = [];
         let tags = {};
@@ -64,6 +79,7 @@ export function loadUserV3() {
                 tags: tags,
                 entriesV3Order: entryOrder,
                 entriesV3: entries,
+                selfMessage: res.data.selfMessage,
             }
         });
     }

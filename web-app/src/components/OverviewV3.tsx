@@ -29,6 +29,8 @@ interface State {
     password: string
 
     editedEntriesV3Order: string[]
+
+    editedSelfMessage: string
 }
 
 class OverviewV3 extends React.Component<Props, State>{    
@@ -46,6 +48,7 @@ class OverviewV3 extends React.Component<Props, State>{
             editedNeighbors: [],
             password: "",
             editedEntriesV3Order: [],
+            editedSelfMessage: this.props.selfMessage,
         }
     }
 
@@ -61,7 +64,14 @@ class OverviewV3 extends React.Component<Props, State>{
             searchString: "",
             editedParents: [],
             editedNeighbors: [],
-            password: "",
+            password: ""
+        })
+    }
+
+    modifySelfMessage(message: string) {
+        this.setState({
+            ...this.state,
+            editedSelfMessage: message
         })
     }
 
@@ -394,6 +404,26 @@ class OverviewV3 extends React.Component<Props, State>{
                     </div>
                 )
                 break;
+            case "settings":
+                pageContents = (
+                    <div className={"mainpage"}>
+                        <TextArea
+                                    id="edit-self-message"
+                                    growVertically={false}
+                                    large={true}
+                                    placeholder="Edited self message"
+                                    value={this.state.editedSelfMessage}
+                                    style={{
+                                        width: "100%",
+                                        minHeight: 400,
+                                        paddingTop: 100,
+                                    }}
+                                    onChange={(e) => { this.modifySelfMessage(e.target.value)}}
+                                    />
+                        <Button intent="primary" onClick={() => this.props.editSelfMessage(this.state.editedSelfMessage)}>Save</Button>
+                    </div>
+                )
+                break;
             default:
                 pageContents = (
                     <div>
@@ -414,10 +444,15 @@ class OverviewV3 extends React.Component<Props, State>{
                                 selectedTabId={this.props.currentTabV2}>
                                 <Tab id="write" title="Write" />
                                 <Tab id="reflect" title="Reflect" />
-                                
+                                <Tab id="settings" title="Settings" />
                             </Tabs>
+                            <div style={{whiteSpace: "pre-line", backgroundColor: "#AD99FF", width: "100%", height: 100}}>
+                                { this.props.selfMessage }
+                            </div>
                         </div>
+                        {/* <div style={{position: "relative", marginTop: 140, width: "100%", height: "100%"}}> */}
                         { pageContents }
+                        {/* </div> */}
                     </div>
                 </div>
             );
@@ -431,7 +466,6 @@ class OverviewV3 extends React.Component<Props, State>{
 }
 
 function mapStateToProps(state: any) {
-    console.log('updating');
     return {
         ...state
     };
