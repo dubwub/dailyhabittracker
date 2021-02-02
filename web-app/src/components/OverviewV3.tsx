@@ -7,6 +7,7 @@ import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } fr
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 import { base_emotions, color_map, feelings_wheel } from '../utils/safe-constants'; 
+import { urlify } from '../utils/habits.utils';
 const moment = require('moment-timezone');
 
 interface State {
@@ -386,7 +387,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                                     entry.tags.map((tag: any) => <Tag>{tag.tag}</Tag>)
                                                                 }
                                                             </div>
-                                                            {entry.note}
+                                                            {<span dangerouslySetInnerHTML={{__html: urlify(entry.note)}}></span>}
                                                             {/* <div>
                                                                 {
                                                                     entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
