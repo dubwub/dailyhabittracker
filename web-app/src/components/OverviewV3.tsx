@@ -6,7 +6,7 @@ import * as mapDispatchToProps from '../actions/index.actions.js';
 import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
-import { base_emotions, color_map, feelings_wheel } from '../utils/safe-constants'; 
+import { base_emotions, color_map, feelings_wheel, flat_emotions } from '../utils/safe-constants'; 
 import { urlify } from '../utils/habits.utils';
 const moment = require('moment-timezone');
 
@@ -160,15 +160,27 @@ class OverviewV3 extends React.Component<Props, State>{
     render() {
         let pageContents = (<div />);
         let tags: string[] = [];
-        let nonEmotionTags: string[] = [];
+        let tagCountMap: any = {};
         for (let id of this.props.entriesV3Order) {
             let entry = this.props.entriesV3[id];
             for (let tag of entry.tags) {
-                if (tags.indexOf(tag.tag) === -1 && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString)) {
+                if (tags.indexOf(tag.tag) === -1 || (this.props.currentTabV2 !== "reflect" && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString))) {
                     tags.push(tag.tag)
+
+                    if (_.isNil(tagCountMap[tag.tag])) { // pareto principle test
+                        tagCountMap[tag.tag] = 1;
+                    } else {
+                        tagCountMap[tag.tag] += 1;
+                    }
                 }
             }
         }
+
+        let paretoBound = .2 * this.props.entriesV3Order.length;
+        tags = tags.sort((a: string, b: string) => {
+            return Math.abs(tagCountMap[a] - paretoBound) < Math.abs(tagCountMap[b] - paretoBound) ? -1 : 1;
+        })
+
 
         let helperMap: any = {
             "journal": "I'm not sure how this will be helpful in the future, but writing will help me process my emotions.",
@@ -304,14 +316,6 @@ class OverviewV3 extends React.Component<Props, State>{
                 )
                 break;
             case "reflect":
-                // let flatEmotions: string[] = [];
-                // for (let entry of this.props.entriesV2) {
-                //     for (let emotion of entry.observations) {
-                //         if (flatEmotions.indexOf(entry) === -1) {
-                //             flatEmotions.push(emotion);
-                //         }
-                //     }
-                // }
 
                 let levels = [
                     "document", "curiosity", "journal", ""
@@ -364,7 +368,8 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 let entryDate = moment.utc(entry.time).subtract(5, 'hours'); // hardcoded for EST
                                                 let dayIsSame = entryDate.isSame(prevDay, "day");
                                                 prevDay = entryDate;
-                                                let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion").map((tag: any) => {
+
+                                                let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion" || flat_emotions.indexOf(tag.tag) !== -1).map((tag: any) => {
                                                     let color = color_map[tag.tag];
                                                     return (
                                                         <div key={tag.tag} style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>

@@ -185,6 +185,8 @@ const rawFeelingsWheel: any = {
     "excited": ["eager", "energetic"]
 }
 
+let flatEmotions: string[] = [];
+
 let baseEmotions = [
     { emotion: "happy", background: "#FFC940", textColor: "#10161A"},
     { emotion: "sad", background: "#48AFF0", textColor: "#10161A"},
@@ -201,6 +203,7 @@ let colorMap: any = {};
 while (baseEmotions.length > 0) {
     let emotion = baseEmotions.pop();
     if (typeof emotion === "undefined") break;
+    flatEmotions.push(emotion.emotion);
     colorMap[emotion.emotion] = emotion.background;
     if (typeof rawFeelingsWheel[emotion.emotion] === "undefined") continue;
     feelingsWheel[emotion.emotion] = rawFeelingsWheel[emotion.emotion].map((name: string) => {
@@ -296,4 +299,5 @@ export {
     feelingsWheel as feelings_wheel,
     base_emotions as base_emotions,
     colorMap as color_map,
+    flatEmotions as flat_emotions,
 };
