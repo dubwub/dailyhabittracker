@@ -32,6 +32,7 @@ interface State {
     editedEntriesV3Order: string[]
 
     editedSelfMessage: string
+    editedEntryTypeSearch: string
 }
 
 class OverviewV3 extends React.Component<Props, State>{    
@@ -50,6 +51,7 @@ class OverviewV3 extends React.Component<Props, State>{
             password: "",
             editedEntriesV3Order: [],
             editedSelfMessage: this.props.selfMessage,
+            editedEntryTypeSearch: ""
         }
     }
 
@@ -65,8 +67,23 @@ class OverviewV3 extends React.Component<Props, State>{
             searchString: "",
             editedParents: [],
             editedNeighbors: [],
-            password: ""
+            password: "",
+            editedEntryTypeSearch: "",
         })
+    }
+
+    modifyEditedTypeSearch(type: string) {
+        if (this.state.editedEntryTypeSearch === type) {
+            this.setState({
+                ...this.state,
+                editedEntryTypeSearch: ""
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                editedEntryTypeSearch: type
+            })
+        }
     }
 
     modifySelfMessage(message: string) {
@@ -120,6 +137,7 @@ class OverviewV3 extends React.Component<Props, State>{
             tagSearch: this.state.tagSearch.filter((e: string) => e !== tag)
         })
     }
+
     modifyNote(note: string) {
         this.setState({
             ...this.state,
@@ -161,25 +179,53 @@ class OverviewV3 extends React.Component<Props, State>{
         let pageContents = (<div />);
         let tags: string[] = [];
         let tagCountMap: any = {};
+        let hideEntriesMap: any = {};
+        let neighborTagMap: any = {};
         for (let id of this.props.entriesV3Order) {
             let entry = this.props.entriesV3[id];
             for (let tag of entry.tags) {
-                if (tags.indexOf(tag.tag) === -1 || (this.props.currentTabV2 !== "reflect" && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString))) {
-                    tags.push(tag.tag)
-
-                    if (_.isNil(tagCountMap[tag.tag])) { // pareto principle test
-                        tagCountMap[tag.tag] = 1;
-                    } else {
-                        tagCountMap[tag.tag] += 1;
+                if (_.isNil(tagCountMap[tag.tag])) {
+                    tagCountMap[tag.tag] = 1;
+                } else {
+                    tagCountMap[tag.tag] += 1;
+                }
+                
+                let newNeighbors = entry.tags.filter((_tag: any) => tag.tag !== _tag);
+                if (_.isNil(neighborTagMap[tag.tag])) {
+                    neighborTagMap[tag.tag] = newNeighbors.map((_tag: any) => _tag.tag);
+                } else {
+                    for (let neighbor of newNeighbors) {
+                        if (neighborTagMap[tag.tag].indexOf(neighbor.tag) === -1) {
+                            neighborTagMap[tag.tag] = neighborTagMap[tag.tag].concat([neighbor.tag]);
+                        }
                     }
                 }
+
+                if (tags.indexOf(tag.tag) === -1 || (this.props.currentTabV2 !== "reflect" && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString))) {
+                    tags.push(tag.tag)
+                }
+            }
+            for (let parent of entry.parents) {
+                hideEntriesMap[parent] = "yes";
             }
         }
 
-        let paretoBound = .2 * this.props.entriesV3Order.length;
-        tags = tags.sort((a: string, b: string) => {
-            return Math.abs(tagCountMap[a] - paretoBound) < Math.abs(tagCountMap[b] - paretoBound) ? -1 : 1;
-        })
+        let randomTagsToSurface: string[] = [];
+        for (let i = 0; i < 10; i++) {
+            let index = Math.floor(Math.random() * tags.length);
+            let justInCase = 0;
+            while (randomTagsToSurface.indexOf(tags[index]) !== -1 && this.state.tagSearch.indexOf(tags[index]) !== -1 && justInCase < 50) {
+                index = Math.floor(Math.random() * tags.length);
+                justInCase++;
+            }
+            randomTagsToSurface.push(tags[index]);
+        }
+        
+
+        // let paretoBound = .2 * this.props.entriesV3Order.length;
+        // tags = tags.sort((a: string, b: string) => {
+        //     return Math.abs(tagCountMap[a] - paretoBound) < Math.abs(tagCountMap[b] - paretoBound) ? -1 : 1;
+        // })
 
 
         let helperMap: any = {
@@ -316,41 +362,66 @@ class OverviewV3 extends React.Component<Props, State>{
                 )
                 break;
             case "reflect":
-
-                let levels = [
-                    "document", "curiosity", "journal", ""
-                ]
-
                 let key = "";
                 if (this.state.editedEntriesV3Order.length > 0) {
                     key = this.state.editedEntriesV3Order[this.state.editedEntriesV3Order.length - 1];
                 }
 
+                let cleanedSearchString = this.state.searchString.toLowerCase().replace(/[^a-z]+/g, '');
+                let tagsToSurface: string[] = tags.filter((tag: string) => {
+                    return tag.toLowerCase().replace(/[^a-z]+/g, '').includes(cleanedSearchString);
+                });
+                if (this.state.searchString === "") {
+                    if (this.state.tagSearch.length === 0) tagsToSurface = randomTagsToSurface;
+                    else {
+                        tagsToSurface = [];
+                        for (let _tag of this.state.tagSearch) {
+                            tagsToSurface = tagsToSurface.concat(neighborTagMap[_tag]);
+                        }
+                        tagsToSurface = tagsToSurface.filter((_tag: string) => this.state.tagSearch.indexOf(_tag) === -1);
+                    }
+                }
+
                 pageContents = (
-                    <div className={"mainpage"} key={key}>
-                        <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
-                                value={this.state.searchString}
-                                onChange={(e: any) => this.modifySearchString(e.target.value.toLowerCase().replace(/[^a-z]+/g, ''))}
-                                />
-                        {tags.map((tag: string) => {
-                            return <Button intent={this.state.tagSearch.indexOf(tag) !== -1 ? "primary": "none"}
-                            onClick={() => {
-                                if (this.state.tagSearch.indexOf(tag) !== -1) {
-                                    this.removeTagSearch(tag);
-                                } else {
-                                    this.addTagSearch(tag);
-                                }
-                            }}>{tag}</Button>
-                        })}
-                        
-                        {
-                            levels.map((level: string, index: number) => {
-                                let prevDay: any = moment().tz('America/New_York').add(1, 'days');
-                                return (
-                                    <div key={this.props.entriesV3Order.length.toString()} style={{height: 400, display: "flex", overflowX: "auto", overflowY: "hidden", padding: 10}}>
+                    <div className={"mainpage"} style={{overflowY: "hidden"}} key={key}>
+                        <div style={{width: "20%", padding: 0}}>
+                            {
+                                ["curiosity", "journal", "document"].map((type: string) => 
+                                    <Button
+                                        onClick={() => this.modifyEditedTypeSearch(type)}
+                                        intent={this.state.editedEntryTypeSearch !== type ? "none" : "primary"}    
+                                    >
+                                        {type}
+                                    </Button>
+                                )
+                            }
+                            <InputGroup type="text" className="bp3-input" placeholder="Note Search" 
+                                    value={this.state.searchString}
+                                    onChange={(e: any) => this.modifySearchString(e.target.value)}
+                                    />
+                            {
+                                this.state.tagSearch.map((tag: string) => {
+                                    return <Button intent={"primary"}
+                                        onClick={() => {this.removeTagSearch(tag);}}>{tag + " (" + tagCountMap[tag] + ")"}</Button>
+                                })
+                            }
+                            {
+                                tagsToSurface.map((tag: string) => {
+                                    return <Button intent={"none"}
+                                    onClick={() => {
+                                            this.addTagSearch(tag);
+                                    }}>{tag + " (" + tagCountMap[tag] + ")"}</Button>
+                                })
+                            }
+                        </div>
+                        <div style={{position: "absolute", top: 0, left: "20%", width: "80%", height: "100%", overflowY: "auto"}}>
+                            {
+                                [0,1,2].map((col: number) => {
+                                    return <div style={{display: "inline-block", float: "left", width: 350}}>
                                         {
-                                            this.props.entriesV3Order.filter((id: any) => { 
+                                            this.props.entriesV3Order.filter((id: any, index: number) => { 
                                                 let entry = this.props.entriesV3[id];
+
                                                 let cleanedEntryForFilter = ((_.isNil(entry.title) ? "" : entry.title) + entry.note).toLowerCase().replace(/[^a-z]+/g, '');
                                                 if (!_.isNil(entry.tags)) {
                                                     for (let tag of entry.tags) {
@@ -362,24 +433,21 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 } else {
                                                     if (this.state.tagSearch.length > 0) return false;
                                                 }
-                                                return entry.latest && (entry.entryType === level || (_.isNil(entry.entryType) && level === "")) && !(this.state.searchString.length > 0 && !cleanedEntryForFilter.includes(this.state.searchString))
-                                            }).slice().reverse().map((_entry: any, index: number) => {
+                                                return (this.state.editedEntryTypeSearch === "" || entry.entryType === this.state.editedEntryTypeSearch) && _.isNil(hideEntriesMap[id]) && index%3 === col && entry.latest && !(this.state.searchString.length > 0 && !cleanedEntryForFilter.includes(this.state.searchString))
+                                            }).slice().reverse().map((_entry: any) => {
                                                 let entry = this.props.entriesV3[_entry];
                                                 let entryDate = moment.utc(entry.time).subtract(5, 'hours'); // hardcoded for EST
-                                                let dayIsSame = entryDate.isSame(prevDay, "day");
-                                                prevDay = entryDate;
-
+                                                
                                                 let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion" || flat_emotions.indexOf(tag.tag) !== -1).map((tag: any) => {
                                                     let color = color_map[tag.tag];
                                                     return (
                                                         <div key={tag.tag} style={{width: 20, height: 20, margin: 5, display: "inline-block", backgroundColor: color}}></div>
                                                     )
                                                 });
-
+            
                                                 return (
-                                                    <div key={entry._id} style={{display: "inline", minWidth: 300, maxWidth: 300, height: 400, padding: 10, wordWrap: "break-word", float: "left"}}>
-                                                        { dayIsSame ? <span></span> : <H3>{entryDate.format("MM/DD/YYYY")}</H3>}
-                                                        <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop: dayIsSame ? 0 : 10}}>
+                                                    <div key={entry._id} style={{height: 400, minWidth: 300, padding: 10, wordWrap: "break-word", border:"1px solid black", overflowY: "auto"}}>
+                                                        <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop:  10}}>
                                                             <div>{emotionColors}</div>
                                                             <H5>{entry.entryType} : [{entry.title}]</H5>
                                                             <Button icon={"upload"} onClick={() => {
@@ -393,20 +461,15 @@ class OverviewV3 extends React.Component<Props, State>{
                                                                 }
                                                             </div>
                                                             {<span dangerouslySetInnerHTML={{__html: urlify(entry.note)}}></span>}
-                                                            {/* <div>
-                                                                {
-                                                                    entry.observations.map((observation: string) => <Tag>{observation}</Tag>)
-                                                                }
-                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 )
                                             })
                                         }
                                     </div>
-                                )
-                            })
-                        }
+                                })
+                            }
+                        </div>
                     </div>
                 )
                 break;
