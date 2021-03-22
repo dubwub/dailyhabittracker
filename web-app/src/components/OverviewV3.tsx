@@ -3,7 +3,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as mapDispatchToProps from '../actions/index.actions.js'; 
-import { Button, InputGroup, H3, H4, H5, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
+import { Button, InputGroup, H3, H4, H5, H6, Tag, Tab, Tabs, Checkbox, TextArea } from "@blueprintjs/core";
 import { Props } from "../types/types"; 
 import { callbackify } from 'util';
 import { base_emotions, color_map, feelings_wheel, flat_emotions } from '../utils/safe-constants'; 
@@ -33,6 +33,8 @@ interface State {
 
     editedSelfMessage: string
     editedEntryTypeSearch: string
+
+    writeTabShowEmotions: boolean
 }
 
 class OverviewV3 extends React.Component<Props, State>{    
@@ -51,7 +53,8 @@ class OverviewV3 extends React.Component<Props, State>{
             password: "",
             editedEntriesV3Order: [],
             editedSelfMessage: this.props.selfMessage,
-            editedEntryTypeSearch: ""
+            editedEntryTypeSearch: "",
+            writeTabShowEmotions: false,
         }
     }
 
@@ -69,6 +72,13 @@ class OverviewV3 extends React.Component<Props, State>{
             editedNeighbors: [],
             password: "",
             editedEntryTypeSearch: "",
+            writeTabShowEmotions: false,
+        })
+    }
+
+    toggleShowEmotions() {
+        this.setState({
+            writeTabShowEmotions: !this.state.writeTabShowEmotions,
         })
     }
 
@@ -259,10 +269,10 @@ class OverviewV3 extends React.Component<Props, State>{
                             <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedParents, this.state.editedNeighbors)}>Save new entry</Button>
                             <div style={{display:"inline-block", width: 50}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
                             <br/><br/>
-                            <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
+                            {/* <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
                             <Button disabled={this.state.editedType === "journal"} onClick={() => this.modifyType("journal")}>journal</Button>
                             <Button disabled={this.state.editedType === "document"} onClick={() => this.modifyType("document")}>document</Button>
-                            <span style={{paddingLeft: 40}}>{ helperMap[this.state.editedType] }</span>
+                            <span style={{paddingLeft: 40}}>{ helperMap[this.state.editedType] }</span> */}
                             <br/><br/>
 
                             <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
@@ -301,8 +311,9 @@ class OverviewV3 extends React.Component<Props, State>{
                                 </div>
                             }
                             <br/>
+                            <Button minimal={true} onClick={() => this.toggleShowEmotions()}>Toggle emotions</Button>
                             {
-                                suggestedEmotions.sort((a: any, b: any) => emotionsOrder.indexOf(a.color) <= emotionsOrder.indexOf(b.color) ? 1:-1).map((tag: any) => {
+                                this.state.writeTabShowEmotions ? suggestedEmotions.sort((a: any, b: any) => emotionsOrder.indexOf(a.color) <= emotionsOrder.indexOf(b.color) ? 1:-1).map((tag: any) => {
                                     return (
                                             <Button 
                                                 style={{
@@ -312,7 +323,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 minimal={true}
                                                 onClick={(e: any) => { this.addTag({type: "emotion", tag: tag.emotion}) }}>{tag.emotion}</Button>
                                     )
-                                })
+                                }) : <span />
                             }
 
                             <div style={{
@@ -436,7 +447,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 return (this.state.editedEntryTypeSearch === "" || entry.entryType === this.state.editedEntryTypeSearch) && _.isNil(hideEntriesMap[id]) && index%3 === col && entry.latest && !(this.state.searchString.length > 0 && !cleanedEntryForFilter.includes(this.state.searchString))
                                             }).slice().reverse().map((_entry: any) => {
                                                 let entry = this.props.entriesV3[_entry];
-                                                let entryDate = moment.utc(entry.time).subtract(5, 'hours'); // hardcoded for EST
+                                                let entryDate = entry.time;
                                                 
                                                 let emotionColors = entry.tags.filter((tag: any) => tag.entryType === "emotion" || flat_emotions.indexOf(tag.tag) !== -1).map((tag: any) => {
                                                     let color = color_map[tag.tag];
@@ -448,13 +459,13 @@ class OverviewV3 extends React.Component<Props, State>{
                                                 return (
                                                     <div key={entry._id} style={{height: 400, minWidth: 300, padding: 10, wordWrap: "break-word", border:"1px solid black", overflowY: "auto"}}>
                                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop:  10}}>
-                                                            <div>{emotionColors}</div>
-                                                            <H5>{entry.entryType} : [{entry.title}]</H5>
+                                                            <H5>{entry.title}</H5>
+                                                            <H6>{entryDate.calendar()}</H6>
                                                             <Button icon={"upload"} onClick={() => {
                                                                 this.loadEntryAsState(entry);
                                                                 this.props.selectTabV2("write");
                                                             }}>Load</Button>
-                                                            {entryDate.format()}
+                                                            <div>{emotionColors}</div>
                                                             <div>
                                                                 {
                                                                     entry.tags.map((tag: any) => <Tag>{tag.tag}</Tag>)
@@ -515,9 +526,9 @@ class OverviewV3 extends React.Component<Props, State>{
                                 <Tab id="reflect" title="Reflect" />
                                 <Tab id="settings" title="Settings" />
                             </Tabs>
-                            <div style={{whiteSpace: "pre-line", backgroundColor: "#AD99FF", width: "100%", height: 100}}>
+                            {/* <div style={{whiteSpace: "pre-line", backgroundColor: "#AD99FF", width: "100%", height: 100}}>
                                 { this.props.selfMessage }
-                            </div>
+                            </div> */}
                         </div>
                         {/* <div style={{position: "relative", marginTop: 140, width: "100%", height: "100%"}}> */}
                         { pageContents }

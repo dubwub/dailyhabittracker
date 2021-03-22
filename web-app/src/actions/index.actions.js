@@ -57,6 +57,7 @@ export function loadUserV3() {
         // preprocess incoming entries
         const raw_entries = res.data.entries;
         entryOrder = raw_entries.map((entry) => {
+            entry['time'] = moment.utc(entry['time']).subtract(5, 'hours'); // hardcoded for EST
             entry.latest = true; // is the latest in the chain of parents
             entries[entry._id] = entry;
             if (!_.isNil(entry.parents)) {
@@ -69,7 +70,10 @@ export function loadUserV3() {
             }
             return entry._id;
         })
-        console.log(entries);
+
+        entryOrder.sort(function compare(a, b) {
+            return (entries[b] > entries[a])
+        });
 
         dispatch({
             type: "LOAD_USER_V3",
