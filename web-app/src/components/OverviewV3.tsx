@@ -121,11 +121,11 @@ class OverviewV3 extends React.Component<Props, State>{
             editedTag: tag,
         })
     }
-    addTag(tag: any) {
+    addTag(tag: any, editedTag: string) {
         this.setState({
             ...this.state,
             editedTags: this.state.editedTags.concat([tag]),
-            editedTag: "",
+            editedTag: editedTag,
         })
     }
     removeTag(tag: string) {
@@ -211,7 +211,10 @@ class OverviewV3 extends React.Component<Props, State>{
                     }
                 }
 
-                if (tags.indexOf(tag.tag) === -1 || (this.props.currentTabV2 !== "reflect" && tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString))) {
+                if (this.props.currentTabV2 === "write" && !tag.tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.searchString)) {
+                    continue;
+                }
+                if (tags.indexOf(tag.tag) === -1) {
                     tags.push(tag.tag)
                 }
             }
@@ -230,19 +233,6 @@ class OverviewV3 extends React.Component<Props, State>{
             }
             randomTagsToSurface.push(tags[index]);
         }
-        
-
-        // let paretoBound = .2 * this.props.entriesV3Order.length;
-        // tags = tags.sort((a: string, b: string) => {
-        //     return Math.abs(tagCountMap[a] - paretoBound) < Math.abs(tagCountMap[b] - paretoBound) ? -1 : 1;
-        // })
-
-
-        let helperMap: any = {
-            "journal": "I'm not sure how this will be helpful in the future, but writing will help me process my emotions.",
-            "curiosity": "I have a feeling this will be helpful in the future, but it's not a fully fledged idea.",
-            "document": "This is a full complete idea that I want to iterate on."
-        }
 
         let emotionsOrder: string[] = base_emotions.map((emotion: any) => emotion.color);
 
@@ -257,6 +247,7 @@ class OverviewV3 extends React.Component<Props, State>{
                 }
 
                 suggestedEmotions = suggestedEmotions.filter((tag: any) => this.state.editedTags.map((_tag: any) => _tag.tag).indexOf(tag.emotion) === -1);
+                suggestedEmotions.sort((a: any, b: any) => emotionsOrder.indexOf(a.color) <= emotionsOrder.indexOf(b.color) ? 1:-1);
 
                 pageContents = (
                     <div className={"mainpage"}>
@@ -269,10 +260,9 @@ class OverviewV3 extends React.Component<Props, State>{
                             <Button icon="floppy-disk" intent={"success"} onClick={() => this.props.createEntryV3(this.state.editedType, this.state.editedTitle, this.state.editedNote, this.state.editedTags, this.state.editedParents, this.state.editedNeighbors)}>Save new entry</Button>
                             <div style={{display:"inline-block", width: 50}}></div><Button intent={"danger"} onClick={() => this.clear()}>Clear</Button>
                             <br/><br/>
-                            {/* <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
+                            <Button disabled={this.state.editedType === "curiosity"} onClick={() => this.modifyType("curiosity")}>curiosity</Button>
                             <Button disabled={this.state.editedType === "journal"} onClick={() => this.modifyType("journal")}>journal</Button>
                             <Button disabled={this.state.editedType === "document"} onClick={() => this.modifyType("document")}>document</Button>
-                            <span style={{paddingLeft: 40}}>{ helperMap[this.state.editedType] }</span> */}
                             <br/><br/>
 
                             <InputGroup id="edit-title" type="text" placeholder="Title (OPTIONAL)" 
@@ -313,7 +303,7 @@ class OverviewV3 extends React.Component<Props, State>{
                             <br/>
                             <Button minimal={true} onClick={() => this.toggleShowEmotions()}>Toggle emotions</Button>
                             {
-                                this.state.writeTabShowEmotions ? suggestedEmotions.sort((a: any, b: any) => emotionsOrder.indexOf(a.color) <= emotionsOrder.indexOf(b.color) ? 1:-1).map((tag: any) => {
+                                this.state.writeTabShowEmotions ? suggestedEmotions.map((tag: any) => {
                                     return (
                                             <Button 
                                                 style={{
@@ -321,7 +311,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                     color: tag.textColor,
                                                 }}
                                                 minimal={true}
-                                                onClick={(e: any) => { this.addTag({type: "emotion", tag: tag.emotion}) }}>{tag.emotion}</Button>
+                                                onClick={(e: any) => { this.addTag({type: "emotion", tag: tag.emotion}, this.state.editedTag) }}>{tag.emotion}</Button>
                                     )
                                 }) : <span />
                             }
@@ -337,7 +327,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                             display: "inline-block"
                                         }}
                                         />
-                                <Button icon={"floppy-disk"} style={{position: "absolute", top: 0, right: 0}} onClick={() => { this.addTag({ tag: this.state.editedTag, type: "other" }); }}
+                                <Button icon={"floppy-disk"} style={{position: "absolute", top: 0, right: 0}} onClick={() => { this.addTag({ tag: this.state.editedTag, type: "other" }, ""); }}
                                 ></Button>
                             </div>
                             {
@@ -351,21 +341,9 @@ class OverviewV3 extends React.Component<Props, State>{
                             {
                                 tags.filter((tag: string) => this.state.editedTags.map((_tag: any) => _tag.tag).indexOf(tag) === -1 && this.state.editedTag.length > 0 && tag.toLowerCase().replace(/[^a-z]+/g, '').includes(this.state.editedTag.toLowerCase().replace(/[^a-z]+/g, ''))).map((tag: any) => (
                                     <Button 
-                                        onClick={(e: any) => this.addTag({tag: tag, type: "other"})}
+                                        onClick={(e: any) => this.addTag({tag: tag, type: "other"}, this.state.editedTag)}
                                         intent={"none"}
-                                        >{tag}</Button>
-                                ))
-                            }
-                            {
-                                this.props.tagOrder.filter((tag: any) => 
-                                    {
-                                        if (_.isNil(this.props.tags[tag])) { return false; }
-                                        return this.props.tags[tag].tag.includes(this.state.editedTag);
-                                    }
-                                ).map((tag: any) => (
-                                    <Button 
-                                        onClick={(e: any) => this.addTag(this.props.tags[tag])}
-                                        >{this.props.tags[tag].tag}</Button>
+                                        >{tag + " (" + tagCountMap[tag] + ")"}</Button>
                                 ))
                             }
                         </div>
@@ -461,6 +439,7 @@ class OverviewV3 extends React.Component<Props, State>{
                                                         <div style={{whiteSpace: "pre-line", padding: 10, margin: 5, marginTop:  10}}>
                                                             <H5>{entry.title}</H5>
                                                             <H6>{entryDate.calendar()}</H6>
+                                                            <Tag>{entry.entryType}</Tag>
                                                             <Button icon={"upload"} onClick={() => {
                                                                 this.loadEntryAsState(entry);
                                                                 this.props.selectTabV2("write");
