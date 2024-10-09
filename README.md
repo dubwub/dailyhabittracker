@@ -13,4 +13,4 @@
 
 ## TODO Checklist
 
-* Am I gonna get rekt by time zones because of the way I store and retrieve dates? Everything is local time
+* Are time zones going to be an issue because of the way I store and retrieve dates? Everything is local time
